@@ -1,0 +1,227 @@
+game:
+  slug: key-strip-rover
+  title: Key Strip Rover
+  idea_ref: g20261001-1-i002
+  terms:
+  - goal.sequence
+  - goal.reach
+  - move.grid
+  - gate.remote
+  - info.telegraph
+  objective:
+    primary: sequence
+    secondary: reach_goal
+  locus: unique-mover
+  actions:
+    ACTION1: declared
+    ACTION2: declared
+    ACTION3: declared
+    ACTION4: declared
+    ACTION5: absent
+    ACTION6: absent
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 9
+    goal: 14
+    danger: null
+    reserved:
+    - 5
+    - 2
+    - 3
+    - 4
+  hud:
+    reserved: custom-rect
+    meter:
+      placement: rows 0-1, full board width (16 cells), the key-strip rail
+      direction: left-to-right
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 48217
+    grid:
+    - 16
+    - 16
+  render:
+    cell_px: 4
+  chrome:
+  - kind: divider
+    where: top
+  - kind: bezel
+    where: border
+  levels:
+  - relation_to_prev: new
+    terms_introduced:
+    - goal.sequence
+    - goal.reach
+    - move.grid
+    - gate.remote
+    - info.telegraph
+    sketch: 'A small open room. The rover starts a short walk from two colored pads.
+      A two-swatch key strip along the top edge is read left-to-right: the left swatch''s
+      color is the pad to touch first, the right swatch''s color is the pad to touch
+      second. The strip is visible in full from the first frame, so the entire required
+      order is telegraphed before the rover takes a single step. Driving onto the
+      pad whose color matches the next unlit swatch locks that swatch (fills it solid)
+      and the pad stays lit; driving onto the other pad produces a one-frame flash
+      with no state change, costing nothing but a step. Once both swatches are lit,
+      a gate segment in the far wall opens into a floor color, exposing an exit cell
+      beyond it; driving the rover onto the exit cell wins the level. The gate''s
+      closed-state color is used nowhere else on the board - not on ordinary wall
+      cells, not on either pad - so its exact location is legible against the plain
+      wall from the first frame, well before it has any reason to open. layout.seed
+      controls the exact start offset, pad positions, and gate/exit column within
+      the room; the invariant is the room shape (single open rectangle, no branches),
+      the two-pad sequence length, the left-to-right rail convention, and the gate''s
+      reserved, never-reused color - never a fixed coordinate.
+
+      '
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: 'The same touch/lock/flash rule and the same remote gate, reused in a
+      narrow single-width corridor instead of an open room, with the sequence lengthened
+      to three pads. The corridor now forks twice into short dead-end alcoves, and
+      the physical order of the alcoves along the corridor does not match the touch
+      order the rail demands, so the rover must enter an alcove, touch its pad, back
+      out the same way it came, and continue - a forced revisit of already-walked
+      floor. The costless-flash rule is reused in a contrasting context: wrong-pad
+      contact is still free, but because the corridor is one-wide and dead-ends are
+      deep, every detour now carries a real time cost, so guessing stops being free
+      in practice even though the rule never changes. layout.seed varies corridor
+      length, alcove depth, which alcove sits on which side, and pad colors; invariant
+      is corridor width (one rover-width), alcove count (two), and sequence length
+      (three).
+
+      '
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: 'Introduces the first true dependency network rather than a single corridor:
+      the spine now carries one pad directly on its own floor (no detour needed) in
+      addition to a single side-branch that itself contains two pads, a near one and
+      a far one past it. The touch order interleaves the two zones (spine pad first,
+      then the branch''s near pad, then the branch''s far pad), so the branch is walked
+      inward once and outward once, but the player must recognize that the spine pad
+      and the branch pads belong to one shared sequence rather than two independent
+      ones. This composes goal.sequence (ordering across zones) with move.grid (a
+      tree-shaped floor graph instead of a line) for the first time. layout.seed varies
+      spine length, branch length, junction position and pad colors; invariant is
+      the tree shape (one junction, one branch, one spine pad) and that the branch
+      pads are strictly nested (near pad sits between the junction and the far pad).
+
+      '
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: 'Doubles the dependency network of the previous level: now two side-branches
+      hang off the spine, each holding a near pad and a far pad, four branch pads
+      total, and the touch order interleaves across both branches (left-near, right-near,
+      left-far, right-far) so each branch must be entered, partially used, left, and
+      later re-entered to reach the pad that was walked past the first time. This
+      is the first level where the solution is not reducible to a single ordered traversal
+      of the floor graph - the player must track two independent half-finished branch
+      visits at once. The gate/exit sit at the far end of the spine, past both junctions,
+      so the final approach also revisits spine floor already crossed twice. layout.seed
+      varies both branch lengths independently, both junction rows, and all four pad
+      colors; invariant is the two-branch, near/far-per-branch shape and the interleaved
+      (not block-grouped) touch order.
+
+      '
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: 'Returns to a single non-branching corridor, reusing move.grid under a
+      third contrasting geometry: a long winding path that folds back on itself (a
+      flattened spiral) rather than a straight line or a tree. Five pads sit along
+      the one true path in rail order, so there is no route ambiguity about which
+      floor to use, only about how much ground a single mis-estimated turn costs on
+      a corridor this long - the same costless-flash rule from level 1 is reused again,
+      now in a context where its cost is purely the corridor''s own length rather
+      than a branch detour. layout.seed varies every turn''s length and direction
+      while keeping the total number of turns and the pad-per-turn placement fixed;
+      invariant is that the path never branches and never revisits a cell (no alcoves),
+      so the entire puzzle is reading the rail order correctly before committing to
+      the long walk.
+
+      '
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: 'A single straight corridor again, but the five pads'' left-to-right physical
+      positions along it are a different permutation than the rail''s touch order,
+      so satisfying the sequence means crossing the same stretch of corridor back
+      and forth several times, walking over already-visited and not-yet-due pads for
+      free along the way. This composes the corridor geometry of level 5 with a non-monotonic
+      order relationship never used before (levels 2-4 always had the correct pad
+      reachable without passing a *later* pad in the wrong direction more than once).
+      layout.seed varies the corridor''s length, the entry column, and the permutation
+      mapping rail order to physical slots; invariant is that exactly one physical
+      permutation is used (no two pads ever share a slot) and the corridor remains
+      one-wide and branchless.
+
+      '
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: 'Combines the two-branch dependency network of level 4 with the non-monotonic
+      ordering of level 6: the spine again carries two pads and two side-branches
+      each carry a near/far pair, but now the rail order sends the player into a branch
+      for its far pad before its near pad, meaning the near pad gets walked over for
+      free on the way in (an ordinary flash, since it isn''t due yet) and must be
+      deliberately revisited afterward as its own trip. The same single rule (touch
+      the due color, anything else flashes for free) now plays three different strategic
+      roles inside one level depending on whether a pad is reached first-pass, skipped-on-purpose,
+      or revisited. layout.seed varies branch lengths, junction spacing, spine pad
+      positions and all six pad colors; invariant is the two-branch/near-far shape,
+      the two spine pads, and that at least one branch is visited far-before-near.
+
+      '
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: 'The capstone: two branches with near/far pairs (level 4/7''s network),
+      at least one far-before-near branch (level 7''s reuse-with-a-twist), plus a
+      ring connector corridor directly linking the two branch junctions without passing
+      back through the spine. The ring is a second composition of move.grid''s floor-graph
+      shape (after line, tree, spiral) and gives the player two structurally different
+      routes between the branches whose true walked length is not proportional to
+      how close the junctions look on the board, since one route runs along the open
+      spine while the other threads the ring''s own turns - a purely structural length
+      difference the player must compare by tracing floor, not by eye. Seven pads
+      total (two spine, two per branch, one extra far-branch pad reachable only via
+      the ring) is the longest sequence in the game. layout.seed varies every corridor
+      length, the ring''s shape and connection points, and all seven pad colors; invariant
+      is the two-branch-plus-ring shape, the seven-pad count, and that the ring is
+      strictly shorter for at least one direction of travel than the spine detour
+      it replaces.
+
+      '
+  budget:
+    enforced: true
+    displayed: true
+    counts: arrow-key moves taken by the rover since the level began; wrong-pad flashes
+      cost the same single step as any other move and nothing more
+    lives: null
+  solver_notes: 'A solver must never assume a fixed coordinate, corridor length, or
+    pad color: layout.seed reshapes the floor graph (open room, corridor, branch-tree,
+    spiral, ring) and all placements every time, so the only stable facts a solver
+    can rely on are the ones each level''s sketch names as invariant (pad count, branch
+    count, near/far nesting, monotonic vs. non-monotonic rail-to-physical mapping,
+    the left-to-right reading convention of the key strip, and the gate''s reserved
+    color). The correct general strategy is: read the key strip once at level start
+    to fix the required color order, then plan a route over the current floor graph
+    that visits pads in that color order, treating any non-due pad contact as a free
+    no-op rather than a failure. Because refusal is visible (a flash held for one
+    full settled frame after the step that caused it, then cleared on the next action),
+    an agent polling frames after every step can always distinguish a progressing
+    touch (swatch fill persists) from a rejected one (flash then reversion) without
+    needing hidden state. The gate''s closed-state color is reserved solely for the
+    gate at every level - it never doubles as a wall color or a pad color - so the
+    gate''s position is legible from the first frame and never has to be discovered
+    by trial; this is the one piece of information the board telegraphs before the
+    player has done anything. No level is solvable by undirected wandering past level
+    1: from level 3 onward the floor graph requires deliberately re-entering already-visited
+    branches in an order that contradicts any single left-to-right or nearest-pad-first
+    heuristic, so an agent must track which colors are already locked and which branch
+    still owes a pad rather than reacting to proximity alone.
+
+    '

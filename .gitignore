@@ -1,0 +1,9 @@
+.venv/
+out/*
+!out/.gitkeep
+workers/
+__pycache__/
+*.egg-info/
+.DS_Store
+/play-logs-games/*
+!/play-logs-games/.gitkeep

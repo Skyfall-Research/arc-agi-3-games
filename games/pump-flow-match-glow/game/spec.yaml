@@ -1,0 +1,257 @@
+game:
+  slug: pump-flow-match-glow
+  title: Pump Flow, Match the Glow
+  idea_ref: b001-pilot-i001
+  terms:
+    - goal.pattern_match
+    - flow.pumped
+    - move.grid
+    - state.wait
+    - info.deception
+    - info.telegraph
+    - hazard.timed
+    - budget.cap
+    - gate.phase
+    - state.facing
+    - terrain.dual_role
+    - info.hidden_geometry
+    - info.fog
+  objective:
+    primary: match_pattern
+    secondary: null
+  locus: unique-mover
+  actions:
+    ACTION1: declared
+    ACTION2: declared
+    ACTION3: declared
+    ACTION4: declared
+    ACTION5: declared
+    ACTION6: absent
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: unique-hue
+    deceptions:
+      - "look-alike dual-role junctions"
+      - "decoy pump stub in level 3 that costs nothing to ignore if the reference panel is read correctly"
+      - "false tell: the purple corner pulse is the only honest signal distinguishing the dual-role tile from its ordinary look-alike"
+      - "palette overload: fog color 2 doubles as both the undiscovered-pipe mask and the generic junction silhouette shown for phase-hidden dual-role tiles"
+      - "camouflage: the phase-hidden dual-role tile's generic junction silhouette camouflages it among ordinary look-alike junctions until the purple corner pulse is read"
+      - "lying display: the fog-masked generic junction silhouette shown for phase-hidden dual-role tiles is a lying display, presenting the same shape as an ordinary junction until discovery and the phase tell reveal it"
+  palette:
+    you: 11
+    goal: 14
+    danger: 8
+    reserved: [0, 1]
+  hud:
+    reserved: row63
+    meter:
+      placement: "bottom-edge horizontal strip spanning the full canvas width"
+      direction: "depletes left-to-right as pump charges are spent"
+  neg2_readers:
+    - pipe_tile: "undiscovered pipe segments render as -2 (true connector shape masked) under fog color 2 until the mover has stood on the tile or has been facing it while adjacent, at which point the tile permanently reveals its real bend/junction shape"
+    - dual_role_tile: "phase-hidden dual-role tiles render as -2 (true pump/valve role masked, showing only a generic junction silhouette) while fog-undiscovered; discovery reveals the shape but the phase-pulse identity tell (purple corner border) is only visible once discovered, requiring at least one further step of observation to read its current gate.phase"
+  layers: explicit
+  layout:
+    seed: 4177
+    grid: [16, 16]
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [move.grid, flow.pumped, goal.pattern_match]
+      sketch: >
+        A single bent pipe run (one connected component, no forks) links a start
+        tile to one pump and a dead-end tail beyond it. The corner reference
+        panel shows a small solved demo swatch in the pump's flow color plus a
+        thin goal-colored ring, so the player sees exactly what "matched and
+        lit" looks like before acting. Walking the bend teaches move.grid
+        (turning costs a discrete step, blocked moves still update facing);
+        standing on the pump and pressing SPACE floods the entire component at
+        once, teaching flow.pumped and immediately satisfying goal.pattern_match
+        the instant every pipe cell in the level equals the target color and no
+        cell outside the run exists to mismatch. Under a different layout.seed
+        the bend's shape, run length, and pump/target color relocate, but the
+        one-component, one-color, walk-then-pump structure is invariant.
+    - relation_to_prev: new
+      terms_introduced: [state.wait, budget.cap]
+      sketch: >
+        Two separate pump components sit near each other, bridged only by a
+        short neutral floor tile (never carries flow) so they can never merge
+        into one component. The reference panel now shows two colored swatches:
+        both components must be lit simultaneously for the exact match to hold.
+        A long, visually obvious floor corridor connects them one way; a short
+        one-floor-tile shortcut connects them the other way, discoverable by
+        backtracking past the pump. Pumping the first component starts its
+        3-step decay countdown (state.wait); taking the long way to the second
+        pump lets the first drain to empty before the second lights, so the
+        instant-checked win never fires — a visible, legible failure that
+        teaches the countdown is real. Taking the short way keeps the first
+        component still lit (dim on its last beat) when the second fires,
+        producing the simultaneous match. The HUD pump-charge meter
+        (budget.cap) is generous enough to fail the long route once, observe
+        the drain, and retry via the shortcut without running dry. Under a
+        different seed the two components, their colors, and which side holds
+        the long vs. short bridge relocate, but the "one bridge is a trap"
+        relational structure is invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        The same two-component drain-race from Level 2 reappears in a
+        contrasting geometry: this time the pump tiles sit at asymmetric
+        depths inside their own branches relative to the shared floor buffer —
+        one pump sits right at the buffer's edge (zero internal walk after
+        pumping), the other sits two pipe cells deep inside its own branch
+        (a two-step walk just to exit toward the buffer). The naive read
+        ("closest pump first," which worked in Level 2) now fails, because the
+        deep pump's own exit walk eats the countdown regardless of press
+        order; the player must reuse the Level 2 lesson (state.wait,
+        budget.cap) but re-derive which press order minimizes total elapsed
+        steps between presses rather than trusting raw distance. A third,
+        fully separate one-tile pump stub sits off to the side with no color
+        in the reference panel at all — it costs nothing to ignore, but
+        pressing it out of habit lights an extra component that breaks the
+        exact match, a light test of reading the panel rather than acting on
+        autopilot. Under a different seed the branch depths and the extra
+        stub's position vary, but the "raw distance lies, internal walk
+        matters" relation is invariant.
+    - relation_to_prev: compose
+      terms_introduced: [hazard.timed, info.telegraph, gate.phase]
+      sketch: >
+        A single pump's component now runs through a valve tile embedded
+        mid-line before continuing to a further dead-end stretch. The valve
+        cycles a fixed 4-step gate.phase loop (2 steps closed/safe, 1 step
+        telegraph-warned by a red rim glow, 1 step open/hazard); while open it
+        blocks propagation and forcibly drains anything already lit beyond it,
+        every step it stays open. A second, separate pump component (bridged
+        by a floor tile, reusing Level 2/3's race) must be lit at the same
+        instant as the full valve-gated run. The local impasse: a player who
+        pumps on an untimed whim likely catches the valve open, so the far
+        stretch and the second component's cells never light while the near
+        stretch does — a visible, partial, confusing glow that only resolves
+        once the player walks up, watches the red telegraph rim for a couple
+        of steps, and learns to press SPACE only during the safe window, then
+        dash to the second pump within the safe window's remaining margin.
+        Under a different seed the valve's phase offset, the run's length on
+        each side of it, and the second component's bridge length vary, but
+        "watch the tell, act only in the safe window, then still race the
+        clock" is invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        The same valve-and-telegraph rule from Level 4 reappears, reused in a
+        contrasting role: a single pump forks into two branches, each gated by
+        its own valve immediately past the fork, and this time the target
+        explicitly wants one branch lit and the other branch left empty. Since
+        a closed valve passes flow and an open valve blocks it, the player
+        must find the one tick where valve A is closed and valve B is open at
+        once (the two valves run the same 4-step gate.phase loop but on
+        different offsets, so their safe/hazard windows only align some of the
+        time) and press SPACE at exactly that tick. Previously "closed" was
+        always the wanted state for every valve in the level; here the same
+        valve rule is deliberately wanted OPEN on one branch, showing that
+        hazard.timed's operational behavior never changed, only which outcome
+        the current target asks for. Under a different seed the two valves'
+        phase offsets and which branch the target wants dark vary, but the
+        "read two tells at once, want them in opposite states" relation is
+        invariant.
+    - relation_to_prev: compose
+      terms_introduced: [info.hidden_geometry, info.fog, state.facing]
+      sketch: >
+        Beyond the level's first few tiles, all pipe geometry starts fogged
+        (rendered as blank -2 stubs): true bend and junction shapes are
+        invisible until the mover has stood on a tile or was facing it while
+        standing adjacent (state.facing tracks the last pressed direction,
+        updating even on a blocked move). Flow physics do not care about fog —
+        an unscouted valve still gates flow exactly as in Levels 4-5 — so a
+        player who pumps blindly gets a shape that does not match the panel
+        for no visible reason, until they walk back, face each fogged branch
+        in turn, and discover a valve was hiding mid-run the whole time. This
+        is the concrete impasse: ordinary pump-and-check no longer explains
+        itself, and only deliberately facing unexplored stubs resolves the
+        confusion. The level's target needs the same valve-timed, two-branch
+        selective lighting as Level 5, now reachable only after scouting.
+        Under a different seed the fog boundary, the hidden valve's position,
+        and which facing-direction first reveals it vary, but "physics ignore
+        fog, only your knowledge does" is invariant.
+    - relation_to_prev: compose
+      terms_introduced: [terrain.dual_role, info.deception]
+      sketch: >
+        Two discovered junction tiles look visually identical (same plain
+        connector silhouette) once defogged: one is an ordinary pass-through
+        junction, the other is a dual-role tile that is pump-capable only
+        during its own closed/telegraph gate.phase and gives a visible refusal
+        flash if SPACE is pressed on it during its open phase — the same
+        gate.phase rule from Levels 4-6, now composed with terrain.dual_role
+        instead of gating a valve's pass-through. The only tell distinguishing
+        the two look-alikes is a faint purple corner pulse that only the
+        dual-role tile shows, visible after standing adjacent for one extra
+        step (reusing state.facing's "face it to learn it" lesson from Level
+        6, now applied to identity rather than shape). The level's target
+        needs the dual-role tile pumped during its safe window to feed a
+        branch that a Level-5-style opposing valve must simultaneously keep
+        open on another branch, while a second floor-bridged component
+        (Level 2/3's race) must land within the same narrow window. Under a
+        different seed which of the two look-alikes is the real dual-role
+        tile, and its phase offset, vary, but "identical shape, different
+        capability, one honest tell" is invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        The finale reuses every established mechanic in one larger network
+        with no new terms: a fogged approach (info.hidden_geometry,
+        state.facing) hides which of three look-alike junctions is the
+        dual-role pump (terrain.dual_role, info.deception); two phase-offset
+        valves must be caught in opposite states at once (hazard.timed,
+        info.telegraph, gate.phase, reused from Levels 4-6); and a fully
+        separate floor-bridged pump component must land its own 3-step
+        countdown window at the same instant as the rest (state.wait,
+        budget.cap, reused from Levels 2-3). No single mechanic is new, but
+        satisfying all of them at one shared instant forces genuine
+        dependency-network planning: the player must scout before the phase
+        windows are legible, but scouting costs steps that eat into the very
+        windows being timed, so the level cannot be solved by executing
+        mechanics in the order they were taught. Under a different seed every
+        relative position, phase offset, and look-alike assignment reshuffles,
+        but the requirement that all four subsystems align at one shared step
+        is invariant.
+  budget:
+    enforced: true
+    displayed: true
+    counts: "each successful SPACE press that fires a pump-capable tile (a refused press on a wrong-phase or unpumpable tile is free and deducts nothing)"
+    lives: null
+  solver_notes: >
+    Movement is confined to pipe and floor tiles only (no free roaming off the
+    etched network); a directional action that would move onto a non-traversable
+    tile leaves the mover in place but still updates state.facing to the
+    attempted direction, consuming a step. Pressing SPACE on a pump-capable tile
+    (a plain pump, or a dual-role tile currently in its closed/telegraph
+    gate.phase) commits instantly within that same step(): every pipe cell in
+    the pump's connected component (stopping at any open-phase valve) is set to
+    the pump's flow color with its state.wait countdown reset to its full fixed
+    length; the same step also advances every gate.phase counter and decrements
+    every already-lit cell's countdown by one, in that order (phase-and-decay
+    tick, then the new pulse is applied on top), so a pump fired the instant a
+    downstream valve opens still fails to cross it. Countdown-2-and-above cells
+    render at full flow-color saturation; countdown-1 cells render with a
+    shared dim overlay as a one-step drain warning (still logically matching
+    their target color); countdown-0 cells render empty. Valve/dual-role tiles
+    cycle a fixed period (2 closed, 1 telegraph with a red rim tell, 1 open)
+    and are never themselves checked against the target's color list. The win
+    check runs after every step(): the level is won the instant every pipe
+    cell's current logical color equals the target's per-cell requirement
+    (empty for any cell the target does not list) everywhere in the play
+    field simultaneously; it is lost never — the meter simply requires a
+    retry if it runs low, and refused presses are free so exploration is cheap.
+    layout.seed drives structural placement only: component shapes, pump/valve/
+    dual-role positions, fog boundaries, phase offsets, bridge lengths and
+    target-cell sets are all regenerated from it per level, while the relational
+    structure named in each level's sketch (which pairing must race, which valve
+    must oppose which, which tile hides which role) is preserved so the same
+    solving insight transfers to any seed; no level's stated solution path may
+    rely on a specific seed-4177 coordinate as the only route, and the canonical
+    coordinates given in the level sketches above illustrate seed 4177 only.
+    Every level's win condition additionally forbids any pipe cell outside the
+    listed target set from being lit at the check instant, so overreaching
+    (pumping components not needed for the current target) is always a real
+    failure mode, not a free action.

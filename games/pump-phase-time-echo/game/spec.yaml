@@ -1,0 +1,226 @@
+game:
+  slug: pump-phase-time-echo
+  title: Pump the Phase, Time the Echo
+  idea_ref: b002-triple-i001
+  terms: [goal.sequence, gate.phase, flow.pumped, agent.echo, hazard.crush, budget.cap, hazard.timed, info.telegraph, info.deception, state.wait]
+  objective:
+    primary: sequence
+    secondary: null
+  locus: selection
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: absent
+    ACTION6: declared
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: unique-hue
+    deceptions: ["decoy clicks on non-armed or closed pads that produce only a harmless visible flash and no other effect, so the pump cell and every pad remain uniformly clickable even when a click does nothing", "palette overload: the shared valve-rhythm shapes reuse a small set of hues across every pad and track, so multiple pads can show matching rim colors while carrying different offsets, cycles, or echo wiring", "retrospective punishment: a crushed echo resets the armed pointer and pressure that were already earned earlier in the run, so a pump choice made many steps before the crush is what actually pays for it", "camouflage: pads sharing the same rim hue under the palette-overload reuse above can be mistaken for one another at a glance, so the player must read each pad's pulsing armed-pointer indicator rather than trust color grouping — a board-level instance of info.deception distinct from the honest countdown pips of info.telegraph"]
+  palette:
+    you: 9
+    goal: 11
+    danger: 8
+    reserved: [0, 1, 2]
+  hud:
+    reserved: row0
+    meter: {placement: row0, direction: left-to-right}
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 7
+    grid: [16, 16]
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [flow.pumped, gate.phase, goal.sequence, budget.cap, info.deception]
+      sketch: >
+        A straight three-pad track (P1,P2,P3) sits right of a single pump cell.
+        Every pad shares the same iris-valve rhythm shape (cycle 12, open window 3)
+        but each is offset around that shared rhythm, so the pads open at different
+        moments even though one pump drives all three. P1 starts open at step 1 so
+        the very first click lands cleanly, proving the causal link between the
+        pump meter and a pad's open glow before any failure is possible. Reaching
+        P2 and P3 then requires the player to pump in short bursts, watch the
+        shared phase counter drift, and click only when the armed pad's ring
+        matches the pump-driven rhythm; clicking early or on a non-armed pad
+        produces a harmless visible flash and nothing else, so the player can
+        freely rehearse the rhythm without penalty. The pump meter is visibly
+        capped a few notches above what any single burst needs, so the player can
+        over-pump and watch the cap hold flat without ever running out of room to
+        experiment. No echo pads exist yet, so the only thing being taught is that
+        flow.pumped sets the speed of gate.phase, that the pump has a hard
+        pressure cap, and that goal.sequence only advances on an open, armed pad.
+        Because all three pads currently share the very same rim hue under
+        palette overload — a deliberate camouflage — the player must learn to
+        identify which pad is armed by its pulsing indicator rather than by
+        color, an early taste of info.deception that later tracks widen into
+        genuine misdirection.
+
+    - relation_to_prev: new
+      terms_introduced: [agent.echo, hazard.crush, hazard.timed, info.telegraph]
+      sketch: >
+        Same shared-rhythm track, now four pads long, with the second pad wired
+        to a delayed twin: a small ring marker on that pad shows it is echo-wired,
+        and a visible countdown pip trail appears next to it the moment the live
+        click lands, telegraphing exactly how many steps remain before the echo
+        fires. The live click succeeds normally and the sequence keeps moving
+        forward, which is the impasse: nothing in the immediate board state
+        demands attention, so an inattentive player keeps pumping and clicking the
+        later pads on their own rhythm while ignoring the pip trail. The pip trail
+        itself is hazard.timed: a running race between the delay clock counting
+        down to zero and the phase clock the player is simultaneously driving,
+        reachable and visible on every echo-wired pad from the moment its live
+        click lands. When the countdown reaches zero, the game re-fires that
+        click on pad 2 automatically, using whatever the shared valve's
+        open/closed state happens to be at that exact step. If the player has
+        driven the shared phase somewhere that closes pad 2's window by then,
+        hazard.timed resolves against the player and manifests as hazard.crush —
+        the iris snapping over the echo token in a unique red flash — and the
+        whole run's sequence progress and pressure reset to zero even though
+        every live click up to that point had been correct, teaching that the pip
+        trail is a forward-looking clock the player must read now, not a receipt
+        for something already finished.
+
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        No echoes here. Instead the flow.pumped/gate.phase pair from level 1 is
+        reused under a harder rhythm layout: three pads in a row, each carrying
+        its own distinct cycle length and open window (short, medium, long)
+        rather than a shared shape with only offset differences. The same pump
+        cell now has to satisfy three genuinely different rhythms back to back,
+        so a pump strategy that nailed the first pad's short window can badly
+        overshoot the second pad's much longer one. This reuses flow.pumped and
+        gate.phase exactly as before with no new object, but the pump's role
+        shifts from a single ramp-up to a repeated push/hold/release pattern the
+        player must adapt three separate times in one uninterrupted run.
+
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Five pads, mixed cycle lengths as in level 3, with two of the pads
+        (positions 2 and 4, on different rhythms) echo-wired with different
+        delays. The player must now hold two live rhythms in mind for the
+        immediate clicks and simultaneously track two independent hazard.timed
+        countdowns landing on two different valve shapes later. Clicking pad 3 or
+        5 correctly can still leave pad 2's or pad 4's echo stranded if the pump
+        choices made in between happened to close that pad's window at the wrong
+        step, so satisfying the near-term armed pad and the far-term echo pulls
+        the same single pump resource in opposite directions.
+
+    - relation_to_prev: new
+      terms_introduced: [state.wait]
+      sketch: >
+        A four-pad track where every open window is unusually narrow (open
+        duration 1 against a long cycle), and one pad's window sits very close
+        after the previous pad's window in phase-space. Pumping at full speed
+        the whole time blows straight through the narrow window before the
+        player can click, which is the impasse: the fix is not to pump harder
+        but to stop pumping and let pressure (and therefore phase advance)
+        decay for a step or two, slowing the shared rhythm's drift enough to
+        land inside the narrow window on purpose. This is the same pump/drain
+        rule as level 1, now used as a brake instead of an accelerator. Because
+        every step still requires a click, the player brakes by aiming refusal
+        clicks at an inert filler cell beside the track — a plain reserved-color
+        tile that flashes and does nothing else — deliberately spending steps
+        as state.wait so pressure drains and the shared phase's drift slows
+        without disturbing any pad's armed pointer, before resuming live clicks
+        once the narrow window has drifted back into reach.
+
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two independent five-pad tracks (A and B) share the one pump cell and
+        one phase counter, with their armed pointers advancing separately; the
+        player alternates live clicks between whichever track currently has an
+        open armed pad. Three pads across the two tracks are echo-wired with
+        overlapping hazard.timed countdowns, so at several points a click that
+        would perfectly advance track A's armed pad must be delayed a step or
+        two because doing it now would drift the shared phase past the window
+        track B's pending echo needs later. The two tracks are not resolved in
+        sequence, they are resolved by continually trading priority based on
+        whichever echo is closer to firing and whichever armed pad is currently
+        open.
+
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        Back to a single seven-pad track, reusing the narrow-window brake
+        technique from level 5 in a contrasting role: here the narrow window
+        belongs to an echo pad near the start of the track (pad 2) rather than
+        to a live click. Advancing cleanly through the middle pads (4, 5, 6) on
+        a fast pump rhythm is exactly what earlier levels rewarded, but doing so
+        here drifts the shared phase straight past pad 2's echo window and
+        triggers hazard.timed against the standing echo. The player must
+        deliberately under-pump through the middle stretch, sacrificing the
+        fastest route to pad 6 and 7, purely to preserve enough phase headroom
+        for a commitment made much earlier.
+
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        The largest track: eight pads bent into an L-shaped path around a
+        structural block, mixed cycle lengths as in level 3, four pads
+        echo-wired with staggered delays as in levels 4 and 6, and one narrow-
+        window pad as in levels 5 and 7. The player must sequence long pump
+        ramps for the wide-window pads, brief brakes for the narrow-window pad,
+        and continuous bookkeeping of up to three simultaneously pending
+        hazard.timed countdowns whose home windows are scattered at different
+        points along the shared rhythm, so a pump choice made to satisfy the pad
+        directly in front of the player routinely trades against an echo
+        commitment made several pads earlier and one still to come.
+
+  budget:
+    enforced: true
+    displayed: true
+    counts: click actions taken (every click is one step; each step also advances the shared pump/drain and phase counter regardless of what was clicked)
+    lives: null
+  solver_notes: >
+    Every clickable sprite on the board — the pump cell and every pad in every
+    track, including non-armed pads, closed pads, and echo-wired pads — is
+    tagged sys_click and routed through the single ACTION6 click handler; no
+    sprite is ever tagged sys_click while being resolved by any other name or
+    tag, so the engine's click-action list stays truthful for every level in
+    this spec. Every level shares one deterministic step order, unchanged
+    across the whole game: (1) snapshot every pad's open/closed state from the
+    phase counter P as it stood at the end of the previous step; (2) resolve
+    this step's click — clicking the pump cell raises pressure by 1 (capped at
+    the pump's budget.cap ceiling), any other click (including a pad) drains
+    pressure by 1 (floored at 0); (3) if the click targeted the currently-armed
+    pad and that pad's snapshot state was open, goal.sequence advances its armed
+    pointer, and if that pad is echo-wired an agent.echo event is scheduled to
+    fire D steps later at that same pad, with a visible countdown pip trail
+    (info.telegraph) counting the delay down each step — from the instant it is
+    scheduled, that countdown is a live hazard.timed race between the delay
+    clock and the phase clock the player keeps driving; any other click on the
+    armed-but-closed pad or on a non-armed pad is a free, visibly-flashed
+    refusal with no other effect; (4) any echo event scheduled for exactly this
+    step is resolved using this same snapshot — open means it silently succeeds
+    and the hazard.timed race is won, closed means hazard.timed resolves against
+    the player and manifests as hazard.crush (the iris closing over the echo
+    token in a unique red flash), resetting the armed pointer to the track's
+    first pad and resetting pressure to 0 without resetting P; (5) P increases
+    by the step's post-update pressure value. A level is won only when every pad
+    in every track has been live-clicked in order while armed and open, and
+    every echo spawned along the way has since resolved successfully — a track
+    is not complete while any of its echoes are still pending, even if every
+    live click has already landed. Because layout.seed varies pad count, path
+    shape, per-pad (offset, cycle, open) triples, which pads are echo-wired, and
+    each echo's delay D, no solution in this spec should be read as a fixed
+    coordinate route: the invariant a solver must actually use is the step-order
+    rule above, plus the general policy of reading each armed pad's snapshot
+    state, projecting the shared phase forward by exactly D steps for any echo
+    just spawned via its countdown pip trail, and choosing pump/drain steps that
+    keep both the near-term armed pad and the far-term pending echoes inside
+    their respective open windows at once. Two additional named mechanics recur
+    across every level: info.deception is the passive misreading risk created by
+    palette-overload/camouflage rim-color reuse across simultaneously visible
+    pads, resolved only by checking each pad's own armed-pointer pulse rather
+    than its color; state.wait is the deliberate choice to spend a step clicking
+    an inert, non-progressing cell (a decoy pad or the reserved-color filler
+    tile) purely to drain pressure and slow the phase clock's drift, used first
+    as a brake in level 5 and available at any pad thereafter.

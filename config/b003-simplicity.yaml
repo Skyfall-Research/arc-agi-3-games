@@ -1,0 +1,114 @@
+# b003-simplicity — two games against the visual+tier-hardened pipeline
+# (operator b003 rulings, 2026-09-25: official-look visuals + easier games are
+# the priority; batch shape = 2 slots, one t1 + one t2; convergence fixes ride
+# along; duck smoke deferred until after this batch). Copy of the frozen
+# b002-triple config except where a comment below says otherwise; every
+# inherited key's provenance comment kept verbatim.
+
+duckwm_docs: ../duckWM/local-docs/arc-agi-3-generator   # READ-ONLY canon (resolved absolute at load)
+duckwm_games: ../duckWM/games/official   # READ-ONLY officials corpus (25 games; B2 calibration)
+
+backends:
+  default_driver: localclaude            # localclaude | codex
+  per_stage: {}                          # e.g. {implementer: codex}
+  localclaude:
+    # implementer fable -> opus (operator R2 ruling, 2026-09-22): a Max-plan
+    # fable-limits call, not a capability ranking — the green-loop can burn
+    # up to 12 long sessions. Flips back when limits allow.
+    models: {spec_writer: claude-sonnet-5, implementer: claude-opus-5, verifier: claude-opus-5}
+    # S2 worker sessions (B3). Operator ruling 2026-09-21: scoped tools, no
+    # permission bypass — `bypassPermissions` here is refused by the driver.
+    session:
+      permission_mode: acceptEdits
+      allowed_tools: [Edit, Write, Read, Glob, Grep, "Bash(make *)", "Bash(python *)",
+                      "Bash(.venv/bin/python *)"]
+      # effort: R2 ruling (operator 2026-09-22). Default-effort S2 sessions sat
+      # >30 min in silent thinking and died on the 1800s driver timeout with
+      # zero output (attempt-1 record). medium = S1's all-day-proven setting.
+      effort: medium
+  codex:
+    auth_env: OPENAI_API_KEY
+    models: {spec_writer: gpt-5.4, implementer: gpt-5.4-codex, verifier: gpt-5.4}
+    session:
+      sandbox: workspace-write           # read-only | workspace-write | danger-full-access
+
+batch:
+  id: b003-simplicity
+  size: 2                                # two slots (operator 2026-09-25): one entry, one core
+  seed: 3                                # fresh S0 draws, disjoint from b001 seed-1 / b002 seed-2
+  # tier_sequence pins slot 1 to t1 and slot 2 to t2 (operator 2026-09-25: "one
+  # t1 + one t2"); the batch.tiers weighted draw below still runs (frozen rng
+  # order) and its result is discarded per slot.
+  tier_sequence: [t1, t2]
+  tiers: {t1: 0.4, t2: 0.4, t3: 0.2}     # legibility tiers (kept verbatim; overridden by the sequence)
+  mix:
+    hazardless: 0.5
+    locus: {mover: .40, selection: .36, click: .24}
+    objective:                           # D24: floors + reach cap (tufa collapsed to 50% reach)
+      floors: {reach_goal: 1, cover_targets: 1, collect_all: 1, match_pattern: 1,
+               sequence: 1, survive: 1, connect: 1, balance: 1}
+      reach_cap: 0.25
+  # quotas stand down for the simplicity A/B (b003 ruling): at size 2 they
+  # degrade to draw boosts toward exactly the rare drill terms an entry-tier
+  # game should not be built from. They return at production size (D22).
+  quotas: {}
+
+ideas:
+  seed_terms_per_idea: [2, 4]
+  failure_family_share: 0.4              # ideas seeded from the five agent-failure families
+  dedupe_window: 3                       # batches
+
+# require_render (contract V-B, b003): every spec declares its ONE render
+# scale (game.render.cell_px) and the linter holds the declaration to the
+# 64-canvas and the officials' tile-scale menu.
+# (`lint.strict` was deleted by contract D-3 §2: hard-required of every config,
+# stamped into every lint report, read by no linter rule — there is one §11
+# linter and it is strict.)
+lint:        {require_render: true}
+# patch_baseline (contract C-1, b003): a rebuild after an S2b reject modifies
+# its own previous validate-green game.py instead of fresh-translating the
+# spec — the b002 slot-3 seesaw fix. Rides only when the reject report's
+# spec hash matches the spec being built.
+implementer: {max_green_attempts: 12, session_token_cap: 400k, patch_baseline: true}
+# verifier.exempt_terms: b002 ruling (operator 2026-09-24) — budget.cap fired in BOTH audit directions on one game in consecutive rounds under the mandated headroom; the finding is recorded, never a reject.
+# info.deception joined the same day under the same bar: sworn dead in two consecutive audits, removed on the audit's own say-so, then flagged reachable in the third — and the operator PLAYED the game and passed it (human ground truth).
+# verifier.lever_corroboration: b002 ruling (operator 2026-09-24) — undeclared-lever findings ROTATE round to round, so an undeclared deception rejects only once two independent blind sessions have named it.
+# lever_corroboration_window (contract C-2, b003): the any-prior-round union
+# SATURATES (measured on b002 slot 3: all 4 distinct levers "corroborated" by
+# round 4 of 8 = reject-on-sight returns). window 1 = consecutive naming, the
+# real/phantom discriminator.
+verifier:    {reject_cap: 2, bfs_level_size_cap: 400,    # cells
+              exempt_terms: [budget.cap, info.deception], lever_corroboration: true,
+              lever_corroboration_window: 1}
+# g.cap_fit: b002 ruling (operator 2026-09-24) — D8's hard reject permanently blocks an otherwise-accepted game; budget calibration is a later optimisation pass, so the violation is recorded and the game ships.
+g:           {median: 2.00, iqr: [1.54, 2.96], floor: 6, span_target: 9, trend: 0.65, redraw_cap: 3, cap_fit: record}
+# The visual report card (contract V-C, b003): objective per-level render
+# measurements from the S2b frames sidecar, written to worker.gate/ for the
+# human review. Both record-only this batch: the l1 color floor flips to
+# `fail` only after a batch of clean records.
+gate:        {visual_card: record, l1_color_floor: record}
+# The tier engine (contracts T-A/T-B, b003): the signed §3.3 table, armed.
+# term_budget: true = the officials' own n at p25/median/max ({t1: 6, t2: 8,
+# t3: 10}); the budget KILLS at authorship (prompt-sync: the same sentence
+# the kill interpolates is in the writer prompt). Knob defaults + intro
+# pacing warn this batch; promotion to kill is a b004 read.
+tiers:
+  prompt_guidance: true
+  term_budget: true
+  term_budget_action: kill
+  knob_defaults_action: warn
+  intro_pacing_action: warn
+  seed_terms: {t1: [2, 3], t2: [2, 4], t3: [3, 4]}
+  term_bias: {t1: common-official}       # entry-tier free slots draw what officials build from
+  quota_boost_tiers: [t2, t3]            # moot with quotas {}; the shipping default for later batches
+# battery.model: pilot stand-in (R1 ruling, operator 2026-09-22; B9 live-proven
+# lane, $0.0023). Flips to the duck's deployment when the team wires it.
+# (`battery.smoke` was deleted by contract D-3 §3: D22's smoke ruling is the
+# tiny `token_cap` right here, and the flag beside it only printed itself back.)
+battery:     {model: meta-llama/llama-3.1-8b-instruct, passes: 3, token_cap: 100k}
+# respec_cap: pilot runs at 3 (R2 ruling, operator 2026-09-22): kill #1 landed
+# under the since-fixed ambiguous neg2 prompt; B11 carry-flag 'RESPEC_CAP=2
+# not canon' resolved by making it per-batch config.
+# Raised to 4 at the R2 coherence pass (operator 2026-09-22): kill #3 (contradiction) came from a hazardless-false draw with no hazard term plus garbage S0 prose; the writer prompt now carries the full lint surface.
+orchestrator: {workers: 4, wave_size: 5, max_attrition: 0.30, respec_cap: 4}
+package:     {seeds_validated: 5, split: {train: 0.7, eval: 0.3}}

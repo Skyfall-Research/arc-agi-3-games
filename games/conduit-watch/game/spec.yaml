@@ -1,0 +1,374 @@
+game:
+  slug: conduit-watch
+  title: Conduit Watch
+  idea_ref: b003r2-simplicity-i002
+  terms: [goal.cover, state.wait, state.checkpoint, goal.path_connect, manip.select_cycle]
+  objective:
+    primary: collect_all
+    secondary: connect
+  locus: selection
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: declared
+    ACTION6: declared
+    ACTION7: declared
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 12
+    goal: 11
+    danger: null
+    reserved: [5, 3, 9, 10, 14]
+    background: 5
+  hud:
+    reserved: row0
+    meter: {placement: "row0, one pip per beacon in the level, left to right in beacon-index order", direction: horizontal}
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 42
+    grid: [16, 16]
+  render:
+    cell_px: 4
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [state.wait, manip.select_cycle, state.checkpoint, goal.cover, goal.path_connect]
+      sketch: >
+        Single SOURCE tile and a two-cell corridor to one beacon. The SOURCE
+        renders already locked (blue), giving the player the exact target
+        color before they act. Clicking the corridor cell adjacent to the
+        SOURCE begins its charge; nothing lights until SPACE is pressed
+        enough times, and the still-charging cell renders in a third,
+        distinct color from both unlit and locked, so the wait state is a
+        visible fact rather than a guess. Reaching the beacon and finishing
+        its charge locks the whole two-cell corridor plus the beacon at
+        once, and the level ends immediately. layout.seed reshapes the
+        corridor's exact bend and the SOURCE's board position and the
+        beacon's position every seed, but always keeps exactly one SOURCE,
+        one beacon, and a corridor of length two between them.
+      solver_notes: >
+        Solvable by charging each of the two corridor cells then the
+        beacon, two SPACE presses per cell, in strict source-to-beacon
+        order; no branch exists so no drop can occur here. Necessity: the
+        corridor must be length two (not one) so the player experiences at
+        least one full click+wait+advance cycle on a plain track cell
+        before meeting the beacon, so the beacon's extra behavior (locking
+        the whole stretch, not just itself) is visible as a genuine
+        addition rather than the only thing that ever happens.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A single SOURCE feeds a short common corridor cell that then forks
+        into two branches, each ending in its own beacon; both beacons must
+        be covered and joined to the SOURCE to win. Nothing stops a curious
+        player from charging partway down one branch, then clicking a cell
+        on the OTHER branch out of curiosity — since that second cell is
+        not adjacent to the first branch's charging cell, the entire
+        uncommitted run back to the common corridor cell reverts to unlit
+        with no warning dialog, only the color change. This is the level
+        where state.wait's silent-drop consequence is first genuinely
+        reachable, because L1's single corridor gave the player no second
+        target to switch to. layout.seed varies the fork's board position,
+        the two branches' individual lengths (never equal to each other),
+        and their compass directions, but always keeps exactly one fork
+        with two branches of unequal length.
+      sketch_coords: >
+        SOURCE (2,8) [locked]. Common cell (3,8). Fork at (3,8): branch A
+        north — (3,7) then beacon_A (3,6); branch B east — (4,8) then
+        beacon_B (5,8).
+      solver_notes: >
+        Safe order: charge (3,8) [2 SPACE], continue to (3,7) [2 SPACE],
+        continue to beacon_A (3,6) [2 SPACE] — this locks (3,8),(3,7),(3,6)
+        together since the run never switched targets. Only then click
+        (4,8), which is a valid new extension off the now-LOCKED (3,8), so
+        no drop is possible; charge it [2 SPACE], then beacon_B (5,8) [2
+        SPACE] to lock and win. Total: 5 track/beacon cells x (1 click + 2
+        SPACE) = 15 actions on the safe path. Anti-degenerate note: an
+        unsafe player who charges (3,7) partway then clicks (4,8) before
+        finishing branch A will watch (3,8) and the partial (3,7) both
+        revert to unlit, forcing a full redo of branch A — the level is
+        only interesting because that mistake is cheap enough to invite
+        and expensive enough to teach.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two independent SOURCE tiles on opposite sides of the board, each
+        feeding its own short chain to its own beacon, and each of those
+        beacons has a second, further beacon beyond it. The two "further"
+        beacons are placed orthogonally adjacent to each other. Covering
+        all four beacons is necessary but the level is not won until the
+        two locked networks are physically touching through those adjacent
+        beacons — a player can lock three of the four beacons, feel done,
+        and only then notice the fourth is what makes the whole thing one
+        conduit rather than two. This is the first true dependency network:
+        the two networks can be worked in either order, or interleaved,
+        and switching attention between them mid-charge on either side
+        drops that side's open run exactly as in level 2, now with two
+        independent fronts to keep straight instead of one. layout.seed
+        varies both SOURCE positions, both chain lengths, and the meeting
+        point, but always keeps two sources, four beacons in two
+        locked-pairs, and the final pair orthogonally adjacent.
+      sketch_coords: >
+        SOURCE_A (2,4), beacon_A (3,4) [adjacent to SOURCE_A], beacon_C
+        (3,5) [adjacent to beacon_A]. SOURCE_B (3,9), beacon_B (3,8)
+        [adjacent to SOURCE_B], track cell (3,7), beacon_D (3,6) [adjacent
+        to track (3,7), and orthogonally adjacent to beacon_C (3,5)].
+      solver_notes: >
+        Either network first, in any order: A-side is beacon_A then
+        beacon_C (2 cells), B-side is beacon_B, then (3,7), then beacon_D
+        (3 cells). Total 5 cells x 3 actions = 15 actions if built cleanly
+        in two uninterrupted passes. The level is won the instant beacon_D
+        locks (assuming beacon_C already locked), because that lock event
+        makes the two LOCKED networks orthogonally adjacent. Necessity:
+        without the C/D pair the two networks would have no legal way to
+        ever touch, since only a beacon's completed charge can lock a
+        stretch permanently — a plain track cell placed at the meeting
+        point could never anchor the connection, so the extra beacon pair
+        is structurally required, not decorative.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        One SOURCE feeds a short corridor to a single hub beacon that has
+        three separate unlit neighbors once locked, opening three
+        simultaneous safe frontiers at once instead of one. The three
+        branches deliberately have different lengths — short, medium, and
+        long — so a player who clears the short branch first and then the
+        medium branch can plausibly forget the long branch is still
+        uncovered, since it is the one furthest from recent attention. Each
+        branch still obeys the same single-active-run drop rule as level 2:
+        working partway into one branch and then clicking into a different
+        branch (rather than continuing the one in progress) drops only that
+        one partial branch, since the hub itself is already locked and
+        cannot be lost. layout.seed varies the hub's position, which three
+        compass directions the branches take, and their three lengths, but
+        always keeps exactly one hub beacon with three branches of three
+        distinct lengths.
+      sketch_coords: >
+        SOURCE (2,2), track (3,2),(4,2), hub beacon H1 (5,2). From H1:
+        branch N — track (5,1), beacon_N (5,0); branch E — track (6,2),
+        (7,2), beacon_E (8,2); branch S — track (5,3),(5,4),(5,5), beacon_S
+        (5,6).
+      solver_notes: >
+        Reach H1 first (3 cells: (3,2),(4,2),H1 = 9 actions), which locks
+        the corridor and the hub. Then clear the three branches in any
+        order — N (2 cells, 6 actions), E (3 cells, 9 actions), S (4 cells,
+        12 actions) — for 36 actions total on a clean pass with each branch
+        finished before the next is started. Anti-degenerate note: a player
+        who starts S, breaks off to do N, finishes N, then resumes S from
+        where they left it will find S has reverted to unlit at the hub,
+        because switching to N's cell was not a continuation of S's open
+        run — the only way to avoid redoing S is to finish whichever branch
+        is currently active before touching another.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two SOURCEs, each feeding its own hub beacon (reusing level 4's
+        three-way hub), and the two hubs' branch sets are laid out so that
+        one branch from each hub terminates in a pair of orthogonally
+        adjacent beacons (reusing level 3's convergence pair). The player
+        now juggles two hubs with three branches apiece, six branches in
+        total, one of which on each side is the convergence branch that
+        must eventually be finished for the win condition rather than just
+        for coverage. Every earlier lesson recombines here: which branch is
+        currently active (level 2/4), which of the two networks currently
+        holds an unfinished run (level 3), and which of the six branches
+        is the one that actually has to touch its counterpart (level 3's
+        forgetting trap, now doubled). layout.seed varies both hubs'
+        positions, all six branch lengths and directions, and the
+        convergence point, but always keeps two hubs of three branches
+        each, with exactly one convergence pair among the six branch ends.
+      sketch_coords: >
+        SOURCE_A (1,1), track (2,1), hub H_A (3,1). Branches from H_A: S —
+        track (3,2), beacon_A1 (3,3); E — track (4,1), beacon_A2 (5,1);
+        CONV — track (3,4),(3,5), beacon_CONV_A (3,6). SOURCE_B (9,9),
+        track (8,9), hub H_B (7,9). Branches from H_B: N — track (7,8),
+        beacon_B1 (7,7); W — track (6,9), beacon_B2 (5,9); CONV — track
+        (7,10),(6,10),(5,10),(4,10),(4,9),(4,8),(4,7), beacon_CONV_B (3,7),
+        orthogonally adjacent to beacon_CONV_A (3,6).
+      solver_notes: >
+        Build each hub's two short branches whenever convenient, but each
+        hub's CONV branch must be finished, uninterrupted from its hub, to
+        lock; only when both beacon_CONV_A and beacon_CONV_B are locked
+        does the level end. Tile count: H_A side (2 setup + 2 + 2 + 3
+        CONV = 9) plus H_B side (2 setup + 2 + 2 + 8 CONV = 14), total 23
+        cells x 3 actions = 69 actions on a clean pass. Necessity: the
+        asymmetric CONV-branch lengths (3 vs 8) mean the two sides are not
+        mirrors, so a player cannot solve one side and blindly copy the
+        plan to the other.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A single SOURCE and a single long corridor (no branch at all) with
+        three beacons spaced unevenly along its length, reusing level 1's
+        plain chain-plus-checkpoint pattern at a much larger scale with no
+        new configuration. Because there is only ever one legal next cell
+        to click, no drop is structurally possible here — this level's
+        pressure is pure sustained attention across a long uninterrupted
+        build, and it exists specifically to prove the same charge/lock
+        rule that opened the game also scales cleanly to a long haul
+        without needing any new device. layout.seed varies the corridor's
+        overall path (it bends, it does not have to run straight) and the
+        three beacons' spacing along it, but always keeps exactly one
+        source, one unbranched corridor, and three beacons along it.
+      sketch_coords: >
+        SOURCE (0,15), corridor bending east then north through roughly 14
+        track cells, with beacon_1 after the first 4 cells, beacon_2 after
+        the next 6 cells, and beacon_3 at the corridor's end after a final
+        4 cells.
+      solver_notes: >
+        Strictly linear: click, SPACE, SPACE, click next cell, repeat, for
+        every one of the 14 track cells and 3 beacons (17 cells x 3
+        actions = 51 actions). Anti-degenerate note: this level is
+        deliberately NOT a corridor-only game overall — it is one level
+        among several precisely because the other levels prove the branch,
+        convergence, and forgetting pressures exist elsewhere; here alone,
+        length itself is the only variable, which is why it stays short in
+        beacon count (three) even though its action count is high.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        A single SOURCE feeds two separate hub beacons in sequence — the
+        corridor from SOURCE locks a first hub beacon, and one of that
+        hub's own branches leads, after further building, to a second hub
+        beacon deeper in the board, which then opens its own three
+        branches. This nests level 4's hub pattern inside itself: the
+        player cannot reach the second hub's three branches without first
+        finishing the specific first-hub branch that leads there, while
+        the first hub's other two branches remain independently available
+        the whole time and can be built before, after, or interleaved with
+        the second hub's discovery, so long as whichever single run is
+        currently active is finished before switching. layout.seed varies
+        both hubs' positions, which of hub one's three branches leads to
+        hub two, and all branch lengths, but always keeps exactly two
+        nested hubs of three branches each (five beacons total).
+      sketch_coords: >
+        SOURCE (1,8), track (2,8), hub H1 (3,8). H1 branches: N — track
+        (3,7), beacon_N (3,6); S — track (3,9),(3,10), beacon_S (3,11);
+        E (leads to hub two) — track (4,8),(5,8),(6,8), hub H2 (7,8). H2
+        branches: N — track (7,7), beacon_2N (7,6); E — track
+        (8,8),(9,8), beacon_2E (10,8).
+      solver_notes: >
+        H1's N and S branches (2 and 3 cells) can be built any time once
+        H1 locks. The E branch to H2 (3 cells) must be finished,
+        uninterrupted, to reach and lock H2 before either of H2's own two
+        branches (2 and 3 cells) becomes reachable at all. Total cells:
+        setup 2 + H1's three branches (2+3+3) + H2's two branches (2+3) =
+        15 cells x 3 actions = 45 actions. Necessity: H2 is unreachable
+        without finishing the E branch first, which is the only place in
+        the game where one beacon's branch is a hard prerequisite for
+        reaching another beacon at all, contrasting with every earlier
+        level where all branches were independently reachable from the
+        moment their hub locked.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Three SOURCEs. Two of them each feed a three-way hub (reusing
+        level 4/7's nested-hub idea, one hub nested one level deep as in
+        level 7), and the third SOURCE feeds a short chain directly to a
+        single beacon with no hub at all. Two convergence-beacon pairs
+        (reusing level 3/5's convergence idea) are needed: one pair joins
+        network one to network three, and a second pair joins network two
+        to network three, so network three's lone beacon chain is the
+        hinge the other two must each separately reach — losing track of
+        which of the two convergence branches is currently active, on top
+        of which hub branches remain uncovered on two separate hubs, is
+        the full combination of every self-monitoring pressure in the
+        game. layout.seed varies all three source positions, both hubs'
+        branch layouts, the hinge chain's length, and both convergence
+        points, but always keeps three sources, two hubs feeding a shared
+        hinge network through two independent convergence pairs.
+      sketch_coords: >
+        SOURCE_A (0,2), track (1,2), hub H_A (2,2). Branches from H_A: N —
+        track (2,1), beacon_A1 (2,0); E — track (3,2), beacon_A2 (4,2);
+        CONV — track (2,3),(2,4),(2,5),(2,6), beacon_CONV_A (2,7).
+        SOURCE_B (12,2), track (11,2), hub H_B (10,2). Branches from H_B:
+        N — track (10,1), beacon_B1 (10,0); W — track (9,2), beacon_B2
+        (8,2); CONV — track (10,3),(10,4),(10,5),(10,6), beacon_CONV_B
+        (10,7). SOURCE_C (6,7) sits directly between the two CONV
+        branches' end rows and forks immediately: leg toward A — track
+        (5,7),(4,7), hinge beacon HINGE_A (3,7), orthogonally adjacent to
+        beacon_CONV_A (2,7); leg toward B — track (7,7),(8,7), hinge
+        beacon HINGE_B (9,7), orthogonally adjacent to beacon_CONV_B
+        (10,7).
+      solver_notes: >
+        Three independent starting points. H_A and H_B each behave exactly
+        as in level 4/7: two short branches reachable any time once the
+        hub locks, plus one longer CONV branch that must be finished
+        uninterrupted to lock. SOURCE_C forks immediately at its own
+        location (no separate hub cell needed, since SOURCE_C is already
+        LOCKED) into two short legs, each of which must individually be
+        finished uninterrupted to lock its hinge beacon — starting leg A,
+        breaking off to leg B, and coming back will drop leg A exactly as
+        in level 2. The level ends only once both HINGE_A/beacon_CONV_A
+        and HINGE_B/beacon_CONV_B pairs are locked. Tile count: H_A network
+        2+2+2+5=11, H_B network 11, SOURCE_C legs 3+3=6, total 28 cells x 3
+        actions = 84 actions on a clean pass. Necessity: because
+        SOURCE_C's two legs share a single active-run slot with both hubs'
+        CONV branches, no fixed build order is forced by the layout — the
+        player must track up to five simultaneously-startable, independently
+        droppable runs across three networks, which is the full composition
+        of every mechanic the game teaches.
+  budget:
+    enforced: true
+    displayed: true
+    counts: "every click, SPACE charge-tick, and undo press spent building the conduit network"
+    lives: null
+  solver_notes: >
+    Every tile is in exactly one of five states: UNLIT, CHARGING (at most
+    one such tile exists on the board at any time — the active_tile),
+    LIT_OPEN (charge complete, part of the single currently-open
+    uncommitted run, still droppable), LOCKED (permanent, immune to
+    dropping; SOURCE tiles start LOCKED), and for beacon tiles specifically
+    an extra flag "covered" that is set the instant a beacon transitions to
+    LOCKED. Charge threshold W is a constant 2 SPACE presses for every
+    track and beacon tile in every level. Click semantics: clicking an
+    UNLIT tile adjacent to the current open run's leading edge (or, if no
+    run is open, adjacent to any LOCKED tile) sets it as the new
+    active_tile with charge 0; if a DIFFERENT active_tile or an unfinished
+    open run already existed and the newly clicked tile is not a
+    continuation of it, that entire prior open run (every LIT_OPEN and the
+    CHARGING tile back to its nearest LOCKED ancestor) reverts to UNLIT in
+    the same step — this is the only place progress is lost, it is fully
+    deterministic, and it is computed identically whether or not the
+    player is watching. Clicking any other tile (already LOCKED, already
+    LIT_OPEN, unrelated background, or an UNLIT tile with no adjacent
+    LOCKED/open-run edge) is refused: no state changes, a one-frame visible
+    flash marks the rejection, and no charge or run is affected. SPACE
+    advances the active_tile's charge by 1 if an active_tile exists,
+    otherwise it is a free no-op. When charge reaches W: if the tile is a
+    plain track cell it becomes LIT_OPEN and active_tile clears, leaving
+    it as the new leading edge of the still-open run; if the tile is a
+    beacon, every tile in the current run (all LIT_OPEN cells plus this
+    beacon) transitions to LOCKED simultaneously, the beacon's covered flag
+    is set, and active_tile clears. ACTION7 (undo) reverts only the
+    current active_tile (0 <= charge < W) to UNLIT and clears active_tile,
+    leaving any earlier LIT_OPEN cells in the same run untouched — it is
+    the deliberate, visible counterpart to the silent whole-run drop
+    triggered by clicking away. Win is evaluated after every step(): true
+    iff every beacon tile's covered flag is true AND the set of all
+    LOCKED-or-better tiles (SOURCE + LOCKED) forms one orthogonally
+    connected component reaching every beacon — a beacon or a connecting
+    stretch left LIT_OPEN but not yet locked does not yet satisfy the
+    connectivity check, since only LOCKED cells count as permanent path,
+    which is why every intended meeting point between two networks in
+    levels 3, 5, and 8 is itself a beacon: a plain track cell can never
+    anchor a connection because it can never permanently lock on its own.
+    All layouts are generated as a function
+    of layout.seed: source count, beacon count, hub arity, and topology
+    class (chain / fork / hub / convergence-pair / nested-hub / hinge) are
+    fixed per level, while exact coordinates, corridor bends, branch
+    lengths, and compass directions vary per seed, so no solver may rely
+    on a fixed coordinate — only on the invariant topology described per
+    level. No animation beyond an instantaneous per-step color recolor is
+    required anywhere: nothing moves across cells, so the "chain reaction"
+    of a whole run dropping at once is rendered as every affected cell
+    recoloring together within the same committed step, not as a
+    multi-frame sequence, and it consumes no extra player budget beyond
+    the single triggering click.

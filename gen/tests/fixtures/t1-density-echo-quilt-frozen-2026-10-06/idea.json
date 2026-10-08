@@ -1,0 +1,22 @@
+{
+  "id": "g20261006-1-i001",
+  "seed_terms": [
+    "goal.cover",
+    "agent.echo"
+  ],
+  "objective": {
+    "primary": "cover_targets",
+    "secondary": "connect"
+  },
+  "failure_family": "agency_attribution",
+  "tier": "t1",
+  "mix_class": {
+    "hazardless": true,
+    "locus": "selection"
+  },
+  "prose": {
+    "title": "Echo Quilt",
+    "text": "Colored blocks sit beside matching target tiles, with a persistent white `0` marking the block currently under the player\u2019s control. Moving the marked block also moves its `agent.echo` by the same amount, so the player learns immediately from two clearly visible motions. The objective is `goal.cover`: place blocks and their echoes over every target, while the occupied targets must form one continuous supporting chain; that chain alone never wins without full coverage. Early layouts make the echo relationship obvious, then later ones require choosing which block to mark so its echo completes the chain without leaving a target uncovered."
+  },
+  "dedupe_key": "agent.echo|goal.cover::cover_targets"
+}

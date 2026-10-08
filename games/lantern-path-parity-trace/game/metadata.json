@@ -1,0 +1,18 @@
+{
+  "game_id": "lantern-path-parity-trace-b4236def",
+  "title": "Lantern Path Parity Trace",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    19,
+    25,
+    36,
+    64,
+    119,
+    137,
+    47,
+    158
+  ],
+  "default_fps": 30
+}

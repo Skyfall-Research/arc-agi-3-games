@@ -1,0 +1,250 @@
+game:
+  slug: seamlock
+  title: Seamlock
+  idea_ref: g20261001-1-i001
+  terms:
+    - goal.cover
+    - manip.interlock
+    - manip.attribute
+    - goal.keyed
+    - manip.merge
+  objective:
+    primary: cover_targets
+    secondary: null
+  locus: click-only
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: absent
+    ACTION6: declared
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 9
+    goal: 11
+    danger: null
+    reserved: [1, 2, 3, 5]
+    tiny_token: [you, goal]
+  hud:
+    reserved: row0
+    meter: {placement: row0, direction: linear}
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 73
+    grid: [16, 16]
+  render:
+    cell_px: 4
+  chrome:
+    - {kind: panel, where: top}
+    - {kind: bezel, where: bottom}
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [goal.cover, manip.interlock, manip.attribute, goal.keyed, manip.merge]
+      sketch: >
+        Three separate outlined target clusters sit on the board: a single
+        cell, a two-cell bar, and a bent three-cell notch. One matching loose
+        tile already sits in line with the single-cell target so the player's
+        very first click only needs to slide and stamp it, immediately
+        showing what a solved target looks like before any fusing is asked
+        of them. Nearby, two single tiles carry a filled triangle mark
+        facing a hollow triangle mark of the same shape; clicking either one
+        merges them into a bar that lines up with the two-cell target. The
+        bent target is served by a short three-tile chain whose middle tile
+        carries two different marks on two different edges, both fully
+        visible at once: a filled triangle on its upper edge and a filled
+        diamond on its side edge, each pointing at a distinct outer tile
+        that carries the matching hollow shape. Clicking the middle tile
+        against one neighbor consumes only the matching mark on that shared
+        edge and grows the chain by exactly one cell in that direction;
+        clicking it against the other neighbor instead would grow the chain
+        the other way, so the player must read which outer tile's hollow
+        shape is reachable along the bent notch's own outline before
+        clicking, then click twice in sequence to grow the chain to the
+        exact bent shape before it becomes eligible to slide onto the
+        notch.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        A 2x2 square target and a single-cell target share the same frame.
+        A 2x2 cluster of four single tiles sits directly beneath the square,
+        and every one of those four tiles is the only pool the square can
+        ever draw from: each tile carries two marks at once, fully visible
+        from the first frame, a horizontal mark toward its row neighbor and
+        a vertical mark toward its column neighbor. Clicking a horizontal
+        pair first, then clicking the two resulting two-cell pieces together
+        to merge them vertically, produces the exact 2x2 composite that
+        slides onto the square. Clicking straight across all four tiles in
+        one horizontal chain instead, consuming every horizontal mark
+        before any vertical one, produces a one-by-four bar that cannot
+        slide onto the square (its footprint is the wrong shape) and cannot
+        slide onto the lone single-cell target either (that target needs an
+        unfused single tile, not a four-cell bar); because merges are
+        permanent, finishing that chain spends the square's only tiles and
+        the square is lost for the rest of the level. A separate single
+        tile sits apart from this cluster and still slides cleanly onto the
+        single-cell target regardless of which way the cluster is merged,
+        so one bad plan costs exactly the square, not the whole level — the
+        lesson in reading a composite's outline against the remaining
+        target shape before committing is affordable here and expensive
+        later.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        Two fully separate target regions sit on opposite corners of the
+        board, each with its own tile pool, so there is no shared-resource
+        risk this time. One region is a straight four-cell bar built from a
+        chain of four singles (the same straight-chain shape that cost the
+        square in level 2 is here the correct answer, because this
+        target's outline is itself a straight bar). The other region is
+        the bent three-cell notch shape from level 1, mirrored left-right,
+        built from a differently-oriented three-tile chain, plus one plain
+        two-cell bar target served by a single matching pair. The point is
+        that the same merge-then-slide loop, and the same triangle/diamond
+        keyed-matching rule, now has to be read fresh against each
+        target's own outline instead of pattern-matched from memory.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        A 2x2 square target and a plain two-cell bar target now draw from
+        one shared pool of six single tiles arranged in two columns of
+        three, each tile's marks fully visible from the first frame. The
+        two bottom tiles each carry exactly one mark, straight up, to the
+        tile directly above them: clicking a bottom tile always grows a
+        vertical two-cell piece. The two top tiles of those same columns
+        each carry a second mark, sideways, toward a third column of two
+        tiles that only exists to build the bar target; both marks on each
+        top tile stay visible at once so the player can see, before
+        clicking, that a top tile has two live options rather than
+        discovering a hidden preference after the fact. Clicking the two
+        bottom tiles first, then clicking the resulting two-cell pieces
+        (not the untouched top tiles) to merge them sideways into the
+        square, finishes the square without ever spending the top tiles'
+        sideways mark, after which the third column's own matching pair
+        still merges cleanly into the bar. Clicking a top tile instead
+        commits its sideways mark immediately and visibly, leaving the
+        square one tile short for the rest of the level — a genuine
+        planning cost, not a hidden one.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        The same visible two-mark column pattern from level 4 now appears
+        twice, back to back along the top edge of the board, feeding two
+        separate 2x2 square targets, plus one extra three-cell bar target
+        fed by its own small pool placed between the two column groups.
+        Every tile's marks remain fully visible at all times, so which
+        column a top tile's sideways mark reaches is readable directly
+        from where the mark points on the board, not inferred from engine
+        order. Because the two column groups sit close together, a
+        careless top-tile click in one group commits that tile's sideways
+        mark into the neighbouring group's column instead of its own
+        square, stranding both squares from a single mistake rather than
+        one. The extra bar target's pool is untouched by either column
+        group, so it is always recoverable even if a square is lost, but
+        losing a square now costs twice the tiles it did in level 4.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Three column-pair pools feed four targets: two 2x2 squares, one
+        three-cell bar, and one 2x3 rectangle. The 2x3 rectangle needs five
+        merges from a six-tile block, and its own bottom row of three
+        tiles is shared physically between the rectangle's pool and one of
+        the square's pools, so a single bottom tile's one visible mark is
+        the single contested link between two different target shapes.
+        Reading which square or rectangle actually has a complete, unused
+        set of tiles left before clicking that shared bottom tile is now
+        necessary; clicking the two uncontested top-corner tiles of the
+        other square first removes the ambiguity and reveals, by what
+        marks remain exposed on the shared tile, which shape it is still
+        free to join.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        The finale combines every pool shape used so far: two visible-mark
+        column pairs feeding two squares, a three-cell bar pool, and a 2x3
+        rectangle pool whose bottom row is shared with one square exactly
+        as in level 6. A fifth, isolated pair of tiles sits apart from
+        every pool; merged together its silhouette is a two-cell bar one
+        cell short of the only remaining uncovered gap after every other
+        target is filled, so finishing every other target correctly still
+        leaves this pair's merge as the wrong size for what is left,
+        forcing the player to notice, before merging it at all, that it
+        must instead be slid unmerged as two separate single-cell stamps
+        onto two of the smaller targets earlier in the sequence rather
+        than saved for last.
+  budget:
+    enforced: true
+    displayed: true
+    counts: total clicks spent attempting merges and stamps, including refused clicks
+    lives: null
+  solver_notes: >
+    Every click is resolved against the tile or empty cell under the
+    cursor in one of three mutually exclusive branches, checked in this
+    fixed order: (1) if the clicked tile is already STAMPED, or the
+    clicked cell holds no tile, the click is a no-op visible refusal; (2)
+    otherwise test STAMP-ELIGIBILITY: does a single cardinal axis and a
+    signed integer distance exist such that translating every cell of the
+    clicked tile by that (axis, distance) lands it exactly onto a set of
+    currently-uncovered cells belonging to one target cluster, with no
+    overlap and a clear straight path; if exactly one such mapping exists,
+    the tile slides (brief linear animation, state committed at the click's
+    step(), animation is cosmetic and costs no extra actions), those target
+    cells become COVERED, and the tile becomes permanently STAMPED and
+    recolors to the locked hue; (3) otherwise test MERGE-ELIGIBILITY: list
+    every boundary edge of the clicked tile that carries a tab or notch
+    mark, in canonical order (cells sorted top-to-bottom then left-to-right,
+    each cell's edges checked UP, RIGHT, DOWN, LEFT), and merge with the
+    first neighboring tile whose facing edge carries the complementary mark
+    (tab+notch, same icon shape, the keyed-matching rule) found in that
+    scan; if none is found, the click is a no-op visible refusal. Every
+    mark on every tile is rendered and visible from the first frame of the
+    level it appears in, so the scan order only disambiguates which of
+    several already-visible valid matches resolves first; it is never used
+    to hide a match the player could not already see on the tile itself.
+    No tile in any level carries a mark whose paired shape is absent from
+    the board: every visible mark names a real, reachable, correctly-shaped
+    partner tile, so there is no clickable pairing whose own existence the
+    player could not already read off the board. A composite's final
+    silhouette not matching any remaining target gap is always a
+    consequence of which real, genuinely-matching tiles the player chose
+    to chain together and in what order — never the result of a tile
+    planted solely to be mistaken for something it is not. This same
+    three-branch rule, with the same scan order, is the only operational
+    rule in the game; every level's difficulty comes from which tile a
+    click lands on and what that tile's own authored, visible marks are,
+    never from a special case or a hidden preference. The layout.seed
+    drives, per level, the exact board coordinates of every target cluster
+    and every loose tile, which of the finite icon-shape/tab-or-notch
+    marks sit on which specific edges, and the flat colors assigned to
+    loose tiles, with every pool kept on a color distinct from every other
+    live pool and from the locked-stamp hue so that no two tiles with
+    different roles ever share a color; it must never change a level's
+    shape-class of targets, its pool topology (how many tiles are
+    single-mark leaves versus two-mark spine tiles, and which pools are
+    shared versus independent), or the win condition. A solver must find a
+    stamp-complete plan for any seed instance of a level, not recall one
+    fixed coordinate path. The running connectivity meter (row0) reports
+    whether already-stamped target cells form one 4-connected block or
+    several islands; it is informational only and never gates the win,
+    which is simply every target cell across every cluster in the level
+    reaching COVERED. Because merging is permanent and there is no undo
+    action, an agent that commits a merge producing a composite shape with
+    no remaining uncovered gap it can axis-slide onto has made that level
+    unwinnable from that point on; detecting this requires comparing a
+    candidate composite's exact cell shape against the remaining uncovered
+    footprint of every target cluster before clicking, not after, using
+    only information already visible on the board. Both the `you` role
+    (unfused, single-cell loose tiles, before any merge commits them into
+    a larger composite) and the `goal` role (an uncovered single-cell
+    target, such as level 1's lone single-cell cluster) are declared tiny
+    tokens: a 1x1 painted footprint for either is the correct, intended
+    rendering of a one-cell tile or a one-cell target, never a stray or
+    undeclared mark, and the role-footprint gate must read it as such
+    rather than as an unaccounted-for pixel.

@@ -1,0 +1,345 @@
+game:
+  slug: convoy-in-the-fog
+  title: Convoy in the Fog
+  idea_ref: b002-triple-i003
+  terms: [goal.survive, info.fog, gate.direct, carry.vehicle, loss.deadlock, agent.delegate, agent.patrol, goal.reach, info.recall, info.telegraph, state.facing, state.wait, terrain.track, move.grid]
+  objective:
+    primary: survive
+    secondary: null
+  locus: click-only
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: declared
+    ACTION6: declared
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: inferable
+    danger_tell: absence
+    deceptions: ["palette overload", "look-alike depot markings"]
+  palette:
+    you: 9
+    goal: 11
+    danger: null
+    reserved: [0, 1, 2, 3, 4, 13]
+  hud:
+    reserved: row63
+    meter:
+      placement: bottom edge strip at y=63, spanning x=0..63, drawn over the reserved background color
+      direction: fills left-to-right from empty (fuel=0, no colored pixels lit) toward full (fuel=max, all 64 columns lit); lit columns drain from the right edge inward as fuel depletes
+  neg2_readers:
+    - gate: "the pointer arrow, the highlighted selected branch, and the trunk/branch leg colors are masked to the flat fog tile whenever the gate's cell lies outside the vehicle's fog halo; only its bare presence as a node is never shown when masked, it reads as ordinary fog"
+    - depot: "the pad's identity color (home-yellow, regular-green, or turnaround marker ring) is masked to the flat fog tile whenever the pad lies outside the halo"
+    - track: "rail segment color and any dead-end stub cap marking are masked to the flat fog tile whenever the segment lies outside the halo; connectivity itself is never shown, only appearance is hidden"
+  layers: explicit
+  layout:
+    seed: 20260924
+    grid: [16, 16]
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [goal.survive, info.fog, carry.vehicle, move.grid]
+      sketch: >
+        A single closed loop of track with no branching, laid out as a rounded
+        rectangle occupying roughly the left two-thirds of the 16x16 grid.
+        The vehicle starts on the home depot pad, which sits directly on the
+        loop (not on a side spur) and is rendered with a distinct ring marker
+        from frame one so the destination is legible before the player acts.
+        A second, ordinary depot pad sits on the far side of the loop. Every
+        step (SPACE or click) advances the vehicle one track cell along the
+        only possible path - a single logical step along the fixed movement
+        lattice defined by the track graph, never a partial or pixel-scale
+        slide - so the player's first concrete encounter with move.grid is
+        this one-cell-per-step advance along track-shaped cells rather than
+        open floor. Fog hides everything outside a small halo around it, so
+        the loop's far side is invisible until approached. Fuel drains one
+        unit per step and refills only when the vehicle occupies a depot pad.
+        There are no gates, so no click ever changes anything (a click on any
+        cell here always shows the visible refusal flash) - this level is
+        solvable only by continuing to act until the vehicle, having left
+        home, re-enters the home pad with fuel remaining, which teaches
+        reading the halo, the fuel meter, and the return-to-home win check
+        before any decision exists. This is the first concrete test of
+        carry.vehicle: the fuel supply is not a passive decoration but a
+        resource physically carried inside the vehicle's own token, and the
+        level's win check is directly gated on that carried supply reading
+        above zero the moment the vehicle re-occupies home - if the loop is
+        long enough relative to starting fuel that the far depot's top-up is
+        required to make it back, carry.vehicle's drain-and-refill cycle is
+        load-bearing from the first level rather than cosmetic. Under a
+        different seed the loop's shape, length, and the second pad's
+        position change, but the structure - one unbroken loop, one home
+        pad, one plain pad, zero gates - is invariant.
+    - relation_to_prev: new
+      terms_introduced: [gate.direct, loss.deadlock, info.telegraph]
+      sketch: >
+        The loop from level 1's family is broken by inserting one gate (a
+        trunk-and-two-branch turnout) a short distance after the home pad.
+        The gate's trunk leg is the direction the vehicle is already
+        traveling; branch A continues the loop back toward home and the
+        plain depot; branch B is a short dead-end stub with no depot at its
+        end. The gate's pointer starts on branch B (the trap). Because the
+        gate sits inside the starting halo, the player sees the wrong
+        pointer immediately: continuing to press SPACE will visibly walk the
+        vehicle down the stub and strand it there, fuel bleeding away with
+        no depot in reach (loss.deadlock made concrete as a dead physical
+        place, not an abstract rule). The player discovers that clicking the
+        visible gate cycles its pointer to branch A, reopening the loop, and
+        the flip is drawn as an immediate arrow-swap so the consequence is
+        legible before the gate fogs back over a few steps later - this
+        arrow-swap is the level's first concrete info.telegraph: the gate
+        does not just change state, it visibly broadcasts which branch the
+        vehicle will be sent down the next time it is entered from the
+        trunk, and that broadcast is only readable for the handful of steps
+        before fog reclaims the cell, so the player must read and remember
+        the telegraph rather than re-check it later. Win condition and
+        fuel/depot rules are unchanged from level 1. Under a different seed
+        the stub's length, the gate's distance from home, and the loop's
+        shape vary, but exactly one gate, one dead-end trap branch, and one
+        safe branch back to a depot chain are invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A larger loop with two ordinary depot pads spaced unevenly around it
+        (one soon after home, one much later) and a single gate placed
+        between them. Both of the gate's branches are safe - neither is a
+        dead-end stub - but branch A is a short direct chord back toward
+        home that passes no depot, while branch B is a long detour that
+        passes the second depot pad before rejoining the loop. The starting
+        fuel is enough to survive branch A comfortably from a full tank, but
+        not enough to survive branch A if the vehicle is already running low
+        when it reaches the gate (for instance after already having taken a
+        long path earlier in the loop). This reuses gate.direct in a
+        contrasting role: the earlier level punished forgetting the gate
+        entirely, this one punishes remembering it but choosing on habit
+        (always take the "shorter" branch) rather than on the fuel gauge
+        visible in the HUD at click time. Both branches rejoin a shared
+        return path to home, so there is no way to die here except by
+        picking branch A with insufficient fuel and stalling short of home;
+        loss.deadlock is reused as "ran dry short of any depot," not as a
+        structural trap. Seed variation changes the loop length, the two
+        depots' spacing, and branch A/B's relative lengths, but the
+        long-safe-detour vs short-risky-chord shape is invariant.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two gates and one dead-end depot spur are combined. Gate 1's trunk
+        is the outbound direction from home; its branch A continues the main
+        loop, its branch B peels off onto a spur ending in a depot pad that
+        has only one track neighbor - a turnaround depot, per the standing
+        global rule that any single-neighbor depot reverses the vehicle's
+        heading once it refuels there, sending it back out the way it came
+        rather than stranding it like an ordinary dead end. Gate 2 sits
+        further along the main loop, past where the spur rejoins it. The
+        puzzle: the main loop's only depot is placed such that a full lap
+        without the spur runs the tank dry before reaching it, so the player
+        must deliberately route through gate 1's "dead-end-shaped" branch B
+        to refuel at the turnaround - reusing the turnaround rule as a
+        planned detour rather than an accident. Because the return trip out
+        of the spur re-enters gate 1 from the branch side, the turnout rule
+        sends it back out the trunk automatically (no click needed there),
+        but this consumes several fogged-over steps during which gate 2 - or
+        the target dead-end stub, or a shortcut opens up - as the vehicle
+        passes near enough to glimpse. The player must click gate 2 into its
+        loop-continuing setting during that brief window, from memory of
+        having seen it default to its dead-end branch back in an earlier
+        glimpse before the spur detour, or the vehicle dead-ends after
+        returning to the main loop. This composes gate.direct (x2),
+        carry.vehicle's turnaround rule, and info.fog's glimpse timing into
+        one dependency: the spur detour is required for fuel, and taking it
+        is what creates and then closes the window to fix gate 2. Seed
+        variation changes both gates' positions, the spur's length, and the
+        main depot's distance from home, but two gates plus exactly one
+        turnaround spur required for fuel survival is invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A tight loop where the single lap's total length is close to the
+        vehicle's full tank capacity, with one gate and one turnaround spur
+        depot reused from level 4's toolkit, but now framed around margin
+        instead of detour-discovery: the gate's branch A is the short
+        loop-only path (no depot, insufficient fuel to finish a second
+        circuit without topping up somewhere) and branch B detours onto the
+        turnaround spur depot before rejoining. Unlike level 4, here EITHER
+        branch technically reaches home once, but only branch B leaves
+        enough fuel for the level's true requirement: the vehicle must
+        complete two consecutive laps (pass home once without stopping,
+        continue around again, then finish) before the win check accepts
+        the return - so a single lap's fuel margin is not the target, and
+        skipping the spur "successfully" on lap one is a trap that stalls
+        the vehicle mid-loop on lap two. This reuses gate.direct and the
+        turnaround rule in a contrasting, efficiency-under-repetition
+        context rather than a one-shot detour, and reuses loss.deadlock as
+        "technically survived once, then ran dry on the required second
+        pass." Seed variation changes the loop's total length relative to
+        tank size and the spur's position, but the two-lap requirement with
+        exactly one gate deciding whether the margin survives lap two is
+        invariant.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        A figure-eight-like network where two loops share one gate as their
+        common junction: the gate's trunk faces the shared segment, branch A
+        continues into loop 1 (which contains the home pad and one ordinary
+        depot), branch B continues into loop 2 (which contains a second
+        ordinary depot and one dead-end stub with no depot). Two more gates
+        sit inside loop 2, each a plain trunk/branch turnout where one
+        branch is a short dead-end stub. Fuel capacity only covers slightly
+        more than loop 2's full circuit plus the return through the shared
+        gate, so the vehicle must pass out to loop 2 to refuel at its depot
+        and then return - meaning the shared gate is entered once outbound
+        (needing branch B) and once on the way back (arriving from branch B,
+        so the turnout rule auto-returns it to trunk, no click needed there)
+        but a third time later in the same level when the route loops back
+        toward loop 2 a second time for a second necessary refuel, at which
+        point the shared gate's pointer - last left however the player set
+        it - must again read branch B, forcing a deliberate revisit-and-reset
+        rather than a "set once and forget" gate for the first time. This
+        composes gate.direct, carry.vehicle, info.fog, and loss.deadlock
+        into a dependency network rather than a chain: which of loop 2's two
+        interior gates matters depends on which depot is still needed, which
+        depends on how much fuel the shared-gate routing already spent, and
+        the shared gate itself must be revisited correctly more than once.
+        Seed variation changes both loops' sizes and which interior gate
+        sits nearer which depot, but the two-loop, one-shared-gate,
+        forced-revisit shape is invariant.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A single larger loop, structurally simple (one main circuit, two
+        gates, one turnaround spur, one ordinary depot, one dead-end stub),
+        reusing every established mechanic with no new topology class, but
+        stretched so that the distance between glimpsing a gate inside the
+        halo and reaching the point where its setting matters spans many
+        fogged-over steps - far longer than any earlier level's gap. The
+        first gate is seen and must be set within the opening few steps near
+        home, but its consequence is not resolved until deep into the lap,
+        well after the fog has closed over it many times more than in
+        earlier levels. This reuses gate.direct and info.fog in a
+        contrasting, long-horizon-memory context: earlier levels rewarded
+        reacting to what was currently visible near a decision point, this
+        one requires holding a decision made near the start in mind through
+        a long blind stretch with no reminders. Seed variation changes the
+        loop's total length and the exact glimpse-to-consequence gap, but a
+        single very long gap between one gate's visible window and its
+        payoff is invariant.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        The largest network: three gates, two turnaround spur depots, one
+        ordinary depot, and at least one dead-end stub, arranged as a
+        two-loop dependency network (as in level 6) but with the long
+        glimpse-to-consequence gaps of level 7 layered on top, plus a fuel
+        margin as tight as level 5's two-lap requirement (the level demands
+        at least two full circuits of the outer loop before the win check
+        accepts the return to home). At least one gate must be revisited and
+        reset between the two required circuits because its correct setting
+        differs between the first pass (heading toward a spur that is only
+        needed once, on the first pass, to bank enough fuel for the second)
+        and the second pass (heading straight through toward home instead,
+        since revisiting the already-used spur a second time would spend
+        more fuel than it returns). This composes every established
+        mechanic - gate.direct, carry.vehicle (including the turnaround
+        rule), info.fog, loss.deadlock, and goal.survive's two-circuit
+        return check - into one dependency network with no single linear
+        order: the fuel plan depends on the spur, the spur's route depends
+        on a gate revisit, and the revisit's correct timing depends on which
+        circuit (first or second) the vehicle is currently on. Seed
+        variation changes every coordinate, both loops' sizes, and all gate
+        and depot placements, but the double-circuit requirement with at
+        least one gate needing two different settings across the two passes
+        is invariant.
+  budget:
+    enforced: true
+    displayed: true
+    counts: "steps taken (each SPACE wait or click, valid or refused) since the vehicle's fuel was last topped up at any depot pad; fuel drains at a fixed rate of one unit per step regardless of which action was taken"
+    lives: null
+  solver_notes: >
+    Every level is a function of layout.seed: the track's shape, the
+    positions of the home pad, ordinary depots, turnaround-spur depots,
+    dead-end stubs, and every gate all move with the seed, and so does the
+    exact distance between any gate's visible window and the point where its
+    setting takes effect. What never moves with the seed is the rule set: a
+    gate is always a fixed-trunk, two-branch turnout whose pointer only
+    matters when entered from the trunk side (entry from a branch side
+    always auto-returns to trunk, no click required); a depot with exactly
+    one track neighbor always reverses the vehicle's heading after refueling
+    instead of stranding it, while a non-depot dead end always strands the
+    vehicle in place, draining fuel to zero with no recovery; fuel always
+    drains exactly one unit per step regardless of action type, and always
+    refills to the same fixed maximum on any depot pad, home or otherwise;
+    fog always reveals the same fixed small halo centered on the vehicle's
+    current cell, updated after movement each step, independent of level or
+    seed. carry.vehicle is reachable concretely, not just declared: it is
+    what level 1's win check actually gates on (the carried fuel supply must
+    read above zero when the vehicle re-occupies home, forcing at least the
+    far depot's top-up on a loop sized to require it), it is what the
+    turnaround rule operates on from level 4 onward (the vehicle's carried
+    fuel and its carried heading both flip state together at a
+    single-neighbor depot), and it is what makes level 3's branch choice and
+    level 5's two-lap margin meaningful at all - without a resource that is
+    physically carried inside the vehicle rather than tracked off-board,
+    neither the gate choice nor the lap count could ever matter. A solver
+    must therefore win at any seed by applying these invariant rules to
+    whatever concrete network that seed generates, never by memorizing a
+    fixed route. Clicking a gate that is not currently inside the halo, or
+    clicking a non-gate cell, always produces the same visible refusal (a
+    brief flash, no pointer change) and still costs the step's fuel unit
+    exactly as a successful click or a SPACE wait would; there is no free or
+    hidden action. State commits at the end of each step() in this fixed
+    order: (1) apply a valid click's pointer flip if the clicked cell is a
+    visible gate, else render the refusal flash, (2) advance the vehicle
+    exactly one track cell per the current turnout/dead-end/turnaround
+    rules, (3) drain one fuel unit, (4) if the vehicle's new cell is a depot
+    pad, refill fuel to max and, if that pad has exactly one track neighbor,
+    reverse heading, (5) recompute the fog halo around the vehicle's new
+    position, (6) evaluate loss (fuel at zero) then win (vehicle occupies
+    the home pad, has departed it at least once already this level, fuel
+    above zero, and - from level 5 onward - has completed the level's
+    required number of full circuits). Gate pointer flips and the depot
+    reversal are drawn as short deterministic animations (arrow swap;
+    vehicle facing-icon flip) that commit their final state at the end of
+    the same step, not mid-animation, and do not themselves consume any
+    additional step beyond the one action that triggered them. The
+    all-track board is terrain.track: every traversable cell belongs to the
+    fixed rail network and nothing off that network is ever enterable. The
+    vehicle's cell-by-cell advance along that fixed rail network is
+    move.grid: the movement lattice is the track graph rather than open
+    floor, one logical cell per step, with no diagonal or partial moves and
+    no free coordinate the player can pick beyond the gate settings that
+    steer the lattice's branches. The vehicle is an autonomous
+    agent.patrol/agent.delegate pair - it never receives a direct move
+    action; SPACE is an explicit state.wait step that lets it continue
+    patrolling the network under its current gate settings, while a click
+    delegates a routing decision to the next trunk-entered gate without ever
+    moving the vehicle itself. carry.vehicle's turnaround rule is a
+    state.facing flip: the vehicle's stored heading reverses when it
+    refuels at a single-neighbor depot, and that heading (not player input)
+    determines which cell state.wait advances it into next. Because the fog
+    re-occludes gates and depots the vehicle has already passed, correct
+    play depends on info.recall of what a now-fogged gate or depot looked
+    like several steps ago, and each gate's arrow-swap animation is an
+    info.telegraph of the branch it will send the vehicle down the next
+    time it is entered from the trunk, legible for the few steps before fog
+    closes over it again - first encountered concretely in level 2, where
+    the player must act on the telegraphed arrow-swap before it fogs back
+    over, and reused in every later level whenever a gate's setting must be
+    read from memory rather than re-checked. goal.survive is the level's
+    outer win condition (return home with fuel above zero, including the
+    required circuit count from level 5 onward); goal.reach is its per-step
+    constituent - every advance in step (2) is the vehicle reaching the
+    single next track cell or depot pad that its current facing and the
+    active gate settings determine, and a full solve is nothing more than a
+    chain of such single-cell reaches that closes back on the home pad. The
+    'palette overload' and 'look-alike' deception levers are both present in
+    the rendering: the turnaround spur depot's ring marker and the ordinary
+    depot's fill both draw from the same warm palette family (palette
+    overload) so that the two depot types look alike at a glimpse and cannot
+    be told apart from color alone at range - the player must resolve which
+    depot type it is from the number of track legs touching it (one leg for
+    a turnaround, two or more for ordinary/home) rather than from hue, which
+    is why info.recall and not color-matching is what the later levels
+    actually test.

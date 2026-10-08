@@ -1,0 +1,24 @@
+{
+  "id": "b001-pilot-i001",
+  "seed_terms": [
+    "goal.cover",
+    "info.fog",
+    "info.telegraph",
+    "terrain.conveyor"
+  ],
+  "objective": {
+    "primary": "cover_targets",
+    "secondary": null
+  },
+  "failure_family": "belief_maintenance",
+  "tier": "t2",
+  "mix_class": {
+    "hazardless": true,
+    "locus": "selection"
+  },
+  "prose": {
+    "title": "Fogbound Switchyard",
+    "text": "A top-down warehouse floor is threaded with a fixed network of conveyor lanes that continuously carry single-color crates toward a scatter of color-matched target pads, and the player's only action is clicking the small switch tiles at lane junctions to choose which branch an oncoming crate takes. The win condition is easy to state and hard to keep true: every pad on the board must be covered by a crate of its own color at the same moment, so a pad filled correctly a minute ago can just as easily get bumped empty by a later crate routed wrong. Periodically a fog bank silently settles over one section of the belt network, but right before it does, that whole section flashes its true state \u2014 crate colors, current switch settings, which pads are covered \u2014 for a few beats before going opaque. Belts and crates keep moving underneath the fog exactly as they did before it fell, so the player has to keep setting switches for a now-hidden region from memory of that flash rather than from what's currently on screen. Nothing in the fog can hurt the player and no move is ever unrecoverable, so the game is decided entirely by whether their memory of the concealed layout stays accurate call after call \u2014 a stale belief about what's under the fog, not a mistimed click, is what leaves a pad empty when the fog finally lifts."
+  },
+  "dedupe_key": "goal.cover|info.fog|info.telegraph|terrain.conveyor::cover_targets"
+}

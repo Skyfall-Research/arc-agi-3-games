@@ -1,0 +1,17 @@
+{
+  "game_id": "tidegate-mosaic-9e7369ef",
+  "title": "Tidegate Mosaic",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    18,
+    18,
+    16,
+    6,
+    10,
+    10,
+    27
+  ],
+  "default_fps": 30
+}

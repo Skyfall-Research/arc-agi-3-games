@@ -1,0 +1,495 @@
+{
+  "actions": {
+    "level-1.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ],
+    "level-2.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ]
+  },
+  "config": {
+    "caps": {
+      "basis": "official-band"
+    },
+    "g": {
+      "cap_fit": "record",
+      "floor": 6,
+      "iqr": [
+        1.54,
+        2.96
+      ],
+      "median": 2.0,
+      "redraw_cap": 3,
+      "span_target": 9,
+      "trend": 0.65
+    }
+  },
+  "metadata": {
+    "baseline_actions": [
+      6,
+      6
+    ],
+    "cap_fit": {
+      "mode": "record",
+      "ok": false,
+      "violations": [
+        {
+          "baseline": 6,
+          "cap": 6,
+          "level": 1,
+          "margin_needed": 24
+        },
+        {
+          "baseline": 6,
+          "cap": 6,
+          "level": 2,
+          "margin_needed": 24
+        }
+      ]
+    },
+    "caps": [
+      6,
+      6
+    ],
+    "caps_basis": "official-band",
+    "caps_required": [
+      30,
+      30
+    ],
+    "g": [
+      3.0,
+      2.0
+    ],
+    "game_id": "i1-repeat-rule",
+    "provenance": {
+      "arcengine": "<ARCENGINE>",
+      "g_config": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      },
+      "python": "<PYTHON>"
+    },
+    "rng_seed": 7,
+    "schema_version": "b8.1",
+    "solver_actions": [
+      2,
+      3
+    ],
+    "verdict": "fit"
+  },
+  "report": {
+    "band": {
+      "config": {
+        "games": 1,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "levels": 2,
+        "median": 2.0,
+        "tolerance": 0.25
+      },
+      "iqr_g": [
+        2.25,
+        2.75
+      ],
+      "median_g": 2.5,
+      "within": {
+        "iqr": false,
+        "median": true
+      }
+    },
+    "cap_fit": {
+      "mode": "record",
+      "ok": false,
+      "violations": [
+        {
+          "baseline": 6,
+          "cap": 6,
+          "level": 1,
+          "margin_needed": 24
+        },
+        {
+          "baseline": 6,
+          "cap": 6,
+          "level": 2,
+          "margin_needed": 24
+        }
+      ]
+    },
+    "caps": {
+      "band": {
+        "basis": "official-band",
+        "g_box": [
+          1.0,
+          2.288329519450801
+        ],
+        "in_band": false,
+        "levels": [
+          {
+            "baseline": 6,
+            "budget_fraction": 0.06666666666666667,
+            "cap_shortfall": 24,
+            "in_band": false,
+            "level": 1,
+            "literal_target_ok": false,
+            "measured_cap": 6,
+            "ratio": 0.3333333333333333,
+            "required_cap": 30,
+            "solver": 2
+          },
+          {
+            "baseline": 6,
+            "budget_fraction": 0.1,
+            "cap_shortfall": 24,
+            "in_band": true,
+            "level": 2,
+            "literal_target_ok": false,
+            "measured_cap": 6,
+            "ratio": 0.5,
+            "required_cap": 30,
+            "solver": 3
+          }
+        ],
+        "margin": {
+          "battery_margin": 5,
+          "literal_target": "baseline/cap inside the officials' ratio band",
+          "literal_target_conflicts": true,
+          "satisfied_by_required": true,
+          "shortfall_factor": {
+            "loosest": 2.185,
+            "median": 3.9450000000000003,
+            "tightest": 5.42
+          }
+        },
+        "ratio": {
+          "band": [
+            0.437,
+            1.084
+          ],
+          "median": 0.789
+        },
+        "ratio_median_achieved": 0.41666666666666663,
+        "required": [
+          30,
+          30
+        ],
+        "source": "audit/comparative/data/effort.csv"
+      },
+      "basis": "official-band",
+      "battery_margin": 5,
+      "bound": 2000,
+      "has_lose_call": true,
+      "levels": [
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 6,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 6,
+          "level": 1
+        },
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 6,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 6,
+          "level": 2
+        }
+      ],
+      "status": "measured",
+      "values": [
+        6,
+        6
+      ]
+    },
+    "config": {
+      "g": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      }
+    },
+    "g_fit": {
+      "clip": [
+        1.0,
+        2.288329519450801
+      ],
+      "mu": 0.6931471805599453,
+      "sigma": 0.4843712241145833
+    },
+    "game_id": "i1-repeat-rule",
+    "out_dir": "<OUT>",
+    "paths": {
+      "actions": [
+        "<OUT>/actions/level-1.json",
+        "<OUT>/actions/level-2.json"
+      ],
+      "metadata": "<OUT>/metadata.json",
+      "report": "<OUT>/s4-report.json"
+    },
+    "result": {
+      "attempts": [
+        {
+          "attempt": 0,
+          "baselines": [
+            6,
+            7
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 7,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": false,
+              "level": 2,
+              "solver": 3
+            }
+          ],
+          "g": [
+            3.0,
+            2.3333333333333335
+          ],
+          "ok": false
+        },
+        {
+          "attempt": 1,
+          "baselines": [
+            6,
+            7
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 7,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": false,
+              "level": 2,
+              "solver": 3
+            }
+          ],
+          "g": [
+            3.0,
+            2.3333333333333335
+          ],
+          "ok": false
+        },
+        {
+          "attempt": 2,
+          "baselines": [
+            6,
+            7
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 7,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": false,
+              "level": 2,
+              "solver": 3
+            }
+          ],
+          "g": [
+            3.0,
+            2.3333333333333335
+          ],
+          "ok": false
+        },
+        {
+          "attempt": 3,
+          "baselines": [
+            6,
+            6
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 6,
+              "battery_fits": false,
+              "cap": 6,
+              "fits": true,
+              "level": 2,
+              "solver": 3
+            }
+          ],
+          "g": [
+            3.0,
+            2.0
+          ],
+          "ok": false
+        }
+      ],
+      "baseline_actions": [
+        6,
+        6
+      ],
+      "g": [
+        3.0,
+        2.0
+      ],
+      "invariants": {
+        "floor_ok": true,
+        "has_strict_descent": "vacuous",
+        "span_achieved": 1.0,
+        "trend_achieved": null
+      },
+      "redraws": 3,
+      "verdict": "fit"
+    },
+    "rng_seed": 7,
+    "schema_version": "b8.1",
+    "seed_source": "explicit",
+    "solver": {
+      "actions_per_level": [
+        2,
+        3
+      ],
+      "actions_total": 5,
+      "described": [
+        [
+          "ACTION4",
+          "ACTION4"
+        ],
+        [
+          "ACTION4",
+          "ACTION4",
+          "ACTION4"
+        ]
+      ],
+      "levels": 2,
+      "win": true
+    },
+    "stage": "s4",
+    "verdict": "fit",
+    "versions": "<VERSIONS>",
+    "worker": "<WORKER>"
+  },
+  "seed": 7,
+  "worker": "repeat_rule"
+}

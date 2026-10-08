@@ -1,0 +1,294 @@
+game:
+  slug: twin-signal-rendezvous
+  title: Twin Signal Rendezvous
+  idea_ref: b004-validation-i001
+  terms:
+    - goal.rendezvous
+    - move.grid
+    - manip.select_cycle
+    - hazard.crush
+    - agent.patrol
+  objective:
+    primary: reach_goal
+    secondary: null
+  locus: selection
+  actions:
+    ACTION1: declared
+    ACTION2: declared
+    ACTION3: declared
+    ACTION4: declared
+    ACTION5: declared
+    ACTION6: absent
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: unique-hue
+    deceptions: []
+  palette:
+    you: 0
+    goal: 11
+    danger: 8
+    reserved: [1, 3]
+    background: 1
+  hud:
+    reserved: row63
+    meter:
+      placement: row63
+      direction: left-to-right depletion
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 4231
+    grid: [16, 16]
+  render:
+    cell_px: 4
+  chrome:
+    - kind: panel
+      where: top
+    - kind: bezel
+      where: border
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [move.grid, manip.select_cycle, goal.rendezvous]
+      sketch: >
+        Open 16x16 floor bounded by a one-cell perimeter wall, no hazard yet.
+        The cyan lantern (2x2, anchor near the top-left) and the amber lantern
+        (2x2, anchor a short distance away along a shared open row) start
+        close enough that the whole rendezvous can be closed in under ten
+        actions. A white selection ring marks whichever lantern currently
+        answers to grid-move input; only that lantern moves per step, the
+        other holds still. The top chrome panel carries a static two-frame
+        reference icon (two small tokens apart, then merged under a pale
+        highlight) so the "make them occupy the same cell" objective reads
+        before the player takes any action. The local impasse is trivial by
+        design: walking the selected lantern toward the other only closes
+        half the gap, because the other lantern never moves on its own. The
+        player discovers that toggling selection lets them finish the walk
+        with the second lantern, establishing move.grid (stepwise motion,
+        wall-bump stops it dead and visibly) and manip.select_cycle (input
+        always targets exactly one marked lantern) together. Under a
+        different layout.seed the two starting anchors and the perimeter
+        shape change, but the invariant is that they always start on the
+        same connected open region with no obstruction between them, so the
+        level never depends on a specific coordinate pair, only on the
+        two-phase pattern: move one lantern partway, toggle, move the other
+        lantern the rest of the way.
+    - relation_to_prev: new
+      terms_introduced: [hazard.crush]
+      sketch: >
+        The floor splits into two regions connected only by a single
+        one-cell-wide corridor; the cyan lantern's region and the amber
+        lantern's region no longer touch anywhere else. A red sentinel
+        patrols back and forth along that corridor's full length, moving one
+        cell per step and reversing at each end; a dim red outline one cell
+        ahead of its current position telegraphs where it goes next, so its
+        path is always predictable one step in advance. The impasse: walking
+        the selected lantern straight into the corridor the moment it looks
+        clear can still walk it directly onto the sentinel's next cell,
+        which knocks that lantern all the way back to its level-start
+        position (a short slide-back animation makes the loss legible). The
+        player learns to read the telegraph and step only when the sentinel
+        will have vacated the target cell, introducing hazard.crush as
+        something that punishes the currently selected lantern specifically.
+        Under a different seed the corridor's length, bend count, and the
+        sentinel's patrol endpoints move, but the corridor always remains
+        the sole connection between the two starting regions, so crossing it
+        at least once is unavoidable regardless of seed.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        A second one-cell corridor, longer than level 2's, is the only route
+        to a shared meeting pocket past its far end; the sentinel patrols
+        this corridor exactly as before. This time the pocket is narrow
+        enough that only one lantern can usefully wait inside it while the
+        player ferries the other lantern up from its distant start. The
+        natural plan is to walk the first lantern into the corridor, park it
+        partway while the far lantern is fetched, and only then bring the
+        parked one the rest of the way. Because parking happens to leave the
+        idle lantern standing on a cell the sentinel later occupies while
+        patrolling, the player observes directly that the sentinel passes
+        through an unselected lantern without effect: hazard.crush's
+        operational rule (it only ever knocks back the currently selected
+        lantern) is unchanged from level 2, but this is the first level
+        where standing in its path is a plan rather than an accident, which
+        reuses move.grid, manip.select_cycle, and hazard.crush together in a
+        contrasting, deliberately-parked context. Seed variation changes
+        which lantern's start sits farther from the pocket and how long the
+        detour corridor runs, but always keeps one lantern's shortest route
+        passing through the hazard corridor and the other's not, so the
+        asymmetry that motivates parking survives any seed.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two hazard corridors now exist, one running vertically and one
+        horizontally, each with its own independently patrolling sentinel
+        and telegraph, meeting the maze's open regions at different points.
+        Neither lantern can reach the other's starting region without
+        crossing at least one corridor, and the shortest overall path
+        crosses both: cyan must cross the vertical corridor to reach a
+        central room, and amber must cross the horizontal corridor to reach
+        that same room from the other side, before either can close the
+        final gap between them. The player composes the level-3 parking
+        insight on purpose now: ferrying one lantern across its corridor,
+        parking it safely in the central room, toggling to fetch the other
+        across its own corridor, and only then walking the pair together to
+        an exact overlap. Getting the toggle timing wrong when a lantern
+        sits mid-corridor (rather than fully parked past it) reintroduces
+        the level-2 risk, so the level tests whether the player generalized
+        "park past the hazard, not inside it." Seed variation changes which
+        corridor is vertical versus horizontal, the two sentinels'
+        independent patrol lengths, and the central room's shape, while
+        always keeping exactly one hazard corridor on each lantern's
+        shortest route to the other and always carving the central room as
+        a single connected pocket of at least four open floor cells with
+        both corridors opening directly onto it, so an overlap cell
+        reachable from both corridor mouths exists at every seed and a
+        winning line is always constructible.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        A single one-cell chokepoint corridor is now the only connection
+        between the two starting regions, and its sentinel's patrol
+        endpoints sit close together, so the safe window between passes is
+        shorter than in any earlier level. Both lanterns must cross this
+        same chokepoint, one after the other, because the region beyond it
+        is where the rendezvous must ultimately happen. The player has to
+        walk one lantern up to the chokepoint's near mouth, wait there
+        (holding position, not entering) while reading the telegraph across
+        several patrol cycles, cross at a safe beat, then toggle back for
+        the second lantern and repeat the same waiting discipline before it
+        can cross too. Because the far mouth opens onto a small dead-end
+        pocket with no other exit, a lantern that crosses too early relative
+        to the other's readiness must sit exposed in that pocket while its
+        partner is fetched, composing timing pressure with the parking
+        insight from levels 3-4 under a much tighter window. Seed variation
+        changes the chokepoint's exact length and the patrol's period, but
+        always keeps the safe crossing window shorter than the round trip
+        needed to fetch the second lantern, forcing at least one genuine
+        wait rather than a single lucky rush.
+    - relation_to_prev: invert
+      terms_introduced: []
+      sketch: >
+        This layout forces the rendezvous cell itself to sit inside a
+        hazard corridor's patrol range, rather than in a safe room past it.
+        Every earlier level treated "get clear of the corridor" as progress
+        and safety at once; here that stops being true, because the final
+        overlap can only happen on a cell the sentinel also visits on its
+        patrol. The player can walk both lanterns to adjacent safe cells
+        just outside the corridor with no risk at all, exactly as prior
+        levels rewarded, but the level only completes once both anchors sit
+        on the same in-corridor cell simultaneously, so someone has to be
+        selected and standing there when the sentinel is elsewhere, then
+        immediately toggle to bring the second lantern onto that same cell
+        before the sentinel returns. Arriving early and idling exposed in
+        the hazard cell risks exactly the knockback that "reaching the
+        doorway" used to make safe from. This inverts the standing "clear
+        the corridor, you're safe" lesson without changing hazard.crush's
+        rule at all: it still only ever punishes the selected lantern on
+        contact. Seed variation moves which corridor cell is forced to be
+        the rendezvous point and the patrol's period, but always keeps that
+        cell strictly inside the sentinel's patrol range, never at either
+        endpoint, so idling right at a turnaround is never a safe shortcut.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Two independent hazard corridors again, as in level 4, but now the
+        maze also contains a dead-end pocket whose only entrance sits back
+        near cyan's own starting region, and the only route to the region
+        where amber must ultimately be fetched from runs past that pocket's
+        mouth. A lantern walked straight for the far region without first
+        detouring to check the pocket finds no shortcut there, so the pocket
+        is not a decoy to avoid but a necessary waypoint: an item-free
+        alcove that happens to be the only place with room to park one
+        lantern safely while the corridors' two independent sentinels are
+        both mid-patrol on the direct route, since parking anywhere else
+        along the direct route leaves that lantern in one sentinel's range.
+        Solving this level means composing all established mechanics with a
+        forced revisit: cross corridor A with cyan, backtrack partway to
+        stage it in the alcove, toggle to amber, cross corridor B, bring
+        amber to the alcove's mouth, then walk both together to the meeting
+        room only once both corridors read clear on the telegraph. Seed
+        variation changes which region the alcove sits nearest to and the
+        two sentinels' relative patrol periods, but always keeps the alcove
+        off the direct route and necessary as a staging point regardless of
+        seed.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        The largest layout: two hazard corridors whose sentinels have
+        different, non-matching patrol periods cross the maze at a shared
+        junction cell that lies on both patrols, so each sentinel visits the
+        junction on its own schedule and the two schedules only align into a
+        simultaneous safe gap once every several patrol cycles. Both
+        lanterns must pass through that junction to reach the far region
+        where the rendezvous must close, and the earlier levels' single-
+        corridor waiting discipline is no longer enough on its own: reading
+        one telegraph and moving is easy, but timing entry against two
+        independently moving telegraphs at once requires holding a lantern
+        at the junction's near mouth across multiple combined cycles before
+        committing. The level composes every established mechanic under
+        this harder timing load: ferrying and parking (levels 3-4), waiting
+        at a mouth for a window (level 5), and treating an in-hazard cell as
+        the necessary final meeting ground rather than something to avoid
+        (level 6's inversion), since the rendezvous room itself opens
+        directly off the junction. Seed variation changes both sentinels'
+        patrol lengths and their phase offset at level start, but always
+        keeps their periods non-matching so a genuine multi-cycle wait is
+        required at some seed-determined point, never a single lucky
+        crossing.
+  budget:
+    enforced: true
+    displayed: true
+    counts: every UP/DOWN/LEFT/RIGHT grid-step and every SPACE selection-toggle, summed across both lanterns
+    lives: null
+  solver_notes: >
+    Each step() resolves in a fixed order: (1) if the action is a movement
+    action, the currently-selected lantern attempts to move one logical cell
+    in that direction — if the destination cell is a wall or off-board the
+    lantern's position is unchanged and this counts as the visible refusal
+    (no position delta between the pre- and post-step settled frames is
+    itself the signal, since knobs.refusal is visible and non-transient; no
+    flashing bar is needed or drawn); (2) if the action is SPACE, the
+    selection marker instantly moves to the other lantern and no lantern
+    position changes that step; (3) after any movement resolution, every
+    active sentinel advances exactly one cell along its fixed patrol lane
+    and reverses direction at either endpoint, and its one-cell-ahead
+    telegraph outline is recomputed for the next frame; (4) a knockback
+    check compares the newly-selected-and-moved lantern's cell to every
+    sentinel's newly-updated cell — on a match, only that lantern (the one
+    that was selected this step) is reset to its level-start anchor with a
+    brief slide-back animation that commits on the following frame; an
+    unselected lantern occupying a sentinel's cell during step (3) is never
+    checked and is never affected, which is the fact levels 3, 4, 6 and 7
+    are built to teach and then exploit. (5) a win check compares both
+    lanterns' anchor coordinates; on an exact match the board pulses the
+    palette.goal (11) highlight under both footprints for one settled frame
+    and the level ends. Solvers must track sentinel phase (position and
+    direction) as explicit hidden-but-visible state carried between steps,
+    since the telegraph only reveals one cell of lookahead; verifying a
+    solution for any seed requires simulating each sentinel's ping-pong
+    walk deterministically from its declared start and period rather than
+    reading a fixed table, since layout.seed changes corridor lengths,
+    patrol endpoints, and starting phase but never the resolution order
+    above. Every seeded layout is required to carve fully-connected regions
+    end to end — in particular level 4's central room is always at least
+    four open floor cells with both corridors opening directly onto it —
+    so that a winning line (a finite sequence of moves and toggles reaching
+    goal.rendezvous) is constructible at every seed; a generator draw that
+    would leave a corridor mouth opening onto an unconnected pocket is
+    rejected and redrawn rather than shipped. No level is solvable by
+    undirected random stepping: every level from 2 onward requires at least
+    one deliberately timed corridor crossing that a naive immediate crossing
+    fails, and every level from 3 onward also requires at least one
+    deliberate toggle-and-park action whose payoff (a lantern sitting safely
+    in a cell a sentinel later crosses) only appears several steps later, so
+    blind action spam either times out against the corridor or wastes the
+    parking opportunity and cannot reach goal.rendezvous. The red sentinel
+    is the game's sole agent.patrol instance in every level from 2 onward:
+    its position, direction, and period are fixed at level start and it
+    advances deterministically per step (3) regardless of player action,
+    never reacting to either lantern's position — the telegraph exposes its
+    patrol rule directly so reading agent.patrol's schedule, not evading an
+    adaptive foe, is what every corridor crossing in levels 2-7 requires.

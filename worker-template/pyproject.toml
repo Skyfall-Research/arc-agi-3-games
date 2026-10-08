@@ -1,0 +1,13 @@
+# Dependency manifest for a self-contained worker venv (AWS lane / future).
+# The local pilot does NOT install this: worker.mk pins PY to the
+# arc-agi-games venv, which already carries these pins.
+[project]
+name = "arc3-worker"
+version = "0.0.1"
+requires-python = ">=3.12"
+dependencies = [
+    "arcengine==0.9.3",
+    "numpy>=2.0",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]

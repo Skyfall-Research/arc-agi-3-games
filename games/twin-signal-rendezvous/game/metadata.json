@@ -1,0 +1,18 @@
+{
+  "game_id": "twin-signal-rendezvous-6826cd02",
+  "title": "Twin Signal Rendezvous",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    25,
+    39,
+    25,
+    46,
+    50,
+    21,
+    22,
+    48
+  ],
+  "default_fps": 30
+}

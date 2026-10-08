@@ -1,0 +1,17 @@
+{
+  "game_id": "seamlock-cb044ffc",
+  "title": "Seamlock",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    10,
+    7,
+    21,
+    12,
+    25,
+    39,
+    23
+  ],
+  "default_fps": 30
+}

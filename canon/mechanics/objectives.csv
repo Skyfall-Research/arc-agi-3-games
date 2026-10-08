@@ -1,0 +1,191 @@
+slug,corpus,objective_primary,objective_secondary,source,evidence
+ar25,official,cover_targets,,triage,triage.csv ar25-0c556536 (verbatim). Witness: goal.cover flip — `vplrhaovhr` ar25.py:1688-1696 requires every `0001sruqbuvukh` target cell occupied.
+bp35,official,reach_goal,,triage,"triage.csv bp35-0a0ad940 (verbatim). Witness: goal.reach flip — win on contact with the goal gem, bp35.py:4096-4099 / 4222-4225."
+cd82,official,match_pattern,,triage,"triage.csv cd82-fb555c5d (verbatim). Witness: goal.pattern_match confirmed — `np.array_equal` canvas vs on-board reference, cd82.py:740-753."
+cn04,official,cover_targets,connect,triage(qualifier-secondary),triage.csv cn04-2fe56bfb (verbatim). cover_targets witnessed by the goal.cover flip (cn04.py:1023-1048). `connect` has NO goal.path_connect witness — conflict noted on the cn04/goal.path_connect cell; the pairing it names is tagged goal.rendezvous.
+dc22,official,reach_goal,survive,triage(qualifier-secondary),triage.csv dc22-fdcac232 (verbatim). reach_goal witnessed by the goal.reach flip (dc22.py:10891-10892). `survive` has NO goal.survive witness — conflict noted on the dc22/goal.survive cell (every counter here loses on empty).
+ft09,official,match_pattern,,triage,triage.csv ft09-0d8bbf25 (verbatim). Witness: goal.pattern_match confirmed — `cgj()` ft09.py:2436-2519 per-neighbour colour equality/inequality against the clue art.
+g50t,official,reach_goal,connect,triage(qualifier-secondary),triage.csv g50t-5849a774 (verbatim). reach_goal witnessed by the goal.reach flip (g50t.py:2515-2517). `connect` has NO goal.path_connect witness — conflict noted on the g50t/goal.path_connect cell (the circuit is pre-wired at level build).
+ka59,official,reach_goal,cover_targets,triage,"triage.csv ka59-38d34dbb (verbatim). reach_goal witnessed by the goal.reach flip (exact inset equality, ka59.py:41093); cover_targets by the goal.cover flip (all frames of both families, ka59.py:41262-41273)."
+lf52,official,collect_all,connect,triage(qualifier-secondary),"triage.csv lf52-271a04aa (verbatim). collect_all witnessed by the goal.cover flip, mode:clear (disc count -> 1, lf52.py:5375-5377/5572). `connect` has NO goal.path_connect witness — conflict noted on the lf52/goal.path_connect cell."
+lp85,official,match_pattern,balance,triage(qualifier-secondary),"triage.csv lp85-305b61c3 (verbatim). match_pattern witnessed by the confirmed goal.pattern_match cell (lp85.py:21442-21451). `balance` has NO phys.balance witness — conflict noted on the lp85/phys.balance cell (track-index rotation, no equilibrium anywhere in lp85.py:21206-21451)."
+ls20,official,reach_goal,,triage,triage.csv ls20-9607627b (verbatim). Witness: goal.reach flip — `pbznecvnfr` ls20.py:2042-2046 banks a goal on exact cell equality; vocabulary-v2.md:69 already cites o:ls20 as the reach exemplar.
+m0r0,official,reach_goal,connect,triage(qualifier-secondary),"triage.csv m0r0-492f87ba (verbatim). NEITHER family is witnessed: `connect` has no goal.path_connect (the win is co-location, m0r0.py:844-865, tagged goal.rendezvous) and `balance` has no phys.balance (mirrored coupling + OR-gate plates). Both conflicts noted on the m0r0 cells. | D24 amendment: balance qualifier recorded here (mirrored coupling + OR-plates); primary re-anchored to the co-location win"
+r11l,official,balance,reach_goal,triage,"triage.csv r11l-495a7899 (verbatim). balance witnessed by the phys.balance flip (core = centroid of its arms, r11l.py:1536-1551) — see the flag on that cell re: v2-final's termless 'centroid-linkage' rarity; reach_goal witnessed by the goal.reach flip (core must overlap its target, r11l.py:1765-1767)."
+re86,official,cover_targets,,triage,"triage.csv re86-8af5384d (verbatim). cover_targets witnessed by the new goal.cover cell (re86.py:1894-1918, every target sprite's coloured pixels must be covered); goal.keyed records the per-target colour key."
+s5i5,official,reach_goal,connect,triage(qualifier-secondary),"triage.csv s5i5-18d95033 (verbatim). reach_goal witnessed by the new goal.reach cell (s5i5.py:2080-2086, head at food's exact (x,y)). CONFLICT: `connect` has no witnessing goal term — see the note on s5i5/goal.path_connect."
+sb26,official,match_pattern,connect,triage,"triage.csv sb26-7fbdac44 (verbatim). match_pattern witnessed by goal.pattern_match (sb26.py:918-933, confirmed); connect witnessed by goal.path_connect (sb26.py:975-989 + :946-958, confirmed — vocabulary-v2.md:72's one official exemplar)."
+sc25,official,reach_goal,match_pattern,triage,"triage.csv sc25-635fd71a (verbatim). reach_goal witnessed by the new goal.reach cell (sc25.py:2731-2746 -> :1856); match_pattern witnessed by goal.pattern_match (sc25.py:1958-1965), which is the spell-cast control surface rather than the win test."
+sk48,official,sequence,match_pattern,triage,"triage.csv sk48-d8078629 (verbatim). sequence witnessed by the new goal.sequence cell (sk48.py:842-859, index-wise compare at :854 — vocabulary-v2.md:75's own exemplar); match_pattern witnessed by goal.pattern_match (same predicate, confirmed)."
+sp80,official,cover_targets,balance,triage(qualifier-secondary),"triage.csv sp80-589a99af (verbatim). cover_targets witnessed by goal.cover (sp80.py:729-731 + :747, confirmed). CONFLICT: the PRIMARY `balance` has no witnessing mechanic — phys.balance is absent in code; see the note on sp80/phys.balance."
+su15,official,reach_goal,connect,triage(qualifier-secondary),"triage.csv su15-1944f8ab (verbatim). reach_goal witnessed by the new goal.reach cell (su15.py:2033-2081, centres inside a goal disc -> :1056-1057). CONFLICT: `connect` has no witnessing goal term — see the note on su15/goal.path_connect."
+tn36,official,reach_goal,balance,triage(qualifier-secondary),triage.csv tn36-ef4dde99 (verbatim). reach_goal witnessed by the new goal.reach cell (the x/y conjuncts of tn36.py:2153-2156); goal.keyed stays present per the D20 sign-off. CONFLICT: `balance` has no witnessing mechanic — see the note on tn36/phys.balance.
+tr87,official,match_pattern,sequence,triage,"triage.csv tr87-cd924810 (verbatim). match_pattern witnessed by goal.pattern_match (tr87.py:1044-1113, confirmed); sequence witnessed by the new goal.sequence cell (ordered RHS concatenation + name-by-name compare, tr87.py:1060-1113)."
+tu93,official,reach_goal,survive,triage(qualifier-secondary),triage.csv tu93-0768757b (verbatim). reach_goal witnessed by the new goal.reach cell (tu93.py:1261-1264). CONFLICT: `survive` is unwitnessed under v2-final's definition — see the note on tu93/goal.survive.
+vc33,official,match_pattern,balance,triage,"triage.csv vc33-5430563c (verbatim). match_pattern witnessed by goal.pattern_match (vc33.py:1937-1955, confirmed); balance witnessed by phys.balance (vc33.py:2014-2051, confirmed — the only official instance)."
+wa30,official,collect_all,survive,triage(qualifier-secondary),"triage.csv wa30-ee6fef47 (verbatim). collect_all witnessed by the new goal.cover cell (wa30.py:1194-1196, every cargo block on a target and unheld; crosswalk collect_all <- goal.cover). CONFLICT: `survive` is unwitnessed — see the note on wa30/goal.survive."
+airtime_glider,tufa,survive,,derived-mechanical,single-goal crosswalk: goal.survive
+alternating_helpers,tufa,reach_goal,,judged,"win check `self._red_pos == self._blue_pos == self._beacon` (alternatinghelpers.py:473) - a single designated beacon tile; goal.reach + goal.rendezvous both witness reach_goal, so there is no second family"
+anchor_drift,tufa,cover_targets,,judged,"dominant clause `all(crate.pos in occupied_docks ...)` with per-dock colour matching (anchor_drift.py:488-494) = occupy/fill every target cell; manifest obj.dock_all_crates reads straight across. The requires_anchor adjacency clause (:481-486, 3 of 9 levels) is a placement sub-constraint, not a second family"
+arrow_crate_dock,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+avoid_the_lava_timed_hazards,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+axis_reflect,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+beat_dock_buttons,tufa,reach_goal,,judged,"`elif target == self._current_spec['dock_pos'] ... next_level()` (beat.py:239-243); the beat-phase gate (:240) is a timing condition on the same arrival, and goal.rendezvous crosswalks to the same family"
+blink,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+bombdroptactics,tufa,collect_all,reach_goal,judged,"`won = player_alive and exit_open and (px,py) in model.exit_tiles` (bombdroptactics.py:550) where `exit_open` = `block_mask == 0 and _alive_enemy_count(...) == 0` (:300-301). The clear-every-block-and-enemy clause is mode:clear and is the whole puzzle (the exit is solid until then, :325-326); the exit tile is the terminal step -> secondary reach_goal"
+bottomless_pit,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+boulder_mirror_beam_combo,tufa,connect,,judged,"`if self._receiver_lit: self.next_level()` (bouldermirrorbeamcombo.py:776-777) fed by the traced emitter->receiver path (:528-530): connectivity is the win test itself. Resolves the manifest's `light_receiver` label as connect, not reach_goal - no avatar position is ever tested"
+boulder_push_roll,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+breakout,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+catch_eggs,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+chase_escape,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+circuit_connect_path_drawing_by_clicks,tufa,connect,,derived-mechanical,single-goal crosswalk: goal.path_connect
+clock_dock_walk,tufa,reach_goal,,judged,stepping into the single dock cell wins (clockdockwalk.py:298-300 -> 332-334); the accept-phase clause (:299) is a timing gate on that arrival and crosswalks to the same family
+coin_collector_collect_all,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+color_washer_route,tufa,reach_goal,,judged,"`elif tile == 'd': moved = self.player_color == 'blue'; won = moved` (colorwasherroute.py:417-419) - one dock cell, entered in the required colour; goal.keyed is a structural modifier and witnesses no family of its own"
+column_sculptor,tufa,cover_targets,,judged,"`if all(self._ball_captured)` (columnsculptor.py:360) - every ball delivered into a colour-matching basin off one final landscape; balls fill target cells, nothing is removed"
+command_twins,tufa,reach_goal,,judged,"`solved = self._bot_a == self._beacon and self._bot_b == self._beacon` (commandtwins.py:244) - a designated per-level beacon; goal.reach and goal.rendezvous witness the same family, so no secondary"
+conveyor_sort_gpt,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+corner_hall_match,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+crane_dipper,tufa,match_pattern,sequence,judged,"`_is_solved` is cell-by-cell canvas-vs-reference equality ignoring both diagonals (crane_dipper.py:466-472) = the dominant clause; manifest obj.match_reference_ignoring_diagonals agrees. Secondary sequence because strokes overwrite rather than blend (:419-421), so the reference is only reachable in one dip order - the L1 spec is named 'Right half after top half' (:75). Same shape as official tr87's triage match_pattern/sequence"
+cutline_drop,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+dash_puzzle,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+debug_identify_the_agent,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+deliver_the_package,tufa,reach_goal,,judged,"`if pkg in level.bay_cells[level.target_bay]` (deliverthepackage.py:670-671) - arrival of the carried package in the designated bay zone; the wrong-bay fail (:646-648) is goal.keyed, a modifier"
+dodge_ball,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+dodger_falling_blocks,tufa,survive,,derived-mechanical,single-goal crosswalk: goal.survive
+domino_socket,tufa,connect,,derived-mechanical,single-goal crosswalk: goal.path_connect
+doortimers,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+easy_taps,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+echo_maze_gpt,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+fan_drift,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+flood_fill,tufa,cover_targets,,judged,"`is_uniform` (floodfill.py:182-184), the only win test (:264-265), requires EVERY cell of the puzzle region to hold one colour - a satisfy-every-target-cell predicate, witnessed by the goal.cover flip (mode:cover). Explicit conflict recorded: the other present term, goal.rendezvous, crosswalks to reach_goal, which would be play-nonsense for a Flood-It; goal.pattern_match stays absent because no target pattern is stored or shown"
+flood_fill_water,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+flux,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+footprint_walker,tufa,reach_goal,,judged,`_is_winning_anchor` = avatar anchor equals a mask-matching target anchor (footprintwalker.py:206-214 -> 244-246); arrival is the whole win test and goal.keyed only decides which homes count
+frequency_lock,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence
+frogger,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+ft09_close,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+ghost,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+glass_orchard,tufa,cover_targets,,judged,"`all(basket['filled'] for basket in self.baskets)` (glass_orchard.py:647-648) - fruit must fill every colour-matching basket; manifest obj.fill_matching_baskets reads straight across as cover_targets (fill target cells), not collect_all"
+glyph,tufa,sequence,reach_goal,judged,"win check `self._progress >= len(self._runes) and player == self._goal` (glyph.py:227). Primary sequence because the order is code-enforced with instant loss - only runes[_progress] is clickable and any other ACTION6 loses the level (:186-189, :239-240) - and the runes are the puzzle (mode-keyed, Manhattan-1 range) while the snake corridor makes the route forced. Secondary reach_goal for the designated goal cell behind the goal_lock (:175-177)"
+golf_grid_putt,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+gravity_flip,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+gravity_platformer,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+greedy_friend_meeting,tufa,reach_goal,,judged,"`player_on_marker and helper_on_marker` against the designated per-level marker (greedyfriendmeeting.py:289-292, spec :91-96, sprite :115). Witnessed by the goal.reach flip and by goal.rendezvous; matches the sibling mirror_greedy_friend"
+grid_archery,tufa,collect_all,reach_goal,judged,"`_has_won` = exit open AND archer on the exit centre (gridarchery.py:543-544), where `_update_exit` opens it only once `_all_targets_hit()` (:386-387, :532-535). Hitting every target with ricocheting arrows is mode:clear and is the substance of every level; the exit-centre step is the terminal clause -> secondary reach_goal"
+hazard_baton,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+hazard_skip_portals,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+herding,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+hinge_bridge,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+hll1,tufa,reach_goal,,judged,"`self._heavy == self._spec['rendezvous'] and self._light == self._spec['rendezvous']` (hll1.py:237) - one designated pad per level (:66,:75,:95). Witnessed by the goal.reach flip plus goal.rendezvous. NOT balance: phys.balance is present as a MECHANIC (heavy/light classes, :249/:272) but no equilibrium or threshold is ever tested at win time"
+home_finding,tufa,cover_targets,,judged,"`_all_matched` requires every agent to sit within WIN_RADIUS of a colour-matching circle (homefinding.py:317-333 -> 314-315) - occupy every target cell, with agents click-teleported rather than routed, so cover_targets rather than the reach_goal that walked-avatar ka59 carries in triage"
+hookshot,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+ice_stop,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+identify_the_agent,tufa,reach_goal,,judged,"win predicate identifytheagent.py:167-169 fires on `_agent_on_target()` - arrival at the target cell; the L3 cross is a single-item precondition (:150-155), too thin for a second family, and the manifest reads obj.reach_target"
+island_portal_dock,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+js26,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+junction_click_maze,tufa,reach_goal,,judged,"junc.py:236-241 - arriving at the destination node is the only win clause; goal.confirm (the one-step cleared_hold, :221-224) is a structural modifier and witnesses no family"
+key_door,tufa,reach_goal,,judged,"the win check `_check_open_exit_overlap` (keydoor.py:801-808, consumed :989-990) is plain arrival at the exit rect; the key is a gate.key precondition (:758-767, :980-981), not a keyed target. Manifest obj.reach_goal agrees"
+keys,tufa,reach_goal,sequence,judged,"keys.py:229's terminal conjunct is `_at_goal(player)` -> next_level (the lock sits on that cell until unlocked, :190-196), so reach_goal is primary; the ordered collection enforced by lose() at :205-209 is the genuine second family (goal.cover mode:collect is the same clause as the sequence, so collect_all is not recorded)"
+lantern_moths,tufa,cover_targets,,judged,"`_is_solved` (lantern_moths.py:434-438) requires every moth to OCCUPY a matching flower cell simultaneously - fill-the-target-cells, so cover_targets rather than collect_all (nothing is removed; sleepers can be re-woken, :425-431). Manifest obj.sleep_matching_flowers agrees"
+laseretch,tufa,connect,,derived-mechanical,single-goal crosswalk: goal.path_connect
+latch_bridges,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+latch_holders,tufa,reach_goal,,judged,"`_check_win` (latchholders.py:196-205) is arrival: one named pawn on its goal cell (L1/L2) or both pawns on their own goal cells (L3, :102-103); goal.keyed and the new goal.confirm are structural modifiers with no family of their own"
+leap_frog,tufa,collect_all,,judged,"the only win clause is the population count `_green_count() == 1` (leap_frog.py:349, :482-483) - greens are removed, and the board has no target cells at all, so collect_all not cover_targets. Manifest obj.leave_one_green agrees"
+light_out,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+light_shadow,tufa,reach_goal,,judged,"the win status is returned by `player in level.exits` (lightshadow.py:718-719) and banked at :947-948; nothing else is tested, and both alarm and timeout are losses (:715-721, :931-943)"
+limited_turns,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+locksmith_warded_routes,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+looping_chains,tufa,cover_targets,,judged,"`_is_solved` (looping_chains.py:537-543) is a quantifier over spec.targets - every target box must hold its own rider (and facing) in the same tick; the newly-present goal.cover witnesses it. Manifest obj.align_riders. No secondary: goal.rendezvous here is the coupling/phase character of the SAME clause, not a separate arrival objective"
+ls20_close,tufa,reach_goal,,judged,"the destination is a cell: walking onto a lock whose target the carried key matches opens it and the last one calls next_level (ls20_close.py:637-638, :644-650) - v2's own o:ls20 goal.reach exemplar, and the official LS20 triage is reach_goal with no secondary; goal.keyed is the modifier on that arrival"
+magnet,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+make_all_same,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+match_sliders,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+maze,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+maze_runner_reach_the_goal,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+memory,tufa,sequence,collect_all,judged,"the dominant clause is the order test: an out-of-order pad calls lose() at once (memory.py:341-344) and `_expected_order` is what advances (:357). Secondary collect_all - every one of `_pads_required` pads is consumed on contact (:352-356, :389-392) before the explicit two-step confirm (:347-349, :377-410) banks the level"
+mirror_greedy_friend,tufa,reach_goal,,judged,"`_won` (mirrorgreedyfriend.py:216-221) is co-location inside the fixed BEACON_CELLS zone (:12); goal.reach and goal.rendezvous both map to reach_goal under the crosswalk, so there is no second family"
+mirror_match,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+mirror_push,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+mirror_walk_gpt,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+mirrored,tufa,reach_goal,,judged,"`same_cell or crossed` (mirrored.py:301-311) is pure co-location of the two blocks - the crosswalk's 'co-location = reaching a moving goal' case, witnessed by goal.rendezvous; manifest obj.meet_or_cross. There is no designated goal cell, which is noted in the cells file"
+mirrorshot,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+moving_platforms_manual_animation,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+nonogram_picross_lite_visual_clues,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+one_enemy_duel,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+one_screen_precision_jumps,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+one_way_warp_maze,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+orbx,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+outline_painter_pads,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+paint_snakes,tufa,cover_targets,match_pattern,judged,"`_is_solved` (paint_snakes.py:638-647) quantifies over the designated target cells ONLY - non-target cells are unconstrained and neutral (desired None) targets are explicitly skipped (:641-642) - so the win is fill-the-target-cells (cover_targets, manifest obj.paint_targets), not whole-region equality. The per-cell colour equality that the same clause performs is the second family, witnessed by goal.pattern_match"
+painttheroom,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+panel_door_dock,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+path_connect_sequence,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence
+pathfinder,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+pattern_match_sequence,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence
+pattern_match_sequence_2,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence
+pick_and_place,tufa,cover_targets,,judged,"win is `len(self._locked) == len(targets)` (pickandplace.py:411-412) - every target occupied by its colour-matching block; blocks are placed, not removed, so cover_targets. goal.keyed is the modifier (:406-407)"
+pipe_connect_rotate_tiles,tufa,connect,,derived-mechanical,single-goal crosswalk: goal.path_connect
+pong_solo_training_walls,tufa,survive,,derived-mechanical,single-goal crosswalk: goal.survive
+push,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+push_enemies_into_hazards,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+pushlane,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+pushonlybridges,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+re_create,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+relay_portals,tufa,reach_goal,,judged,"`win_now` (relayportals.py:309-318) is co-arrival of player and helper on the fixed beacon cell (:198, spec :136/:148/:162) on the same action; witnessed by both goal.rendezvous and the newly-present goal.reach"
+relaygems,tufa,reach_goal,collect_all,judged,"relaygems.py:373-378 - the terminal clause that calls next_level is standing on the goal cell, so reach_goal is primary; the three gems removed on contact (:323-333) and required by `gems_collected >= gems_total` (:376) are a real second family (mode:collect -> collect_all)"
+reticle,tufa,cover_targets,,judged,"`_is_solved` = all targets pass (reticle.py:400-401); a target passes when a same-coloured reticle covers its 3x3 centre neighbourhood (:389-398). Derivation beats the manifest label here: obj.match_topmost_reticle_pixels implies layer order and region equality, and the win check consults neither (see the goal.pattern_match note)"
+rook,tufa,reach_goal,collect_all,judged,"rook.py:313/:317 - the slide must end on or cross the goal cell, which is impassable until the mask is full (:284, :297-300), so reach_goal is primary; every beacon must be collected first (`_collect_at` :286-294, `_target_mask` :270), order free, mode:collect -> collect_all"
+roomswap,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+rotate_pattern,tufa,match_pattern,,judged,"single-clause win: rotatepattern.py:236 advances only while _rotation == 0, i.e. the player-side shape must sit at the same orientation as the displayed reference (:191-195, :221-222). goal.confirm (the ACTION5 press, :235-239) is a structural modifier and witnesses no family. Manifest obj.view is a stale tufa tag - nothing in the game is a viewport or a view operation; the source_spec description (`Make shapes match by rotating them`) agrees with match_pattern"
+rotor_junction,tufa,reach_goal,,judged,"dominant clause = _all_docked (rotorjunction.py:435-436, :468): levels 1-2 are one puck routed to one goal pad and level 3 is two pucks each routed to its OWN identity-locked pad (:177-178), which is conjunctive keyed arrival - the same shape v2 rated goal.reach+goal.keyed in sync. metadata.json idea states the objective verbatim: configure the rotors so the puck reaches the goal pad. I flipped goal.reach on and goal.cover off; no secondary because goal.keyed witnesses no family"
+row_pulse_packing,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+rows,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+safe_tile_taps,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+scale_gate_flood,tufa,cover_targets,connect,judged,"dominant clause = scalegateflood.py:424-426 `target_set <= flooded` - every target tile must be filled by water (cover_targets, occupy/fill target cells; manifest obj.flood_target). Secondary connect is real and load-bearing: _is_passable (:352-361) makes a gate conductive only while its group is open, so the player`s whole job in the setup phase is opening a connected source-to-target route before committing with ACTION5 (:400-402)"
+scale_lock,tufa,reach_goal,balance,derived+synthesis,"win=standing on target cell (scalelock.py:552-553, audit high); scales gate the route (phys.balance, D24 alias migration)"
+select_and_settle,tufa,reach_goal,,judged,"win = selectandsettle.py:262-263, a pawn`s position equalling the OTHER pawn`s anchor marker. Witnessed by goal.rendezvous, which the crosswalk maps to reach_goal (co-location = reaching a moving goal); the level names (one_switch / leapfrog / dock_exactly, :33-61) confirm the play-level objective is docking onto the marked cell. No secondary - the anchor leash (:209-210) is a movement constraint, not a second goal"
+sf01,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+shadow_step,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+shape_mold_gpt,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+shortest_route_challenge,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+signal_chain,tufa,sequence,,judged,"dominant clause = signalchain.py:296 `_progress_idx == len(self._spec.sequence)`, reached only by clicking the symbol chain in order (:268-271); manifest obj.route_sequence agrees. No secondary: goal.path_connect is DEAD (the line-of-sight refusal at :283-284 can never fire), so `connect` has no witness, and goal.confirm witnesses no family"
+skewer,tufa,sequence,,judged,"dominant clause = skewer.py:456-462: every scoring skewer`s tuple of threaded colours must EQUAL its declared target tuple, so the arrangement order is the constraint (two-colour targets at :106, :143, :156, :168, :209); manifest obj.score_color_sequences and the metadata idea (`the required color sequence for each scoring skewer, read from the handle outward`) agree. No secondary: goal.keyed is structural, and I left goal.cover/goal.pattern_match absent (see the cell notes)"
+sliders,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+sliding_rows,tufa,match_pattern,,judged,"win = slid.py:207-208, all 12 columns showing one colour across every strip - the player slides whole strips until the boards agree, which is an equality/matching objective. NOTE the crosswalk hazard: the only pre-existing cell was goal.rendezvous, which maps to reach_goal - false for a game with no avatar and no goal cell - so I recorded the pattern_match cell the win check actually computes and assigned match_pattern. Flagged in the cell note for ratification"
+snake,tufa,collect_all,reach_goal,judged,"conjunctive win at snake.py:525 `won_immediate = (foods_mask == 0) and (new_head in exit_cells)`. Primary collect_all: the dominant clause is consuming EVERY 2x2 food block (:490-497, mode:collect) - that is the whole level and the growth loop, and the exit renders inactive until the mask clears (:794-800). Secondary reach_goal: the win still fires only on entering the 3x3 exit zone"
+sokoban,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+split_wing_maze,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+splitlink,tufa,reach_goal,sequence,judged,"conjunctive win at splitlink.py:311-316 - the avatar must stand on the goal tile with all three terminals lit. Primary reach_goal: the terminals are door keys (lighting one un-collides its door, :299-302) so the objective is to get out through the opened route. Secondary sequence: ACTION5 only fires on terminals[_sequence_progress] (:283-297), so the three must be lit in order"
+splitpathclick,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence
+ss99,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+stack_equalizer,tufa,match_pattern,,judged,"win = stackequalizer.py:153 `won = self._left == self._right`. The truthful family is `balance` (manifest obj.balance; the source_spec description is `Balance two block towers`) but the crosswalk witnesses balance ONLY with phys.balance, which the signed vocabulary-v2-final.md:46-52 refuses to this game by name (`two counters + equality, no physics`). match_pattern is the witnessed reading of the same clause - attribute equality between the two towers - and the conflict is recorded in the cell notes for the operator"
+stamp_press,tufa,cover_targets,match_pattern,judged,"primary from the majority-and-idea reading of _win_matches (stamppress.py:203-219): levels 1-2 win when every targets_any cell holds ink of any colour and no forbidden cell does (:205-207, :216-219), and the metadata idea states the objective as covering the required target cells. Secondary match_pattern: level 3 replaces the cover test with exact per-cell ink equality against a two-colour template (:103, :209-214); manifest obj.print_pattern sits on that half"
+stealth_to_exit,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+subroutine,tufa,match_pattern,,derived-mechanical,single-goal crosswalk: goal.pattern_match
+swch,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+sweeper_blade,tufa,collect_all,,judged,"win = sweeperblade.py:450-459, pellet_count(state) == 0 - the check counts pellets REMAINING, and a pellet is removed the moment the blade pushes it onto its own colour bin (:195-218), so this is `remove/collect every X` rather than `occupy target cells`. Manifest obj.sort_pellets_into_bins describes the same clause. No secondary: goal.keyed (colour-matched bins) is a structural modifier on the same win"
+switch_doors_toggle_walls,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+sync,tufa,reach_goal,,judged,"win = sync.py:310-314, next_level() only when alpha is on alpha_goal AND beta is on beta_goal simultaneously - conjunctive arrival at two identity-locked pads (:226-243). goal.keyed witnesses no family, and the avatars never meet (a mover is blocked from the other`s cell, :308-309) so there is no rendezvous clause"
+szgt,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+tag,tufa,reach_goal,,judged,"win = tag.py:534 `won = _overlap_entities(player, target)` - catching a fleeing entity that runs its own escape policy each tick (:505-532). Witnessed by goal.rendezvous, which the crosswalk maps to reach_goal explicitly (co-location = reaching a moving goal). No secondary: the timer is a loss clock (:537), not a survive win"
+taps,tufa,sequence,,judged,"win = taps.py:126-128 after clicking every target in the prescribed order; a wrong click resets _progress to 0 and rebuilds every target (:131-132), so the order is the entire constraint (manifest-free; metadata title is Sequence Taps). No secondary: goal.cover (mode:clear) is co-extensive with completing the sequence - the same single event - so it earns no separate family"
+teleport_maze,tufa,reach_goal,,judged,"win = teleportmaze.py:362-363, the avatar`s cell equalling the fixed per-level goal cell (:228-244) - plain arrival, which is goal.reach under vocabulary-v2-final. The colour-cycling (:376-379) and the colour-matched portals (:350-352) are the routing mechanic (terrain.keyed), not a goal condition. This game previously had an EMPTY goal group because the v2 fleet row assigned no goal.* term"
+teleport_pads_click_to_select_destination,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+territory_capture,tufa,cover_targets,,judged,"win = territorycapture.py:958-960, _capture_count() reaching capture_required = capture_pct percent of the fillable cells (:450) - filling claimed ground, a threshold form of cover. NO secondary reach_goal even though the manifest says obj.capture_and_reach_goal: the goal-block arrival is dead code (the step that opens the goal banks the level first, :958-965, and the shipped oracle agrees at :1148)"
+timed_patrol_crossing,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+timing_gate,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+traffic_jam_rush_hour_mini,tufa,reach_goal,,judged,"win = trafficjamrushhourmini.py:390-397 / :697-698 - any cell of the colour-3 goal car overlapping an exit cell, with only that car allowed into the exit (:379-380). goal.confirm (the six celebration ticks, :549, :679-688) is a structural modifier and witnesses no family; the sliding of the other cars is the means, not a second goal"
+trail_follow_touch_all_floor_a1,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+tron_light_cycles,tufa,survive,collect_all,judged,"decided on the dominant clause: tronlightcycles.py:700-701 (`time_left <= 0` returns win) is available on ALL six levels and is the ONLY win path on levels 1-2, which ship no AI riders (LEVEL_CONFIGS :195-196) - so outlasting the meter is the game`s universal objective, matching manifest obj.survive. Secondary collect_all for the level-3-plus early-out at :696-698 (win when every AI rider is dead, achieved indirectly by making them crash): it removes every X rather than occupying cells, so collect_all rather than cover_targets"
+tunnel_search,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+turn,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+valve_equalizer,tufa,cover_targets,,derived-mechanical,single-goal crosswalk: goal.cover
+warp_hallways,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+weav,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+wide_body_ember_route,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+winch_line,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+windmolen,tufa,reach_goal,,derived-mechanical,single-goal crosswalk: goal.reach
+wire_the_circuit,tufa,connect,,derived-mechanical,single-goal crosswalk: goal.path_connect
+zigclick,tufa,sequence,,derived-mechanical,single-goal crosswalk: goal.sequence

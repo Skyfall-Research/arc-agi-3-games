@@ -1,0 +1,117 @@
+# BAD FIXTURE — good-spec.yaml with ONE change:
+#   objective.primary connect — its §3b witness goal.path_connect is absent from terms.
+# Must trip exactly one kill rule: objective-unwitnessed
+game:
+  slug: fogbound-switchyard
+  title: Fogbound Switchyard
+  idea_ref: b001-pilot-i001
+  terms:
+    - goal.cover           # §3b witness for cover_targets
+    - terrain.conveyor
+    - manip.select_cycle
+    - info.telegraph
+    - info.fog
+    - info.recall
+  objective:
+    primary: connect       # witness goal.path_connect is NOT in terms
+    secondary: null
+  locus: selection
+  actions:
+    ACTION1: declared      # UP    — move the junction selection one lane up
+    ACTION2: declared      # DOWN
+    ACTION3: declared      # LEFT
+    ACTION4: declared      # RIGHT
+    ACTION5: declared      # SPACE — cycle the selected junction's branch
+    ACTION6: declared      # click — put the selection on the clicked junction
+    ACTION7: absent        # undo  — not offered; no routing error is terminal
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 4                 # the junction selection marker
+    goal: 3                # an uncovered pad
+    danger: null           # hazardless game
+    reserved: [0, 1, 2]    # 0 = selection/highlight white; 1,2 = meter indices
+  hud:
+    reserved: row63
+    meter:
+      placement: row63-left
+      direction: shrink-right
+  neg2_readers:
+    - crate-sprite: crate-color-mask
+  layers: explicit
+  layout:
+    seed: 20260921
+    grid: [64, 64]
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [goal.cover, terrain.conveyor, manip.select_cycle]
+      sketch: >-
+        One belt carries blue crates past two junctions toward two blue pads.
+        Selecting a junction and cycling it sends the next crate down the left
+        or the right branch; the level is won on the beat when both pads carry
+        a crate of their own color at the same time.
+    - relation_to_prev: new
+      terms_introduced: [info.telegraph, info.fog]
+      sketch: >-
+        A second belt adds red crates and red pads. Just before a fog bank
+        settles over the west half of the yard, that half flashes its true
+        state for a few beats — crate colors, junction settings, which pads are
+        already filled — and then renders as flat gray while the belts keep
+        running underneath it exactly as before.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >-
+        The same two-belt yard, mirrored, with the fog bank settling over the
+        east half instead. Nothing new arrives: the player re-runs the level-2
+        routine in a layout where the flash lands while a crate is already
+        between junctions.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >-
+        Both belts feed one shared spur, so a single junction decides which
+        belt's crate reaches the last pair of pads. The fog bank settles over
+        the spur itself, so the branch that was right for the blue crate has to
+        be cycled again for the red crate behind it.
+    - relation_to_prev: new
+      terms_introduced: [info.recall]
+      sketch: >-
+        Six pads, three crate colors, and a fog bank that settles twice. The
+        yard flashes only once between the two settlings, so the player carries
+        a remembered map of the fogged section into the second half of the
+        level rather than reading it off the screen.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >-
+        The level-5 yard rebuilt around a longer belt loop, so a crate sent
+        down the wrong branch comes back to its junction after a full circuit.
+        Same mechanics, more travel time between the flash and the pad that
+        needs it.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >-
+        Every mechanic at once: three colors, two fog banks, the shared spur,
+        and a last pad that can only be filled while the other five stay
+        filled. The winning line needs the remembered layout from the flash and
+        the spur's branch order together.
+  budget:
+    enforced: true
+    displayed: true
+    counts: >-
+      one charge per selection move and per branch cycle; the cycle that
+      completes the cover is free (win check runs before exhaustion)
+    lives: null
+  solver_notes: >-
+    The solver plans per crate, not per pad: from the settled frame it reads
+    each junction's branch, the ordered queue of crates on each belt, and the
+    pads still empty, then cycles exactly the junctions that would misroute the
+    next crate. Fog is not a guess — the belt step rule is deterministic, so the
+    solver carries the last flashed snapshot of the fogged section forward and
+    keeps it exact. No state.action_lag and no goal.confirm term is declared, so
+    a cycle takes effect on the step it is issued and no trailing confirm action
+    belongs in the winning line; the level ends on the step the last pad is
+    covered. Refused cycles (a junction with one outgoing branch) are visible
+    and still call complete_action().

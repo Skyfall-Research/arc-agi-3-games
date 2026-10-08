@@ -1,0 +1,90 @@
+{
+  "ts": "2026-09-21T12:14:04+00:00",
+  "ok": true,
+  "driver": "localclaude",
+  "model_requested": "claude-haiku-4-5-20251001",
+  "model_reported": "claude-haiku-4-5-20251001",
+  "text": "SMOKE-OK",
+  "usd_cost": 0.06795,
+  "tokens_in": 10,
+  "tokens_out": 166,
+  "duration_s": 7.825939875008771,
+  "exit_code": 0,
+  "cmd": [
+    "claude",
+    "-p",
+    "Reply with exactly: SMOKE-OK",
+    "--output-format",
+    "json",
+    "--model",
+    "claude-haiku-4-5-20251001"
+  ],
+  "raw": {
+    "is_error": false,
+    "duration_api_ms": 2974,
+    "num_turns": 1,
+    "stop_reason": "end_turn",
+    "session_id": "c455bcff-70c7-461e-be9c-f8970eadce58",
+    "total_cost_usd": 0.06795,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 33555,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 166,
+      "output_tokens_details": {
+        "thinking_tokens": 157
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 33555,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 10,
+          "output_tokens": 166,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 33555,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 33555
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 10,
+        "outputTokens": 166,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 33555,
+        "webSearchRequests": 0,
+        "costUSD": 0.06795,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "SMOKE-OK",
+    "ttft_ms": 2947,
+    "ttft_stream_ms": 1030,
+    "time_to_request_ms": 39,
+    "type": "result",
+    "duration_ms": 4131,
+    "uuid": "2ffeb3a1-333a-4ea5-a22e-904351eb250c"
+  }
+}

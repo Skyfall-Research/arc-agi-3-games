@@ -1,0 +1,1303 @@
+{
+  "schema_version": "b7.1",
+  "game_id": "two-keys-one-echo",
+  "worker": "<REPO>/out/corpus/b005r2-auto/two-keys-one-echo/worker",
+  "mode": "full",
+  "lever_window": 1,
+  "term_window": 1,
+  "lookalikes": {
+    "undeclared_found": [],
+    "declared_ungrounded": [
+      "the declared entry \"palette overload: index 11 (goal) doubles as both the corner template's lit-targ\" names palette index 11, and no look-alike family is drawn in it (C_GOAL at game.py:725); the families this game actually draws are in index(es) []",
+      "the declared entry \"palette overload: index 11 (goal) doubles as both the corner template's lit-targ\" names palette index 0, and no look-alike family is drawn in it (C_SEL at game.py:714, C_SEL at game.py:737); the families this game actually draws are in index(es) []"
+    ]
+  },
+  "term_sites": {
+    "move.grid": "the sim_step branch that builds `target` from DIRS[action] and commits it only if can_enter() holds and the cell is neither the other key nor the echo; one cell per accepted press, discrete, collision-checked",
+    "manip.select_cycle": "the `sel` field of the state tuple: ACTION5 flips it, every arrow reads it to pick `here`, and it is never reset within a level",
+    "agent.echo": "the `pend` tuple plus the dequeue-and-move block: presses enter at the tail, and the head press is applied to (ex,ey) once the tuple exceeds ECHO_LAG",
+    "state.action_lag": "the same `pend` tuple read as a depth-4 input buffer \u2014 `if len(pend) > ECHO_LAG` is what defers each press's world effect by exactly four actions, and predict_echo is the drain of the not-yet-applied remainder",
+    "gate.remote": "the uc/um latch pair: set in _settle by occupancy of the socket cell, consumed by gate_blocks at a different cell, and rendered as the gate's retracted bar",
+    "terrain.keyed": "gate_blocks' first clause, `if colour != key: return True` \u2014 the tile's passability predicate is a function of the moving body's identity/colour, independent of any latch",
+    "goal.pattern_match": "the pads-held tuple st[10] compared for equality against ctx[\"targets\"], with the target vector itself painted as the rows 0-3 reference band",
+    "loss.deadlock": "is_dead's owed-pads test over reach_map's gate-opening fixpoint, with the echo's predicted rest cell as the sole extra blocker; its True wires straight to self.lose()",
+    "budget.cap": "self._steps (incremented only by accepted moves) against entry[\"cap\"], with the row-63 meter sprite as the displayed attribute",
+    "info.recall": "st[6], the pending-press tuple: load-bearing for the echo's rest cell and the loss predicate, and read by no branch of _repaint",
+    "gate.key": null,
+    "gate.plate": null,
+    "state.wait": null,
+    "move.coupled": null,
+    "hazard.crush": null,
+    "state.undo": null,
+    "state.checkpoint": null,
+    "goal.sequence": null,
+    "terrain.trail": null,
+    "info.hidden_geometry": null
+  },
+  "term_disputes": [],
+  "canon": {
+    "docs_root": "<DUCKWM>/local-docs/arc-agi-3-generator",
+    "spec_hash": "77bf04d92aad053f3be18face401dabad108c50701a9e5f2fc17367b1445a07a"
+  },
+  "frames": {
+    "source": "solver",
+    "count": 10,
+    "levels_completed": 8,
+    "win": true,
+    "path": "worker.frames.json"
+  },
+  "checks": [
+    {
+      "check_id": "static.complete-action",
+      "leg": "static",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 801,
+          "frame_label": null,
+          "note": "TwoKeysOneEcho.step(): every exit completes or advances guard state"
+        }
+      ],
+      "note": "Every step() exit either calls complete_action() or writes a self attribute a guard reads (a legitimate continuation frame)."
+    },
+    {
+      "check_id": "static.sys-click-truthful",
+      "leg": "static",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "engine",
+          "path": null,
+          "line": null,
+          "frame_label": null,
+          "note": "available_actions=[1, 2, 3, 4, 5]; engine click list at RESET = 0 cell(s)"
+        }
+      ],
+      "note": "No click tags and no ACTION6 in available_actions \u2014 REQUIRED 2 has no premise here."
+    },
+    {
+      "check_id": "static.unread-minus2",
+      "leg": "static",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "no -2 in any pixel-data literal"
+        }
+      ],
+      "note": "The game ships no -2 pixel, so REQUIRED 5 has no premise."
+    },
+    {
+      "check_id": "static.parsed-field-no-reader",
+      "leg": "static",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "no data= dict literal in the file"
+        }
+      ],
+      "note": "The game defines no level/config data fields, so there is nothing that could go unread."
+    },
+    {
+      "check_id": "static.palette-hud-collision",
+      "leg": "static",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "no RenderableUserDisplay subclass; nothing paints after the board"
+        }
+      ],
+      "note": "The game ships no interface, so interface paint cannot collide with the board (affordance \u00a78: 'Interfaces paint AFTER the board')."
+    },
+    {
+      "check_id": "required.row1",
+      "leg": "required",
+      "status": "deferred",
+      "evidence": [
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "reset",
+          "note": "10 settled frame(s) captured from 5 declared action(s) \u2014 the material the agent leg re-derives the locus from"
+        }
+      ],
+      "note": "REQUIRED 1 ('the locus of control is identifiable within a few actions') is the blind agent pass's job per the B7 contract: identifiability is a judgement about what a fresh reader can infer from the frames, not a static property of the source."
+    },
+    {
+      "check_id": "required.row2",
+      "leg": "required",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "engine",
+          "path": null,
+          "line": null,
+          "frame_label": null,
+          "note": "available_actions=[1, 2, 3, 4, 5]; engine click list at RESET = 0 cell(s)"
+        }
+      ],
+      "note": "No click tags and no ACTION6 in available_actions \u2014 REQUIRED 2 has no premise here."
+    },
+    {
+      "check_id": "required.row3",
+      "leg": "required",
+      "status": "deferred",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 845,
+          "frame_label": null,
+          "note": "exhaustion wired: lose() at 1 site(s)"
+        },
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 843,
+          "frame_label": null,
+          "note": "win predicate: 1 next_level()/win() site(s)"
+        },
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "step-39:ACTION1",
+          "note": "edge band (row 0/63, col 0/63) changes in 7 captured frame(s) \u2014 an edge-anchored meter drains"
+        }
+      ],
+      "note": "Parts (a) meter and (b) exhaustion\u2192lose() are checkable here and hold. Part (c), 'the cap accommodates the solver's line + the g-margin', is an S4 fact (architecture S4 step 4, cap-fit check) and cannot be decided before baselines exist, so the row is deferred rather than passed. affordance \u00a75 names the defect class this row excludes: tn36 ships baseline 72 > its own cap 61."
+    },
+    {
+      "check_id": "required.row4",
+      "leg": "required",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 843,
+          "frame_label": null,
+          "note": "win predicate wired: 1 next_level()/win() site(s)"
+        },
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "final",
+          "note": "capture source=solver, levels_completed=8, win=True"
+        }
+      ],
+      "note": "The win predicate exists and the solver line reaches it: the capture ends in WIN after 347 action(s)."
+    },
+    {
+      "check_id": "required.row5",
+      "leg": "required",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "no -2 in any pixel-data literal"
+        }
+      ],
+      "note": "The game ships no -2 pixel, so REQUIRED 5 has no premise."
+    },
+    {
+      "check_id": "required.row6",
+      "leg": "required",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 682,
+          "frame_label": null,
+          "note": "explicit z: 4 layer= kwarg(s), 0 set_layer() call(s)"
+        }
+      ],
+      "note": "Explicit layer values are declared; z-order does not fall back to declaration order (REQUIRED 6; affordance \u00a78 records three officials that drop the stock layer sort, one of them shipping an invisible mechanic)."
+    },
+    {
+      "check_id": "required.row7",
+      "leg": "required",
+      "status": "premise-not-met",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "no RenderableUserDisplay subclass \u2014 nothing paints after the board"
+        }
+      ],
+      "note": "REQUIRED 7 governs reserved HUD geometry; with no interface there is no reserved strip to declare."
+    },
+    {
+      "check_id": "required.row8",
+      "leg": "required",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": null,
+          "frame_label": null,
+          "note": "sprite pixel-data colours: [1]"
+        },
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "reset",
+          "note": "rendered colours across the capture: [0, 1, 2, 3, 4, 5, 6, 9, 10, 11]"
+        }
+      ],
+      "note": "White-0 is not painted into any board sprite, so the ecosystem's selection/highlight index stays reserved (affordance \u00a79; REQUIRED 8)."
+    },
+    {
+      "check_id": "solver.noop-prefix",
+      "leg": "solver",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "ACTION2",
+          "note": "the first action changes the settled frame or the counters"
+        }
+      ],
+      "note": "No leading no-op: the line's 347 action(s) start working immediately."
+    },
+    {
+      "check_id": "solver.bfs-spot-check",
+      "leg": "solver",
+      "status": "skipped",
+      "evidence": [
+        {
+          "kind": "engine",
+          "path": null,
+          "line": null,
+          "frame_label": null,
+          "note": "opening level is 4096 playable cell(s), over the verifier.bfs_level_size_cap of 400"
+        }
+      ],
+      "note": "Architecture \u00a73 scopes this pass to 'BFS spot-check small levels'; this level is outside the configured cap."
+    },
+    {
+      "check_id": "solver.lag-confirm-modeled",
+      "leg": "solver",
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "code",
+          "path": "game.py",
+          "line": 778,
+          "frame_label": null,
+          "note": "game lag/confirm idiom 'deferred' at 9 site(s)"
+        },
+        {
+          "kind": "frame",
+          "path": null,
+          "line": null,
+          "frame_label": "final",
+          "note": "the captured line still wins the game"
+        }
+      ],
+      "note": "The solver's source names no lag/confirm idiom, but its line clears the game under the mechanic \u2014 the behaviour is accounted for even though the naming is not."
+    }
+  ],
+  "required_rows": [
+    {
+      "row": 1,
+      "check_id": "required.row1",
+      "status": "deferred"
+    },
+    {
+      "row": 2,
+      "check_id": "required.row2",
+      "status": "premise-not-met"
+    },
+    {
+      "row": 3,
+      "check_id": "required.row3",
+      "status": "deferred"
+    },
+    {
+      "row": 4,
+      "check_id": "required.row4",
+      "status": "pass"
+    },
+    {
+      "row": 5,
+      "check_id": "required.row5",
+      "status": "premise-not-met"
+    },
+    {
+      "row": 6,
+      "check_id": "required.row6",
+      "status": "pass"
+    },
+    {
+      "row": 7,
+      "check_id": "required.row7",
+      "status": "premise-not-met"
+    },
+    {
+      "row": 8,
+      "check_id": "required.row8",
+      "status": "pass"
+    }
+  ],
+  "agent": {
+    "session_id": "ee1a9e29-fe59-4b26-a134-fd4463a9ce48",
+    "model": "claude-opus-5",
+    "usd": 2.5514495,
+    "tokens_in": 8,
+    "tokens_out": 55985,
+    "wall_s": 879.1442886669975,
+    "staged_copy_verified": true,
+    "claims": {
+      "terms": [
+        {
+          "term": "move.grid",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 570,
+              "note": "target cell must be floor, not gate-blocked, not the other key, not the echo"
+            },
+            {
+              "path": "game.py",
+              "line": 51,
+              "note": "DIRS: 1=UP 2=DOWN 3=LEFT 4=RIGHT, one cell per accepted press"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "step-39:ACTION1"
+          ]
+        },
+        {
+          "term": "manip.select_cycle",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 564,
+              "note": "ACTION5: sel = 1 - sel, carried in the state tuple across actions"
+            },
+            {
+              "path": "game.py",
+              "line": 566,
+              "note": "`here` is chosen by sel, so every later arrow applies to the selection"
+            },
+            {
+              "path": "game.py",
+              "line": 876,
+              "note": "the white ring sprite is re-positioned onto whichever key sel names"
+            }
+          ],
+          "frame_refs": [
+            "step-39:ACTION1"
+          ],
+          "distinguishes": {
+            "term": "move.coupled",
+            "clause": "move.coupled is \"one input drives several bodies at once\"; here an arrow drives ONLY the selected key (`here = (cx,cy) if sel == CYAN else (mx,my)`), the unselected key never moves on that input"
+          }
+        },
+        {
+          "term": "agent.echo",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 579,
+              "note": "pend = pend + ((dx,dy),) \u2014 every press recorded, refused ones included"
+            },
+            {
+              "path": "game.py",
+              "line": 584,
+              "note": "the dequeued press is applied to the grey token's own position"
+            },
+            {
+              "path": "game.py",
+              "line": 740,
+              "note": "the token is a real board body, _solid(C_ECHO)"
+            },
+            {
+              "path": "game.py",
+              "line": 874,
+              "note": "repainted at st[4],st[5] every frame"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "step-72:ACTION4"
+          ],
+          "distinguishes": {
+            "term": "agent.patrol",
+            "clause": "agent.patrol is an \"autonomous mover with own policy\"; this token has no policy at all \u2014 it only dequeues the player's recorded presses, which is agent.echo's \"replays the player's own action history\""
+          }
+        },
+        {
+          "term": "state.action_lag",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 36,
+              "note": "ECHO_LAG = 4"
+            },
+            {
+              "path": "game.py",
+              "line": 580,
+              "note": "a press is applied only once len(pend) > ECHO_LAG, i.e. four actions after it was issued"
+            },
+            {
+              "path": "game.py",
+              "line": 479,
+              "note": "predict_echo exists precisely because up to four issued presses are still unapplied"
+            },
+            {
+              "path": "solver.py",
+              "line": 106,
+              "note": "the solver searches over states that carry the pending queue, so its line is padded for the lag"
+            }
+          ],
+          "frame_refs": [
+            "step-39:ACTION1"
+          ],
+          "distinguishes": {
+            "term": "state.wait",
+            "clause": "state.wait's *Not* clause excludes \"the per-action world clock itself (that is engine default)\"; the claim here is the four-deep queue that defers each input's world effect, not the fact that the world ticks per action"
+          }
+        },
+        {
+          "term": "gate.remote",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 447,
+              "note": "_settle latches uc/um when the matching key stands on its socket cell"
+            },
+            {
+              "path": "game.py",
+              "line": 471,
+              "note": "the gate at B yields to its own key only once that latch is set from the socket at A"
+            },
+            {
+              "path": "game.py",
+              "line": 867,
+              "note": "the gate sprite retracts its bar when armed \u2014 the barrier at B visibly changes"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "final"
+          ],
+          "distinguishes": {
+            "term": "gate.plate",
+            "clause": "gate.plate is \"occupancy-held state, reverts on leave\"; uc/um are only ever assigned True (game.py:447-450) and nothing clears them, so the unlock survives the key leaving the socket"
+          }
+        },
+        {
+          "term": "terrain.keyed",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 469,
+              "note": "`if colour != key: return True` \u2014 the gate tile refuses the other colour absolutely, armed or not"
+            },
+            {
+              "path": "game.py",
+              "line": 519,
+              "note": "the deadlock oracle blocks the other colour's gate cell for each key, so the colour lock is load-bearing for the loss predicate too"
+            }
+          ],
+          "frame_refs": [
+            "reset"
+          ],
+          "distinguishes": {
+            "term": "gate.key",
+            "clause": "gate.key is \"collectible unlocks barrier\"; nothing is collected or carried here \u2014 passability is conditioned on which body is moving (its colour), which is terrain.keyed's \"conditioned on an avatar-carried attribute (phase, polarity, colour)\", device: tile"
+          }
+        },
+        {
+          "term": "goal.pattern_match",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 592,
+              "note": "won = st2[10] == ctx[\"targets\"] \u2014 attribute-vector equality against the declared target vector"
+            },
+            {
+              "path": "game.py",
+              "line": 643,
+              "note": "_band_pixels paints that target vector as one swatch per pad in rows 0-3"
+            },
+            {
+              "path": "game.py",
+              "line": 395,
+              "note": "targets are fixed at layout time from the pad features"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "final"
+          ],
+          "distinguishes": {
+            "term": "goal.keyed",
+            "clause": "goal.keyed is \"targets admit only matching shape/type/polarity\"; these pads admit the WRONG key and record its colour (game.py:452-456), they merely fail the equality test, so the constraint lives in the win predicate, not in the target's admission rule"
+          }
+        },
+        {
+          "term": "loss.deadlock",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 551,
+              "note": "a key that still owes a pad and can reach none of them returns dead"
+            },
+            {
+              "path": "game.py",
+              "line": 593,
+              "note": "dead = (not won) and is_dead(st2), evaluated after every action"
+            },
+            {
+              "path": "game.py",
+              "line": 845,
+              "note": "self.lose() \u2014 the engine run ends, the game does not sit idle"
+            },
+            {
+              "path": "solver.py",
+              "line": 107,
+              "note": "the search prunes `if info[\"dead\"]`, i.e. dead configurations occur in the reachable state graph"
+            }
+          ],
+          "frame_refs": [
+            "step-166:ACTION4"
+          ]
+        },
+        {
+          "term": "budget.cap",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 358,
+              "note": "max(30, 15 * bound) \u2014 a game-enforced per-level action cap"
+            },
+            {
+              "path": "game.py",
+              "line": 829,
+              "note": "only an ACCEPTED directional move increments self._steps"
+            },
+            {
+              "path": "game.py",
+              "line": 844,
+              "note": "self._steps >= cap wired to lose(), with the win check first"
+            },
+            {
+              "path": "game.py",
+              "line": 894,
+              "note": "displayed: the row-63 meter fill is round(64*steps/cap)"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "final"
+          ]
+        },
+        {
+          "term": "info.recall",
+          "reachable": true,
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 558,
+              "note": "pend lives in the state tuple as st[6]"
+            },
+            {
+              "path": "game.py",
+              "line": 848,
+              "note": "_repaint reads st[0..5], st[7..10] and never st[6]: no sprite shows the queue"
+            },
+            {
+              "path": "game.py",
+              "line": 817,
+              "note": "self._flash = None \u2014 the one-frame refusal mark that showed the press is cleared on the next action, while the press stays live for four more"
+            },
+            {
+              "path": "game.py",
+              "line": 479,
+              "note": "the undrawn queue is what decides where the echo rests, and hence the loss predicate"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "step-237:ACTION3"
+          ],
+          "distinguishes": {
+            "term": "agent.echo",
+            "clause": "agent.echo is \"an entity's behavior replays the player's own action history\" \u2014 a property of the token; info.recall is \"required state was shown but is no longer displayed\" \u2014 the four queued presses were each shown once (as a displacement or a one-frame refusal mark) and are afterwards nowhere on the board, span: within-level"
+          }
+        }
+      ],
+      "dead_code": [
+        {
+          "what": "_place_anchors' last-resort collapse: an anchor that found no room anywhere stacks all its features on one loop cell. No action sequence can reach it (it runs at layout time), and its own comment says it is never taken at a validated seed; consistent with the frames, where every captured level shows start/socket/gate/pad/echo on distinct cells.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 312
+            }
+          ]
+        },
+        {
+          "what": "_gate(c, 1) \u2014 the bar mid-retraction. It is painted only on the first pass of the two-pass unbar and is overwritten by phase 2 on the same action's second pass, so it never survives into a settled frame (`frame[-1]`); no trajectory of settled frames can show it.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 639
+            },
+            {
+              "path": "game.py",
+              "line": 867
+            },
+            {
+              "path": "game.py",
+              "line": 807
+            }
+          ]
+        },
+        {
+          "what": "reach_map's `opened` return value is discarded by its only caller (`seen, _opened = reach_map(...)`); the fixpoint still matters through its effect on `seen`, but the returned list is read nowhere.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 542
+            },
+            {
+              "path": "game.py",
+              "line": 532
+            }
+          ]
+        },
+        {
+          "what": "_cap_for's `dist.get(stop, len(floor))` fallback: the loop plus its attached spurs are one connected component with every gate treated open, so the default never fires.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 355
+            }
+          ]
+        }
+      ],
+      "deceptions": [
+        {
+          "lever": "look-alike",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 856,
+              "note": "ring = C_GOAL if held == target else T \u2014 a pad held by the WRONG colour loses its halo and renders as a bare solid 4x4 of the key hue"
+            },
+            {
+              "path": "game.py",
+              "line": 741,
+              "note": "key_c is exactly _solid(C_CYAN), the same bare 4x4; key_m likewise at line 742"
+            },
+            {
+              "path": "game.py",
+              "line": 153,
+              "note": "level 6's spur puts a cyan-target pad at depth 2 on magenta's only route to depth 4, so the mismatch is forced and persists after magenta leaves (held is never cleared)"
+            },
+            {
+              "path": "game.py",
+              "line": 174,
+              "note": "level 8 forces the mirror case: cyan must cross a magenta-target pad to reach its socket"
+            }
+          ]
+        },
+        {
+          "lever": "palette overload",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 42,
+              "note": "C_GOAL = 11 is declared for BOTH the satisfied-pad halo and the socket halo"
+            },
+            {
+              "path": "game.py",
+              "line": 861,
+              "note": "ring = T if armed else C_GOAL \u2014 on a socket the index-11 halo means NOT yet done, the inverse of its meaning on a pad"
+            },
+            {
+              "path": "game.py",
+              "line": 46,
+              "note": "C_SEL = 0 is declared palette.you and is also every unheld pad's fill"
+            },
+            {
+              "path": "game.py",
+              "line": 737,
+              "note": "unheld pad = _halo(T, _solid(C_SEL)) \u2014 a 4x4 of the selection index sitting on the board"
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "final"
+          ]
+        }
+      ],
+      "lookalikes": [
+        {
+          "family": "key_c (the mover) / a cyan-held pad whose target is magenta (scenery)",
+          "index": 10,
+          "differs_by": "identical bare solid 4x4; the key is re-positioned every repaint and answers arrows when selected, the pad is a fixed tile whose core merely tracks st[10][i]. Forced to exist by level 8's spur (padM crossed by cyan).",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 855
+            },
+            {
+              "path": "game.py",
+              "line": 741
+            },
+            {
+              "path": "game.py",
+              "line": 872
+            }
+          ]
+        },
+        {
+          "family": "key_m (the mover) / a magenta-held pad whose target is cyan (scenery)",
+          "index": 6,
+          "differs_by": "same construct in the other hue; level 6's depth-2 padC on magenta's only route makes this state unavoidable and permanent until cyan re-crosses",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 855
+            },
+            {
+              "path": "game.py",
+              "line": 742
+            },
+            {
+              "path": "game.py",
+              "line": 153
+            }
+          ]
+        },
+        {
+          "family": "a matched pad with the live key standing on it / a matched pad with nothing on it",
+          "index": 11,
+          "differs_by": "both render as an 8x8 index-11 band around a 4x4 core in the key's hue; the selection ring that would disambiguate is layer 2 and the pad's opaque halo is layer 5 at the same 8x8 geometry, so the ring is fully occluded. Frame 0 contains two 4x4 blocks of index 0 (the unheld pads) and no 8x8 band of index 0 at all.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 714
+            },
+            {
+              "path": "game.py",
+              "line": 737
+            },
+            {
+              "path": "game.py",
+              "line": 876
+            }
+          ],
+          "frame_refs": [
+            "reset"
+          ]
+        }
+      ],
+      "term_sites": [
+        {
+          "term": "move.grid",
+          "site": "the sim_step branch that builds `target` from DIRS[action] and commits it only if can_enter() holds and the cell is neither the other key nor the echo; one cell per accepted press, discrete, collision-checked",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 570
+            }
+          ]
+        },
+        {
+          "term": "manip.select_cycle",
+          "site": "the `sel` field of the state tuple: ACTION5 flips it, every arrow reads it to pick `here`, and it is never reset within a level",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 564
+            }
+          ]
+        },
+        {
+          "term": "agent.echo",
+          "site": "the `pend` tuple plus the dequeue-and-move block: presses enter at the tail, and the head press is applied to (ex,ey) once the tuple exceeds ECHO_LAG",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 580
+            }
+          ]
+        },
+        {
+          "term": "state.action_lag",
+          "site": "the same `pend` tuple read as a depth-4 input buffer \u2014 `if len(pend) > ECHO_LAG` is what defers each press's world effect by exactly four actions, and predict_echo is the drain of the not-yet-applied remainder",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 580
+            },
+            {
+              "path": "game.py",
+              "line": 483
+            }
+          ]
+        },
+        {
+          "term": "gate.remote",
+          "site": "the uc/um latch pair: set in _settle by occupancy of the socket cell, consumed by gate_blocks at a different cell, and rendered as the gate's retracted bar",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 447
+            },
+            {
+              "path": "game.py",
+              "line": 471
+            }
+          ]
+        },
+        {
+          "term": "terrain.keyed",
+          "site": "gate_blocks' first clause, `if colour != key: return True` \u2014 the tile's passability predicate is a function of the moving body's identity/colour, independent of any latch",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 469
+            }
+          ]
+        },
+        {
+          "term": "goal.pattern_match",
+          "site": "the pads-held tuple st[10] compared for equality against ctx[\"targets\"], with the target vector itself painted as the rows 0-3 reference band",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 592
+            },
+            {
+              "path": "game.py",
+              "line": 652
+            }
+          ]
+        },
+        {
+          "term": "loss.deadlock",
+          "site": "is_dead's owed-pads test over reach_map's gate-opening fixpoint, with the echo's predicted rest cell as the sole extra blocker; its True wires straight to self.lose()",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 546
+            },
+            {
+              "path": "game.py",
+              "line": 845
+            }
+          ]
+        },
+        {
+          "term": "budget.cap",
+          "site": "self._steps (incremented only by accepted moves) against entry[\"cap\"], with the row-63 meter sprite as the displayed attribute",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 829
+            },
+            {
+              "path": "game.py",
+              "line": 895
+            }
+          ]
+        },
+        {
+          "term": "info.recall",
+          "site": "st[6], the pending-press tuple: load-bearing for the echo's rest cell and the loss predicate, and read by no branch of _repaint",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 558
+            },
+            {
+              "path": "game.py",
+              "line": 852
+            }
+          ]
+        },
+        {
+          "term": "gate.key",
+          "site": null
+        },
+        {
+          "term": "gate.plate",
+          "site": null
+        },
+        {
+          "term": "state.wait",
+          "site": null
+        },
+        {
+          "term": "move.coupled",
+          "site": null
+        },
+        {
+          "term": "hazard.crush",
+          "site": null
+        },
+        {
+          "term": "state.undo",
+          "site": null
+        },
+        {
+          "term": "state.checkpoint",
+          "site": null
+        },
+        {
+          "term": "goal.sequence",
+          "site": null
+        },
+        {
+          "term": "terrain.trail",
+          "site": null
+        },
+        {
+          "term": "info.hidden_geometry",
+          "site": null
+        }
+      ],
+      "enforcement": [
+        {
+          "claim": "Gate 3 (budget triple) is wired: an edge-anchored full-width meter at row 63, exhaustion wired to lose(), and the win check evaluated FIRST so the winning move is free. The cap is extremely loose, though \u2014 max(30, 15*(tour + 6*pads + 25)), i.e. roughly 15x an open-gate tour, against a solver line of 347 actions for all eight levels; the final frame's meter shows 2 of 64 pixels filled, so the meter is live but near-static.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 358
+            },
+            {
+              "path": "game.py",
+              "line": 844
+            },
+            {
+              "path": "game.py",
+              "line": 752
+            },
+            {
+              "path": "game.py",
+              "line": 895
+            }
+          ]
+        },
+        {
+          "claim": "Gate 4: the goal is game-checkable by a pure predicate (pad-colour vector == target vector) and the solver reaches it \u2014 the digest shows levels_completed=8, win=True.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 592
+            },
+            {
+              "path": "solver.py",
+              "line": 217
+            }
+          ]
+        },
+        {
+          "claim": "Gate 5: no -2 pixel is ever written. The only sprite sentinel is T = -1 (engine transparency); a grep for -2 across game.py returns nothing, so there is no unread -2 to declare.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 606
+            }
+          ]
+        },
+        {
+          "claim": "Gate 6: every sprite carries an explicit layer= (board 0, band 1, ring 2, gate 3, socket 4, pad 5, echo 6, keys 7, flash 8, meter 9) \u2014 no declaration-order z anywhere.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 697
+            },
+            {
+              "path": "game.py",
+              "line": 714
+            },
+            {
+              "path": "game.py",
+              "line": 740
+            },
+            {
+              "path": "game.py",
+              "line": 752
+            }
+          ]
+        },
+        {
+          "claim": "Gate 7: HUD geometry is rows 0-3 (the reference band, layer 1) and row 63 (the meter, layer 9). Both land on the bezel border rows that _board_pixels already paints as chrome, so no playable board cell is overwritten by an interface.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 650
+            },
+            {
+              "path": "game.py",
+              "line": 667
+            },
+            {
+              "path": "game.py",
+              "line": 747
+            }
+          ]
+        },
+        {
+          "claim": "Gate 2 is truthful by vacuity: no sprite is given tags, no ACTION6 is declared (available_actions=[1,2,3,4,5]), and the engine digest reports zero sys_click/sys_place cells. An undeclared ACTION6/7 that still reaches step() falls into the non-DIRS guard, which repaints, charges nothing and completes the action.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 784
+            },
+            {
+              "path": "game.py",
+              "line": 816
+            }
+          ]
+        },
+        {
+          "claim": "Gate 1 is satisfied only after the first action, not on the opening frame: the selection-marker idiom is the 8x8 white ring at layer 2, but it is exactly co-located with the pad halo at layer 5, and level 1 starts the selected key on an already-matched pad \u2014 the reset frame contains no index-0 ring at all, only two index-0 pad fills. One arrow press or one ACTION5 makes the ring visible (frame step-39:ACTION1 rows 10-17, cols 30-37).",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 714
+            },
+            {
+              "path": "game.py",
+              "line": 737
+            },
+            {
+              "path": "game.py",
+              "line": 876
+            },
+            {
+              "path": "game.py",
+              "line": 89
+            }
+          ],
+          "frame_refs": [
+            "reset",
+            "step-39:ACTION1"
+          ]
+        },
+        {
+          "claim": "Gate 8 is departed from in two places, which is why I report palette overload above: index 0 (declared palette.you) also fills every unheld pad on-board, and index 11 (palette.goal) is both the satisfied-pad halo and the UNARMED socket halo, carrying opposite polarity in the two roles. The meter indices 1 and 9 are correctly off-board (row 63 only), and index 2 is unique to the echo.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 42
+            },
+            {
+              "path": "game.py",
+              "line": 46
+            },
+            {
+              "path": "game.py",
+              "line": 861
+            },
+            {
+              "path": "game.py",
+              "line": 896
+            }
+          ]
+        },
+        {
+          "claim": "No FORBIDDEN missing complete_action(): the three terminal handler paths all call it (deferred pass, non-DIRS guard, normal path). The one path that returns without it is the first pass of a deliberate two-pass action, and the _deferred branch at the top of step() completes it on the engine's next re-render; that branch is only entered when the action did not win, so it cannot strand a level transition.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 809
+            },
+            {
+              "path": "game.py",
+              "line": 818
+            },
+            {
+              "path": "game.py",
+              "line": 837
+            },
+            {
+              "path": "game.py",
+              "line": 834
+            },
+            {
+              "path": "game.py",
+              "line": 802
+            }
+          ]
+        },
+        {
+          "claim": "No FORBIDDEN mixed refusal semantics: the rule is stated in one branch and holds everywhere \u2014 a refused press flashes and is never charged, an accepted press charges and never flashes, ACTION5 and undeclared ids charge nothing. Exactly one of the two outcomes fires per directional press.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 826
+            },
+            {
+              "path": "game.py",
+              "line": 829
+            },
+            {
+              "path": "game.py",
+              "line": 563
+            }
+          ]
+        },
+        {
+          "claim": "No FORBIDDEN palette-equality interface mask: nothing reads a rendered frame anywhere. _board_pixels, _band_pixels and _repaint all key on geometry (cell rectangles, sprite positions) and on game state, never on colour equality.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 663
+            },
+            {
+              "path": "game.py",
+              "line": 848
+            },
+            {
+              "path": "game.py",
+              "line": 643
+            }
+          ]
+        },
+        {
+          "claim": "Failure is terminal, not retried: both loss routes call self.lose() on the engine run \u2014 there is no lives allowance, no checkpoint and no undo action, so a single deadlocking press ends the whole eight-level run.",
+          "evidence": [
+            {
+              "path": "game.py",
+              "line": 845
+            },
+            {
+              "path": "game.py",
+              "line": 784
+            }
+          ]
+        }
+      ],
+      "notes": "Grounding, both directions. The two wrong-colour-pad look-alike families are grounded in code only: every captured frame is a level boundary, where the win predicate guarantees all pads match, so no settled frame in this digest shows a mismatched pad \u2014 I cite game.py:855/741/742/153/174 as the grounding and flag that the frames neither show nor contradict it. The third family (key occluded on its own matched pad) IS frame-grounded: frame 0 holds no index-0 ring. I looked for `lying display` on two candidates and could not ground either: the row-63 meter is painted from the same _steps counter that the cap kills on, so it is not desynced from the lethal counter, and the refusal flash reports the refusal truthfully (the undisplayed consequence \u2014 the press still entering the echo queue \u2014 is invisible state, not a lying display). I looked for `retrospective punishment` on the deadlock lose() and deliberately did not report it: the run ends on predict_echo's rest cell, so the final frame still shows the echo short of the cell that strands the board, and that is the catalog's lever 5 (invisible load-bearing state), which by the canon's own note carries no keyword and is declared through info.* \u2014 hence my info.recall claim rather than a keyword. I found no `decoy`: all five declared actions are handled and only accepted moves are charged. Three further observations that are not gate violations. (1) Index 2 is commented palette.danger and the echo is its only user, but no code path makes contact with it lethal \u2014 contact is impossible in both directions (game.py:570 blocks a key from entering the echo cell, game.py:584 blocks the echo from entering a key cell), so I claim no hazard.* term; the token's teeth are blocking and deadlock, not damage. (2) predict_echo freezes both keys at their current cells while draining the queue (game.py:483), whereas the real drain re-checks live key positions each press, so the oracle's rest cell is an approximation and lose() fires on the approximation. (3) ACTION5 is the only non-directional verb and it neither charges the meter nor advances the echo, so there is no pass-time verb at all: the only way to advance the echo while a key is parked is to press it into a wall and be refused, which is why I gave state.wait a null site despite that role being load-bearing in levels 4 and 5. On gate.key: the two movers are literally named keys and the module docstring uses the term, but nothing is collected, carried or removed from the board \u2014 the unlock is a per-key latch set by socket occupancy (gate.remote) plus an absolute colour condition on the tile (terrain.keyed). A name is not a site, so gate.key is null."
+    }
+  },
+  "diff": {
+    "terms_declared": [
+      "agent.echo",
+      "goal.pattern_match",
+      "loss.deadlock",
+      "manip.select_cycle",
+      "move.grid",
+      "gate.remote",
+      "gate.key"
+    ],
+    "terms_detected_reachable": [
+      "agent.echo",
+      "budget.cap",
+      "gate.remote",
+      "goal.pattern_match",
+      "info.recall",
+      "loss.deadlock",
+      "manip.select_cycle",
+      "move.grid",
+      "state.action_lag",
+      "terrain.keyed"
+    ],
+    "dead_spec_terms": [
+      "gate.key"
+    ],
+    "undeclared_terms": [
+      "info.recall",
+      "terrain.keyed"
+    ],
+    "unreachable_declared_mechanics": [],
+    "deceptions_declared": [
+      "look-alike",
+      "lying display",
+      "palette overload"
+    ],
+    "deceptions_detected": [
+      "look-alike",
+      "palette overload"
+    ],
+    "undeclared_deceptions": [],
+    "declared_deceptions_undetected": [
+      "lying display"
+    ],
+    "unimplemented_terms": [
+      "gate.key"
+    ],
+    "exempted": [
+      {
+        "term": "budget.cap",
+        "would_have_been": "undeclared-term"
+      }
+    ],
+    "uncorroborated_levers": [],
+    "uncorroborated_terms": [
+      {
+        "term": "state.action_lag",
+        "code": "undeclared-term",
+        "note": "first sighting \u2014 no earlier recorded round reported this term this way"
+      }
+    ]
+  },
+  "verdict": "reject",
+  "reject_reasons": [
+    {
+      "code": "dead-spec-term",
+      "detail": "spec declares 'gate.key' and the blind audit found no trace of it",
+      "term": "gate.key"
+    },
+    {
+      "code": "undeclared-term",
+      "detail": "'info.recall' is reachable in the code but the spec does not declare it (off-intent)",
+      "term": "info.recall"
+    },
+    {
+      "code": "undeclared-term",
+      "detail": "'terrain.keyed' is reachable in the code but the spec does not declare it (off-intent)",
+      "term": "terrain.keyed"
+    }
+  ],
+  "deception_advisories": [],
+  "versions": {
+    "arcengine": "0.9.3",
+    "python": "3.12.8"
+  }
+}

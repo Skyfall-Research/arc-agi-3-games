@@ -1,0 +1,18 @@
+{
+  "game_id": "pump-phase-time-echo-72ccb8a5",
+  "title": "Pump Phase Time Echo",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    11,
+    51,
+    10,
+    45,
+    17,
+    40,
+    34,
+    115
+  ],
+  "default_fps": 30
+}

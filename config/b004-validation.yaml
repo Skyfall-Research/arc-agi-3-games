@@ -1,0 +1,713 @@
+# template.yaml — the known-good starting config for a new batch.
+#
+# Copy it to `config/<batch-id>.yaml`, change the `batch:` block (id, size,
+# seed, tier_sequence) and leave everything else alone until you have a reason
+# not to. Every other value here is the setting some batch already ran with;
+# the comment on each key says what the default is, what a non-default does,
+# and which batch proved it.
+#
+# Provenance of the values below: `config/b003r2-simplicity.yaml` (the last
+# batch that ran end to end — 2 slots, both authored with every convergence
+# knob live, $8.65 total), plus `verifier.confirm_pass: true`, which the b003
+# freeze record (addendum 3) says the next batch arms.
+#
+# HOW TO READ "default": these stages almost never default a signed knob
+# silently. Some readers RAISE when a key is missing (marked `required`);
+# others fall back to a documented value (marked `default: <x>`). A required
+# key removed from this file stops the batch before it spends anything.
+#
+# Validate a copy of this file before you run it (no spend, nothing written):
+#   .venv/bin/python -c "from gen.config import load_config; \
+#     from gen.s0_ideas import check_config, load_vocab; \
+#     cfg = load_config('config/<your-batch>.yaml'); check_config(cfg, load_vocab(cfg)); \
+#     print('config OK')"
+#
+# TWO KEYS DELIBERATELY ABSENT: `lint.strict` and `battery.smoke`. Both were
+# hard-required of every config and read by nothing — stamped into reports and
+# never consulted (Generator Readiness audit, 2026-09-27); their readers were
+# deleted the same day. If you are on an older checkout, S1 will raise
+# `config missing 'lint.strict'` and S5 `config battery block missing
+# ['smoke']`; add `strict: true` / `smoke: true` back to the two blocks below.
+# Neither value ever changed any behaviour.
+
+# --- the read-only dependencies ---------------------------------------------
+# Resolved against THIS repo's root at load, never against your CWD, and
+# checked for four canon files (`gen/config.py:CANON_FILES`) so a bad path
+# fails at load instead of five stages in. Required.
+duckwm_docs: ../duckWM/local-docs/arc-agi-3-generator   # READ-ONLY canon (resolved absolute at load)
+# The signed officials corpus (25 games), used by the B2 calibration and the
+# conformance battery. OPTIONAL — configs written before B2 must keep loading —
+# but when present it must resolve to a real directory.
+duckwm_games: ../duckWM/games/official   # READ-ONLY officials corpus (25 games; B2 calibration)
+
+# --- backends: who writes, implements and audits ----------------------------
+backends:
+  # Which driver every agent stage uses unless `per_stage` overrides it.
+  # `localclaude` = the locally installed `claude` CLI on your own auth (no API
+  # key is handled by this repo). `codex` = the `codex` CLI (OPENAI_API_KEY or
+  # `codex login`); that lane is AUTH-2 and has never completed a smoke, so
+  # every batch to date ran localclaude.
+  default_driver: localclaude            # localclaude | codex
+  per_stage: {}                          # e.g. {implementer: codex}
+  localclaude:
+    # implementer fable -> opus (operator R2 ruling, 2026-09-22): a Max-plan
+    # fable-limits call, not a capability ranking — the green-loop can burn
+    # up to 12 long sessions. Flips back when limits allow.
+    # Roles are exactly {spec_writer, implementer, verifier} (backends.STAGE_ROLES);
+    # a missing role for the driver in use is a loud KeyError at resolve time.
+    models: {spec_writer: claude-sonnet-5, implementer: claude-opus-5, verifier: claude-opus-5}
+    # S2 worker sessions (B3). Operator ruling 2026-09-21: scoped tools, no
+    # permission bypass — `bypassPermissions` here is refused by the driver.
+    session:
+      # default: acceptEdits. Any of the CLI's modes except bypassPermissions,
+      # which the driver refuses whatever the config says.
+      permission_mode: acceptEdits
+      # default: this exact list (backends.DEFAULT_S2_ALLOWED_TOOLS). Widening
+      # it widens what an implementer session can do inside its worker dir.
+      allowed_tools: [Edit, Write, Read, Glob, Grep, "Bash(make *)", "Bash(python *)",
+                      "Bash(.venv/bin/python *)"]
+      # effort: R2 ruling (operator 2026-09-22). Default-effort S2 sessions sat
+      # >30 min in silent thinking and died on the 1800s driver timeout with
+      # zero output (attempt-1 record). medium = S1's all-day-proven setting.
+      # default: null (the CLI's own deliberation; the flag is omitted).
+      # Other values: low | medium | high | xhigh | max.
+      effort: medium
+      # timeout_s: the wall-clock ceiling on ONE worker turn, in seconds.
+      # default: 1800 (backends.SESSION_TIMEOUT_S). MEASURED over b001-b003:
+      # legitimate attempt-1 sessions ran 252-1646s, and 6 of ~20 attempt-1
+      # sessions died ON the 1800s ceiling with empty output — it clips roughly
+      # the top 30% of the distribution, and a clipped attempt-1 costs an
+      # attempt AND leaves the worker bare (b004 slot 1, attempt 1). 3600 =
+      # 2.2x the observed max. Armed by the 2026-09-28 b004 ruling. Must be
+      # finite and > 0.
+      timeout_s: 3600
+  codex:
+    # Unused while default_driver is localclaude; kept so the lane is one edit
+    # away. Never exercised end to end (AUTH-2 open since B0).
+    auth_env: OPENAI_API_KEY
+    models: {spec_writer: gpt-5.4, implementer: gpt-5.4-codex, verifier: gpt-5.4}
+    session:
+      # default: workspace-write.
+      sandbox: workspace-write           # read-only | workspace-write | danger-full-access
+
+# --- the batch: THE BLOCK YOU EDIT ------------------------------------------
+batch:
+  # PLACEHOLDER. Required, non-empty string. It names everything: the ledger
+  # (`out/batches/<id>/ledger.jsonl`), the corpus dir (`out/corpus/<id>/`), the
+  # ideas dir (`out/ideas/<id>/`) and every slot slug (`<id>-s001`, `<id>-s002`,
+  # …). Change it for every run — a fresh id is how b003 was re-run as b003r2
+  # without touching the stopped batch's artifacts.
+  id: b004-validation
+  # PLACEHOLDER. Required int >= 1 — one slot per game attempted. Proven at 1
+  # (b001), 3 (b002) and 2 (b003, b003r2).
+  size: 2
+  # PLACEHOLDER. Required int. Seeds every S0 draw and the S6 validation seeds,
+  # so two batches on the same seed sample the same ideas. Used so far: 1
+  # (b001), 2 (b002), 3 (b003 + b003r2). Pick an unused one.
+  seed: 5
+  # tier_sequence pins one legibility tier per slot (operator 2026-09-25: "one
+  # t1 + one t2"); the batch.tiers weighted draw below still runs (frozen rng
+  # order) and its result is discarded per slot.
+  # default: absent, which leaves every slot on the batch.tiers draw. Present,
+  # it must name EXACTLY batch.size tiers or the config is refused.
+  tier_sequence: [t1, t2]
+  tiers: {t1: 0.4, t2: 0.4, t3: 0.2}     # legibility tiers (kept verbatim; overridden by the sequence)
+  mix:
+    # Required probability in [0, 1]: the share of ideas drawn with no hazard.
+    #
+    # R-25 (readiness audit): the officials give TWO figures for this and both
+    # are true, because they count different things.
+    #   * 11/25 = 0.44 — officials with no LETHAL hazard, budget exhaustion the
+    #     only loss (spec-v0.3.md:176; affordance-language.md:81 names all
+    #     eleven).
+    #   * 16/25 = 0.64 — officials carrying no `hazard.*` TERM at all
+    #     (mechanics/game-term-matrix.csv, the three hazard columns).
+    # The 7-game wedge is a definition difference, not an error in either
+    # source: wa30's `hazard.static` was adjudicated ABSENT as a nuisance-NPC
+    # you can kill and that cannot kill you (adjudication.md:62). The matrix
+    # counts "no hazard entity"; the prose counts "no way to die".
+    # OPERATOR RULING (2026-09-28): 0.5 STAYS — it sits between the two figures,
+    # it is a sampling knob, and hazardless is NOT a conformance axis. Nothing
+    # measures a batch's realized share against either number. See
+    # `gen/visual_canon._wants_danger` for the full reconciliation.
+    hazardless: 0.5
+    # Required weight map over exactly {mover, selection, click}; must sum to 1.
+    locus: {mover: .40, selection: .36, click: .24}
+    objective:                           # D24: floors + reach cap (tufa collapsed to 50% reach)
+      # Per-family minimums. NOTE: at small batch.size the floors cannot be
+      # met and degrade to draw weights — S0 says so with a RuntimeWarning
+      # ("batch.size 2 < sum(objective floors) 8"). That warning is expected on
+      # any batch smaller than the floor sum; it is not an error.
+      floors: {reach_goal: 1, cover_targets: 1, collect_all: 1, match_pattern: 1,
+               sequence: 1, survive: 1, connect: 1, balance: 1}
+      # Required, strictly inside (0, 1): the hard ceiling on reach_goal's share
+      # of the objective draw, the D24 backstop against a reach-only batch.
+      reach_cap: 0.25
+  # quotas stand down for the simplicity A/B (b003 ruling): at size 2 they
+  # degrade to draw boosts toward exactly the rare drill terms an entry-tier
+  # game should not be built from. They return at production size (D22).
+  # `{}` = no quota. A non-empty map is {term: count} over the signed
+  # vocabulary; an unknown term is refused.
+  quotas: {}
+
+# --- S0: idea sampling ------------------------------------------------------
+ideas:
+  # Inclusive [min, max] seed-term count per idea, nested inside S0's global
+  # [2, 4]. default (when the key is absent): [2, 4]. Overridden per tier by
+  # `tiers.seed_terms` below.
+  seed_terms_per_idea: [2, 4]
+  # Required probability: the share of ideas seeded from the five agent-failure
+  # families.
+  failure_family_share: 0.4              # ideas seeded from the five agent-failure families
+  # Required non-negative int: how many DISTINCT earlier batches' dedupe keys
+  # an idea must avoid. 0 disables dedupe.
+  dedupe_window: 3                       # batches
+  #
+  # --- R-10, refinement wave 2: the objective mix, rebased ------------------
+  # The operator's ruling on the comparative audit's finding A1 is RESEMBLE THE
+  # OFFICIALS, and THIS LINE IS THAT ARMING. Both knobs below are born at
+  # today's behaviour in CODE (`corpus_share: measured`, `secondary_rate: 0.0`)
+  # and armed only here — the same split every wave-1 knob uses, and what keeps
+  # every seeded draw b001..b003r2 ever recorded reproducible.
+  #
+  # corpus_share: measured | officials | blend. default: measured.
+  #   measured — D24's deficit boost over the 190-row corpus (87% tufa). What
+  #     it MEASURES (M-3 §3, N=10,000): a near-uniform 9.2-15.9% mix, with the
+  #     reach cap below never binding because reach's boosted share is 0.101.
+  #   officials — the 25 signed officials' own primary distribution
+  #     (reach_goal 11, match_pattern 6, cover_targets 4, collect_all 2,
+  #     sequence 1, balance 1, survive 0, connect 0), used as the weight
+  #     directly. reach's raw share is 0.44, so `reach_cap` FINALLY BINDS and
+  #     the drawn mix is reach 0.25 / match_pattern 0.32 / cover_targets 0.21 /
+  #     collect_all 0.11 / sequence 0.054 / balance 0.054 — the officials'
+  #     6:4:2:1:1 ratio among the uncapped families, exactly.
+  #     THE PRICE, on the record: survive and connect are 0/25 as official
+  #     primaries, so under `officials` they are weight 0 and NEVER DRAWN, and
+  #     no `floors` entry can rescue them (the floor multiplies the share).
+  #     `blend` is the setting that keeps both tails alive (survive 0.015,
+  #     connect 0.023) if a batch wants the officials' shape without losing
+  #     two families.
+  #   blend — 50/50 of the two shares, same rebase rule.
+  corpus_share: officials
+  # secondary_rate: probability in [0, 1] that an idea also gets a SECONDARY
+  # objective family, drawn from the officials' measured primary->secondary
+  # co-occurrence (a primary with no official evidence — survive, connect —
+  # falls back to their overall secondary table; the secondary is never the
+  # primary). default: 0.0, which draws none AND consumes no rng.
+  # 0.76 = 19/25: the officials carry a secondary 19 times out of 25, and our
+  # sampler has drawn one 0 times out of 11 (findings A1). The dedupe key is
+  # NOT widened by this — it stays seed_terms + primary.
+  secondary_rate: 0.76
+
+# --- S1: the §11 linter -----------------------------------------------------
+# require_render (contract V-B, b003): every spec declares its ONE render
+# scale (game.render.cell_px) and the linter holds the declaration to the
+# 64-canvas and the officials' tile-scale menu.
+# default: false (a spec with no `game.render` block passes). true was proven
+# on b003 and b003r2, where every shipped spec declared a scale.
+#
+# The two fidelity rules (contract W1-B / R-16, comparative audit): each takes
+# off | warn | kill and DEFAULTS TO OFF — an unconfigured lint is byte-identical
+# to a pre-W1-B one, which is what keeps seven shipped lint-reports true. THIS
+# FILE IS WHERE THEY ARE ARMED: `warn` records the finding and refuses nothing,
+# and the audit's "ship as warn first, measure the kill rate before arming" is
+# exactly this line. `kill` also puts the rule's sentence into the writer
+# prompt (prompt-sync: a rule that can end a writer session is quoted to it).
+#   mix_hazardless_action — an idea drawn `mix_class.hazardless: true` may not
+#     ship a `hazard.*`/`loss.*` term or a non-`none` `danger_tell`.
+#     convoy-in-the-fog did both ("no hazards anywhere on the board" +
+#     `loss.deadlock` + `danger_tell: absence`) and nothing read the facet. A
+#     spec that means it declares `game.hazardless_override: "<why>"` and the
+#     departure is recorded as a warn instead.
+#   terms_introduced_coverage_action — every `game.terms` entry must be
+#     introduced by some level (§11 already enforces the containment the other
+#     way). 12 terms across 3 shipped games are introduced by no level, 12/12
+#     spec-added (convoy 7, core-ward 2, facing-sentinel 3).
+#
+# A THIRD RULE JOINS THEM (contract W2-D / R-25), on the same enum and the same
+# `off` default:
+#   unstated_background_action — a spec that declares no `game.palette.
+#     background`. The gate's `field-index` check reads that declaration to ask
+#     whether the board's modal index is the one the spec named, so a silent
+#     spec is measured against the canon default (black 5, affordance §9) that
+#     nobody chose. SIX OF THE SEVEN shipped specs are silent — which is why
+#     this rule cannot be an unconditional warn (it would make six shipped
+#     lint-reports retroactively wrong) and why the measurement happens HERE,
+#     at `warn`, on the next batch's fresh specs.
+#     The spec-side companion is `game.palette.tiny_token` (same contract): the
+#     roles a game draws smaller than one logical cell ON PURPOSE. It is a §11
+#     field with no knob — absent is silent, present is held to a non-empty
+#     list of distinct roles from [you, goal, danger] — and the gate's
+#     `role-footprint` check reports a declared role as `exempt-declared`
+#     instead of `fail`. `gate.role_footprint_exempt` below stays as the
+#     OPERATOR override for games whose specs predate the field.
+#   * silent-levels (contract A2 / R-11): the share of NON-FIRST levels whose
+#     `terms_introduced` is empty. 72.3% of our non-first levels introduce
+#     nothing at all (34/47) while all 183 official levels carry a mechanic —
+#     a game whose whole vocabulary is front-loaded into level 1. It is a FLOOR
+#     and not a ban, because a compose-heavy curriculum that re-reads its
+#     mechanics is the shape R-11 protects: `silent_levels_floor` (default 0.5,
+#     a share in [0, 1]) is the share that may be silent, and the rule fires
+#     only when a spec EXCEEDS it. At 0.5 on the shipped corpus: conduit-watch
+#     (7/7), convoy-in-the-fog (6/7), mosaic (5/6), pump-phase (5/7) and
+#     core-ward (5/7) fire; facing-sentinel (3/6, exactly at the floor) and
+#     pump-flow (3/7) do not. Code default `off`, armed to warn here — the
+#     measurement pass, as with the three rules above.
+#   * refusal-persistence (contract B1 / R-08): a spec that declares
+#     `knobs.refusal: visible` and does NOT declare `knobs.refusal_transient`
+#     has PROMISED a refusal signal the player can still see on a settled frame
+#     — §6's own bar is a signal "persisting >=1 settled frame". It is a PROMISE
+#     rule, not a defect rule: recording the promise is the whole job here, and
+#     B3's gate check is what measures the frames against it. At `warn` all seven
+#     shipped specs fire, because all seven declare `refusal: visible` and none
+#     declares the exception — while six of the seven paint their refusal signal
+#     in ZERO captured records and a seventh renders its flash into the frame
+#     BEFORE the settled one. That is the measurement the audit asked for; a
+#     spec whose flash is deliberately momentary writes
+#     `knobs.refusal_transient: true` and records the departure instead. Code
+#     default `off`, armed to warn here, as with the four rules above.
+lint:        {require_render: true,
+              mix_hazardless_action: warn,
+              terms_introduced_coverage_action: warn,
+              unstated_background_action: warn,
+              silent_levels_action: warn,
+              silent_levels_floor: 0.5,
+              refusal_persistence_action: warn}
+
+# --- S2: the coded validate-until-green loop --------------------------------
+# patch_baseline (contract C-1, b003): a rebuild after an S2b reject modifies
+# its own previous validate-green game.py instead of fresh-translating the
+# spec — the b002 slot-3 seesaw fix. Rides only when the reject report's
+# spec hash matches the spec being built.
+# max_green_attempts: required int — how many implementer attempts one slot may
+# spend reaching validate-green. 12 on every batch so far; b003r2 needed 1 per
+# slot. session_token_cap: optional (absent = uncapped); `400k` is accepted
+# shorthand. patch_baseline: default false.
+implementer: {max_green_attempts: 12, session_token_cap: 400k, patch_baseline: true}
+# NO KNOB, and this is the place you would look for one (contract W2-B / R-07,
+# operator ruling 2026-09-28): a GENERATED game that declares ACTION6 while
+# tagging zero sprites `sys_click`/`sys_place` fails the birth-time static gate
+# (`static.sys-click-generated`, gen/s3_static.py). Machine consumers — RL
+# agents and duck — enumerate the ENGINE's click list, and an untagged game
+# hands them an empty one for a load-bearing action (convoy-in-the-fog:
+# available_actions [5, 6], click_cells [], 15 raw-coordinate clicks). It is a
+# RULING, not a measurement pass, so there is no off|warn|fail line to write
+# here: it is a birth-time gate on games not yet built, and the seven shipped
+# games are already packaged and are not re-gated. The officials' untagged
+# idiom stays legal for the officials (D8 adjudication 4) — the check is not in
+# `run_static_checks`, so the 25-official battery is untouched by it.
+
+# --- S2b/S3: the blind intent verifier --------------------------------------
+# verifier.exempt_terms: b002 ruling (operator 2026-09-24) — budget.cap fired in BOTH audit directions on one game in consecutive rounds under the mandated headroom; the finding is recorded, never a reject.
+# info.deception joined the same day under the same bar: sworn dead in two consecutive audits, removed on the audit's own say-so, then flagged reachable in the third — and the operator PLAYED the game and passed it (human ground truth).
+# verifier.lever_corroboration: b002 ruling (operator 2026-09-24) — undeclared-lever findings ROTATE round to round, so an undeclared deception rejects only once two independent blind sessions have named it.
+# lever_corroboration_window (contract C-2, b003): the any-prior-round union
+# SATURATES (measured on b002 slot 3: all 4 distinct levers "corroborated" by
+# round 4 of 8 = reject-on-sight returns). window 1 = consecutive naming, the
+# real/phantom discriminator.
+# confirm_pass (contract C-4a, b003 addendum 3): a passing round that carries
+# an UNCORROBORATED recording buys exactly one confirmation round, so a
+# round-1 pass can no longer end the loop before any second blind session
+# could corroborate or falsify it (operator 2026-09-25: "We need at least 2
+# audits with the same issue"). default false; the b003 freeze record says the
+# next batch arms it — this is that arming, and it has NOT yet run live.
+#
+# Defaults for this block, key by key:
+#   reject_cap            — optional, default 2: how many audit rejects against
+#                           one spec escalate to a re-spec. Through b003r2 this
+#                           was a DEAD key (the escalation compared against a
+#                           hardwired 2, so a config writing 3 still escalated
+#                           at 2); it is now read, and 2 is what every batch
+#                           has run.
+#   bfs_level_size_cap    — required int > 0 (cells); no code default.
+#   exempt_terms          — default () (canon: nothing exempt). Every entry
+#                           must be a real vocabulary term or the config is
+#                           refused (a typo would exempt nothing silently).
+#   lever_corroboration   — default false. Must be a real bool.
+#   *_corroboration_window— default null = the union over every prior round.
+#                           A positive int narrows it to the N most recent
+#                           rounds. Setting a window with its corroboration
+#                           pass off is a refused contradiction.
+#   term_corroboration    — default false (contract C-3, b003r2).
+#   confirm_pass          — default false. true with BOTH corroboration passes
+#                           off is a refused contradiction.
+#   lookalike_declared    — off | record (the DEFAULT) | fail. See below.
+#
+# lookalike_declared (contract A3 / R-09, refinement wave 3): spec §10 says
+# "deception is always a DECLARED property, never an accident", and the
+# comparative audit (finding B4) measured that failing in BOTH directions on
+# our own games. Two surfaces now answer it. The blind audit prompt gained a
+# LOOK-ALIKE INVENTORY section — no knob, it is a question, and the reply
+# carries it back in an optional `lookalikes` claims key. The code-side
+# detector `static.lookalike-declared` (gen/s3_static.py) measures the same
+# thing off the engine and the AST and diffs it against this game's own
+# `game.knobs.deceptions`; its answer lands in the report's optional
+# `lookalikes` block as `undeclared_found` / `declared_ungrounded`.
+#
+# ARMED AT `record`, WHICH IS ALSO THE CODE DEFAULT — deliberately, and it is
+# the one place this wave departs from "an unconfigured run is byte-identical".
+# The departure is W2-B's ruling: the house rule binds on the OFFICIALS' path
+# and there it holds exactly (the detector is generated-only, is not in
+# `run_static_checks`, and is premise-not-met on all 25 signed officials —
+# measured), while a generated game's report gains the block. A detector that
+# has to be armed to measure anything measures nothing on the batch that would
+# have needed it. This line exists to say so out loud, not to change behaviour.
+#
+# IT IS EVIDENCE, NOT A GATE. `record` changes no verdict: the findings feed
+# the record and the S5 human review, and rejects in this stage stay governed
+# by the corroboration machinery (a finding rejects only after a second
+# independent blind session names it) — a heuristic detector must not get a
+# reject path around that bar. `fail` is the armed gate and makes the detector
+# an ordinary failing `static` check; promote it after a batch of clean
+# records, the way every mode knob in the `gate:` block was promoted.
+# `off` reproduces a pre-A3 report exactly.
+#
+# WHAT IT FLAGS ON THE SEVEN SHIPPED GAMES (replayed, `record`): pump-flow
+# (both directions — 3 kinds through one C_PIPE draw with `gates` undeclared,
+# and the palette-overload entry naming index 2 while the family is drawn in
+# 3), pump-phase (pump/filler/block, three 4x4 flat solids, only `block`
+# untagged), core-ward (gate vs hazards, 2x2 flat solids, levels 3/4/6).
+# convoy, facing-sentinel, conduit-watch and mosaic are clean. conduit is the
+# pinned FALSE-POSITIVE TRAP: its lattice tiles all touch, and two objects that
+# render adjacent fuse into one component, which is a render consequence of
+# tiling rather than an authored look-alike — the seam beacon pair included.
+#
+# The three contract-B3 knobs below are all born `record`, which is the wave's
+# rule for a heuristic: a new rejection earns its place on measured data, not on
+# the day it is written.
+#   term_witness: R-18's witness, `gate.term-witness`. The blind S2b pass is
+#     asked for a per-term implementation SITE and a DECLARED term it can ground
+#     in no code construct is a finding. mosaic-marble-bounce-to-match is the
+#     exhibit: it declares `gate.plate`, introduces it at a level, implements it
+#     nowhere in 290 lines and passed a one-round audit clean. conduit-watch is
+#     the pinned FALSE-POSITIVE TRAP in the other direction — its
+#     `state.checkpoint` IS implemented, as the LOCKED set, with the word
+#     "checkpoint" nowhere in the file — which is why the prompt defines a site
+#     behaviourally and never lexically. The check reddens only on a finding
+#     `term_corroboration` (armed above) confirmed, so one round's judgement
+#     records and a second round's agreement decides.
+#   refusal_honest: §6:158's never-both, `static.refusal-honest`, read off the
+#     AST. Charge silently or signal freely — 17/25 officials charge with no
+#     signal and the 2/25 with a real visible refusal make it FREE. Exhibits:
+#     pump-phase-time-echo (the refusal flashes and still spends `self._used`)
+#     and convoy-in-the-fog (it still rolls and still burns a drum).
+#     facing-sentinel passes — its refusal is drawn and free — and conduit-watch
+#     is premise-not-met, because its handler returns out of a refusal helper
+#     rather than binding a marker, and the check declines to certify a verdict
+#     it did not earn.
+#   refusal_persistence: R-08's other half, `gate.refusal-persistence`, read off
+#     A1's step trace (`frames.trace`, armed at the bottom of this file — with
+#     the trace off this check is honestly not-checked, never a clean bill). A
+#     spec declaring `refusal: visible` without `knobs.refusal_transient`
+#     promises a signal a SETTLED frame carries; a traced step that rendered
+#     more than one frame and settled onto an unchanged board drew something the
+#     engine then threw away. conduit-watch is the measured exhibit: one
+#     swallowed step per refused click, because its flash renders on the first
+#     pass and the second pass clears it.
+verifier:    {reject_cap: 2, bfs_level_size_cap: 400,    # cells
+              exempt_terms: [budget.cap, info.deception], lever_corroboration: true,
+              lever_corroboration_window: 1,
+              term_corroboration: true, term_corroboration_window: 1,
+              confirm_pass: true, lookalike_declared: record,
+              term_witness: record, refusal_honest: record,
+              refusal_persistence: record,
+              # RECORDED OPERATOR AMENDMENT 2026-10-05 (revival #2, the
+              # seamlock precedent): the operator's standing L-1 leniency ruling —
+              # lever sightings on the resumed fix round's re-audit are
+              # advisories, never rejects. Added at resume; the original
+              # batch ran without the key (default reject).
+              deception_action: record}
+
+# --- S4: the g-sampler and the budget cap-fit -------------------------------
+# g.cap_fit: b002 ruling (operator 2026-09-24) — D8's hard reject permanently blocks an otherwise-accepted game; budget calibration is a later optimisation pass, so the violation is recorded and the game ships.
+# All six of median/iqr/floor/span_target/trend/redraw_cap are REQUIRED (no
+# code default) and cross-checked: 0 < iqr[0] < median < iqr[1], floor >= 1,
+# span_target > 1, trend strictly inside (-1, 1), redraw_cap >= 0. The values
+# here are the signed difficulty-model numbers every batch has used.
+# cap_fit: default `hard` (canon D8 — a final violation rejects to S2).
+# `record` measures it and ships the game anyway; used on b002 and b003r2, and
+# b002 slot 1 shipped with a recorded violation on the record. `reject` (R-22,
+# refinement wave 3) is an ALIAS of `hard`, armed here: R-22's acceptance is
+# "zero games shipping with all levels over cap", and the b002 record ruling
+# was a PILOT deviation taken so one slot would not be blocked by a budget the
+# generator could re-tune later. Wave 3 re-tuned it (see `caps:` below) and the
+# violations SURVIVED, so the deviation has done its job and a cap bug goes
+# back to S2 as canon D8 says it should.
+#
+# CALIBRATION ADJUDICATION (stated, per the B2 contract). The b8/b10/b11/b002
+# suites pin S4's LEGACY behavior and none of them reads this file: b8 and the
+# b002 one-go pins drive `config/b001-pilot.yaml` and `config/b002-triple.yaml`
+# (b002's own pin asserts `cap_fit == record` in b002-triple.yaml, which is
+# untouched); b10/b11 build their configs in-test. `caps.basis` defaults to
+# `legacy` and `g.cap_fit` defaults to `hard` in code, so every one of those
+# pins is unmoved by the two lines below. The suite's only reader of THIS file
+# is test_docs_template's reader sweep, which loads it and calls each stage
+# reader — `_g_params`, `_cap_fit_mode` and `_caps_basis` all accept it.
+#
+# WHAT ARMING COSTS, measured on tmp replays of the six shipped S4 dirs: the
+# three games with a measured cap (pump-phase, core-ward, convoy) REJECT to S2
+# under `reject`, because their measured caps (4-57 actions) cannot hold any
+# baseline at `floor: 6` with the 5x battery margin. That is the intended
+# reading — those budgets are bugs — and it is why this arms the template and
+# not the batch configs.
+g:           {median: 2.00, iqr: [1.54, 2.96], floor: 6, span_target: 9, trend: 0.65, redraw_cap: 3, cap_fit: reject}
+
+# --- S4: the cap basis (R-05 / R-22, refinement wave 3) ---------------------
+# caps.basis: `legacy` (the code default, and byte-for-byte the stage as it
+# shipped) or `official-band`, armed here.
+#
+# `official-band` clips the implied-g draw to the officials' MEASURED effort
+# band instead of canon's [1.2, 6]. The band is `audit/comparative/data/
+# effort.csv` (READ-ONLY): `ratio = actions / baseline`, officials' median
+# 0.789 over n=183 levels, per-GAME medians spanning 0.437..1.084 — and since
+# our ratio is exactly `1 / g`, that band IS a g box, `[1.0, 2.288]`. The floor
+# is held at 1.0 rather than the band's literal 0.922: a g below 1 ships a
+# baseline the level's own optimal line cannot meet, which is legal for the
+# officials (their `actions` is a HUMAN play that may overshoot a published
+# baseline) and not for us (ours is a machine optimum).
+#
+# It also records, per level, the cap that band implies — `5 x baseline`, the
+# officials' own enforced budget (D8: 519/590 death-levels at exactly 5.00x) —
+# in `s4-report.json` (`caps.band`) and `metadata.json` (`caps_basis`,
+# `caps_required`). That derived cap is a TARGET for a later budget pass, never
+# a substitute: `caps` keeps the burn probe's measured values and cap-fit keeps
+# judging against them, because S4 measures the enforced budget and cannot set
+# it (the budget lives in the game source, which is S2's).
+#
+# THE FLAGGED CONFLICT, ruled record-mode and reported to the lead. R-05's
+# literal target is "baseline/cap inside the officials' ratio band", i.e.
+# `cap in [0.92 b, 2.29 b]`. D8's battery margin needs `cap >= 5 b`. The two
+# intervals are DISJOINT: the loosest in-band cap is 2.185x tighter than the
+# margin's floor (3.945x at the 0.789 median, 5.42x at the band's tight edge).
+# No cap satisfies both. So the band is applied where effort.csv measures it —
+# on actions/baseline, the g box — the literal target is RECORDED per level
+# (`literal_target_ok`) and never rejects, and BATTERY_MARGIN is untouched.
+caps:        {basis: official-band}
+
+# --- S3 gate: the visual report card ----------------------------------------
+# The visual report card (contract V-C, b003): objective per-level render
+# measurements from the S2b frames sidecar, written to worker.gate/ for the
+# human review. Both record-only this batch: the l1 color floor flips to
+# `fail` only after a batch of clean records.
+# visual_card: default `off` (the gate never builds a card). `record` builds
+# `worker.gate/visual-report.{md,json}` + a contact sheet and the review stop
+# prints the path. l1_color_floor: default `record`; `fail` lets the one hard
+# check in that module (level-1 board colors >= 4, the officials' own MIN)
+# reject a game. Unknown keys in this block are refused.
+#
+# field_index / role_footprint (contract W1-A1, refinement wave 1): the two
+# defects the comparative audit MEASURED on our seven shipped games, armed here
+# as `fail` on the audit's evidence rather than born dormant.
+#   field_index (R-01) — the playfield must be painted: a level-start board
+#     whose modal index is white `0` rejects unless the spec declares
+#     `game.palette.background: 0`. 4 of our 7 shipped games left the field
+#     white; the officials do it on 6 of 183 level-start boards, all one game
+#     (g50t). `0` is the ecosystem's selection mark (affordance §9:L239-240,
+#     L252), so a white field spends the one index every official reads as a
+#     MARK. Replayed over all 7 shipped games it flags exactly those 4.
+#   role_footprint (R-02) — every DECLARED palette role (you/goal/danger) must
+#     be drawn in components of at least one full logical cell
+#     (game.render.cell_px squared; 4 px where no render block is declared).
+#     Replayed over the 7: flags facing-sentinel (`you` = 1-px scatter) and
+#     passes conduit-watch, convoy, pump-flow, pump-phase and core-ward.
+#   Both default to `record` and take off|record|fail. `off` also removes their
+#   fields from the card, which is how a card reproduces a pre-W1-A1 one.
+#   role_footprint_exempt: default [] — the declared-tiny-token list, entries
+#     `<game_id>:<role>`; an exempt role is still measured and still printed,
+#     it just cannot reject. Nothing is exempt today.
+#     Contract W2-D added the SPEC-side declaration `game.palette.tiny_token`
+#     (see the `lint:` block above). This key is now the OPERATOR OVERRIDE: it
+#     covers the seven shipped games, whose specs predate the field, and the
+#     case where a spec is wrong about itself and a human accepts the number
+#     anyway. The card says which one bought the pass — `exempt-declared` for
+#     the spec's own list, `exempt` for this one.
+# (W1-A1's enforcement seam is WIRED: gen/orchestrator.py's s3_gate runner now
+# consults every check's fail mode, not just `l1_color_floor`.)
+#
+# win_render / declared_vs_painted (contract W1-A2, refinement wave 1): the two
+# further defects the same comparative audit measured on the same frames. Both
+# take off|record|fail and both default to `record`, like every knob above them;
+# this file arms both to `fail`. `off` also removes their blocks from the card,
+# which is how a card reproduces a pre-W1-A2 one.
+#   win_render (R-04) — the settled WIN frame must differ from the FINAL LEVEL'S
+#     START frame by at least 229 board cells, counted outside whatever strip
+#     `game.hud.reserved` declares (so a win cannot be rendered by moving a
+#     meter). Replayed over all 7 shipped games it flags 5: convoy-in-the-fog
+#     (0 cells — its win frame is BYTE-IDENTICAL to a frame 84 actions earlier),
+#     core-ward-phase-gates (22), mosaic (36), pump-flow (65), pump-phase (123);
+#     facing-sentinel (321) and conduit-watch (632) pass.
+#     READ THIS BEFORE TRUSTING THE ARM: 229 is the 25 officials' 25th-percentile
+#     win delta, NOT their minimum, which is this repo's usual floor rule. The
+#     minimum (98, m0r0) is quieter than pump-phase's 123, so a min-derived floor
+#     cannot reproduce the audit's verdicts — and the price of the percentile is
+#     that 6 of the 25 SIGNED OFFICIALS (m0r0 98, tu93 111, sc25 124, lp85 147,
+#     tn36 211, re86 214) would fail it. `record` is the honest first batch;
+#     `fail` here is contract W1-A2's instruction, armed with that cost on the
+#     record. A game whose capture never reached a WIN is not-checked, never
+#     failed.
+#   declared_vs_painted (R-06) — a declared palette role (you/goal/danger) that
+#     NO captured frame paints. Absent from every record is a violation; absent
+#     from some records is recorded and never a violation (state-dependent roles
+#     are legitimate). Replayed over the 7: 5 violation rows —
+#     core-ward `you: 11` 0/10, pump-phase `danger: 8` 0/10, mosaic `you: 11`
+#     and `goal: 14` 0/5, conduit-watch `you: 12` 0/10.
+#     KNOWN CAPTURE LIMIT (load-bearing, and why the exemption below exists):
+#     the sidecar holds the reset frame, one frame per level transition and the
+#     final frame, so "painted in no record" is NOT "painted by no code path".
+#     conduit-watch's `you: 12` IS painted by code — it is the selection colour,
+#     live only while a cell is held, and every captured record is a fresh or a
+#     finished board. Until the R-20 capture upgrade this check cannot tell the
+#     two apart.
+#   declared_vs_painted_exempt: default [] — entries
+#     `<game_id>:<role>:<why>`, and the reason is REQUIRED (unlike
+#     role_footprint_exempt's two-part token) precisely because the check cannot
+#     see what the exemption claims: the human's sentence is the only evidence
+#     there is. An exempt role is still measured and still printed. The
+#     conduit-class entry is written out below, commented: uncomment it only for
+#     a batch that actually rebuilds that game.
+#   chrome_extent (R-03) — is the board FRAMED? `occupied_extent` is the count of
+#     cells that are not the board's modal index, and the band is the officials'
+#     FULL per-game-median range, 361 (re86) .. 2889 (tn36) — the audit's own
+#     outside-band rule and the most permissive band available. Our per-game
+#     median is 508 against their 1089 (0.47x) and three of seven shipped games
+#     sit BELOW the whole band: core-ward 166.5, pump-flow 249, facing-sentinel
+#     272. The cause the audit names: two authored decor objects in seven games
+#     against the officials' 28-31 decor rows, which are almost entirely chrome.
+#     THE ACCEPTANCE IS PAIRED and that is the whole design — a game is rejected
+#     only when its median is below the band AND its spec declares no
+#     `game.chrome` at all. Neither leg can reject alone, because each is
+#     gameable on its own: padding the board with meaningless paint satisfies
+#     the extent leg, declaring chrome nobody drew satisfies the count leg.
+#     ABOVE the band is recorded and never a violation (no shipped game is, so a
+#     high-side rejection would have no exhibit behind it). Armed to `fail`:
+#     every new game is told about `game.chrome` in the S2 payload and the
+#     pairing gives it an honest way out, which is what a legacy game that
+#     predates the field does not have — expect the three above to fail a replay.
+#   danger_visible (R-13) — TWO legs, and it is armed to `record` rather than
+#     `fail` deliberately. Leg 1 (direct measurement, ready to reject): a
+#     declared `palette.danger` must be painted on the level-START board of every
+#     level from the one that introduces the first hazard term onward. Replayed
+#     over the 7: pump-flow 3 violations (levels 6-8 — exactly its fog levels;
+#     its `8` IS painted at 4 and 5, right after `hazard.timed` arrives, and
+#     vanishes when `info.fog` does), pump-phase 7 (levels 2-8, its hazard is a
+#     one-frame crush flash and never an object). All 19 official hazard rows are
+#     placed objects that stand on the board before they bite.
+#     Leg 2 (INFERENCE, and the reason for `record`): when the spec declares
+#     `info.fog`, the revealed state must be LIGHTER than the state that hid it.
+#     Nothing in §11 declares WHICH index is fog, so the roles are read from area
+#     at a level start — the wider grey layer conceals — and only when that
+#     reading never wavers (exactly two non-field grey indices, the same two, the
+#     same strict ordering, on every level). convoy fires: fog `2` (luminance
+#     153) is lighter than the rail `3` (102) it reveals, so revealing reads as
+#     shadow. pump-flow declares `info.fog` too and is honestly reported
+#     not-checked — its grey layers swing between one and two and swap identity.
+#     A verdict that can turn on an inference rides as evidence for one batch;
+#     promotion to `fail` is a b004 read. R-13's own acceptance is that the CARD
+#     reproduces the three exhibits, which `record` satisfies in full.
+#     THE EXEMPTION IS `knobs.danger_tell`, NOT `knobs.deceptions` (adjudicated
+#     at B1): §3's `camouflage` and `absence` tells declare a hidden danger and
+#     exempt a level as `exempt-declared`. The deceptions list is FREE PROSE and
+#     three of our seven games mention camouflage about something that is not the
+#     hazard (a dual-role junction, look-alike pads, depot markings), so keying
+#     the exemption on it would exempt both R-13 exhibits and every future game
+#     that writes the word. The prose is still READ and printed on the card so a
+#     reviewer can overrule the verdict.
+# role_footprint fail -> record: OPERATOR RULING 2026-09-29, given AFTER playing
+# both b004 games at the review stop. The armed floor did its job — it caught
+# twin-signal-rendezvous drawing `you` at 12px against the 16px one-cell floor
+# and BLOCKED the slot (the first live catch of an armed visual check) — and
+# the human verdict on the played game was "accept both". The check stays
+# armed in template.yaml for future batches; this downgrade is this batch's
+# review override, not a default. The §4 no-edge-out-of-`verified` routing gap
+# is the flagged contract (freeze addendum 19 follow-up).
+gate:        {visual_card: record, l1_color_floor: record,
+              field_index: fail, role_footprint: record, role_footprint_exempt: [],
+              win_render: fail, declared_vs_painted: fail,
+              declared_vs_painted_exempt: [],
+              chrome_extent: fail, danger_visible: record}
+              # the conduit-class exemption, when a batch rebuilds that game:
+              # declared_vs_painted_exempt:
+              #   - "conduit-watch:you:selection colour, painted only while a cell is held;
+              #      no settled record catches it (R-20 capture upgrade)"
+
+# --- the tier engine --------------------------------------------------------
+# The tier engine (contracts T-A/T-B, b003): the signed §3.3 table, armed.
+# term_budget: true = the officials' own n at p25/median/max ({t1: 6, t2: 8,
+# t3: 10}); the budget KILLS at authorship (prompt-sync: the same sentence
+# the kill interpolates is in the writer prompt). Knob defaults + intro
+# pacing warn this batch; promotion to kill is a b004 read.
+# The whole block is optional (absent = no tier policy at all); every key has
+# a default that reproduces the pre-tier behaviour, and an unknown key is
+# refused. `g_central` is a v2 seam: writing it true is a hard stop.
+tiers:
+  prompt_guidance: true                  # default false — the tier's guidance in the S1 writer prompt
+  term_budget: true                      # default null (off); true = {t1: 6, t2: 8, t3: 10}; or a full map
+  term_budget_action: kill               # default warn; kill refuses an over-budget spec at authorship
+  knob_defaults_action: warn             # default off; warn | kill
+  intro_pacing_action: warn              # default off; warn | kill
+  seed_terms: {t1: [2, 3], t2: [2, 4], t3: [3, 4]}   # default null = ideas.seed_terms_per_idea rules
+  # R-12 (refinement wave 2, lead-applied): the audit measured official-style
+  # term PAIRINGS 17.5x under (scale-matched) with 13 of the top-14 free+free
+  # pairs at 0/5000 in both t2 and t3 — official pairs were effectively
+  # t1-only events. Extending common-official to t2 is the config-only first
+  # pass; the D22 coverage cost is measured and on the record in the wave-2
+  # close (m3 before/after). t3 keeps the rare-term coverage steer.
+  term_bias: {t1: common-official, t2: common-official}
+                                         # default null = every tier on the rare-term steer; rare | common-official
+  quota_boost_tiers: [t2, t3]            # moot with quotas {}; the shipping default for later batches
+                                         # default null = the boost applies in every tier
+
+# --- S5: the smoke battery --------------------------------------------------
+# battery.model: pilot stand-in (R1 ruling, operator 2026-09-22; B9 live-proven
+# lane, $0.0023). Flips to the duck's deployment when the team wires it.
+# model/passes/token_cap are all REQUIRED. The battery plays over OpenRouter,
+# so a batch that reaches S5 needs OPENROUTER_API_KEY in the environment.
+# passes: how many 5x-budget attempts the player gets per level (3 everywhere
+# so far). token_cap: `100k` shorthand accepted; the loop aborts cleanly on it.
+battery:     {model: meta-llama/llama-3.1-8b-instruct, passes: 3, token_cap: 100k}
+
+# --- the orchestrator -------------------------------------------------------
+# respec_cap: pilot runs at 3 (R2 ruling, operator 2026-09-22): kill #1 landed
+# under the since-fixed ambiguous neg2 prompt; B11 carry-flag 'RESPEC_CAP=2
+# not canon' resolved by making it per-batch config.
+# Raised to 4 at the R2 coherence pass (operator 2026-09-22): kill #3 (contradiction) came from a hazardless-false draw with no hazard term plus garbage S0 prose; the writer prompt now carries the full lint surface.
+# workers / wave_size: required ints >= 1. Slots run SEQUENTIALLY today; these
+# describe the intended §5 concurrency and no batch has run them in parallel.
+# max_attrition: required, in [0, 1] — the kill-fraction that aborts the batch.
+# respec_cap: optional, default 2; a slot that keeps getting lint-killed blocks
+# at the cap (architecture §4 draws no edge from respec to dead).
+orchestrator: {workers: 4, wave_size: 5, max_attrition: 0.30, respec_cap: 4}
+
+# --- S6: the packager -------------------------------------------------------
+# seeds_validated: required int >= 1 — layout seeds replayed and required to
+# win before a game is packaged (5 on every batch; 5/5 on all 5 shipped games).
+# split: required {train, eval}; recorded in the manifest, applied at slug
+# level, officials never in train.
+package:     {seeds_validated: 5, split: {train: 0.7, eval: 0.3}}
+
+# --- frame capture ----------------------------------------------------------
+# The STEP TRACE (R-20, refinement wave 3). Our frames sidecar keeps only the
+# settled frame at RESET, at each level transition and at the end, so every
+# transient between them is code-only: the comparative audit found four of
+# conduit-watch's six tile states real in its game.py and absent from every
+# frame we ever wrote, and with no record of how many frames an action rendered
+# we could not even ask whether a board we DID keep was a mid-animation
+# artifact (the sc25 class). Armed, each capture also writes
+# `<worker>.trace.jsonl.gz` beside the sidecar: one gzipped JSONL record per
+# engine step — {t, action, levels_completed, state, n_anim, frame|same_as_prev}
+# — in the officials' own format family (GEN/tools/capture_frames.py), so one
+# decoder reads both corpora, plus a pure non-perturbing render of each new
+# level's board. The header line carries the W2-C source_sha256.
+# trace: on | off. DEFAULT OFF, and off it costs nothing: no file, no extra
+# render, and the settled sidecar's bytes are identical either way (no reader
+# anywhere requires the trace). Armed here because this is the biggest duck
+# de-risk on the roadmap and the wave's other contracts read it.
+frames:      {trace: on}
+
+# --- review: the autonomy knob (contract P-3.3, the operator's 2026-09-29 rulings) --
+# auto_accept: default false = the human review stop. Armed HERE for the
+# twin-signal-rendezvous repackage replay: the game was human-accepted TWICE
+# on this ledger (played->reviewed 2026-09-29, and the review re-run refusal
+# proves the edge is already consumed), and the operator's standing ruling is that
+# the pipeline runs without human feedback. Oversight is post-package.
+review:      {auto_accept: true}

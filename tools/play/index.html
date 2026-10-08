@@ -1,0 +1,554 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ARC-AGI-3 — instrumented player</title>
+<style>
+  :root {
+    --bg: #14161a; --panel: #1d2025; --line: #2c3037;
+    --fg: #e8eaed; --dim: #9aa0a6; --off: #55595f;
+    --accent: #4FCC30; --blue: #1E93FF; --warn: #F93C31; --amber: #FFDC00;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); display: flex; height: 100vh; }
+  #side, #right { flex: none; overflow-y: auto; padding: 12px; }
+  #side { width: 210px; border-right: 1px solid var(--line); }
+  #right { width: 262px; border-left: 1px solid var(--line); }
+  #main { flex: 1; display: flex; flex-direction: column; align-items: center;
+          gap: 10px; padding: 14px 16px; min-width: 0; overflow-y: auto; }
+  h1 { font-size: 11px; margin: 0 0 10px; color: var(--dim); font-weight: 600;
+       letter-spacing: .1em; text-transform: uppercase; }
+  h1 + h1, .gap { margin-top: 22px; }
+
+  .game { padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;
+          display: flex; justify-content: space-between; gap: 8px; }
+  .game:hover { background: var(--panel); }
+  .game.active { background: var(--panel); color: var(--accent); }
+  .game small { color: var(--dim); }
+  .tick { font-size: 9px; padding: 0 3px; border-radius: 2px; margin-left: 2px;
+          border: 1px solid var(--line); color: var(--off); }
+  .tick.on { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- session identity: always visible, so a stale session cannot hide ---- */
+  #session { font-size: 11px; color: var(--dim); display: flex; gap: 14px;
+             flex-wrap: wrap; justify-content: center; align-items: baseline; }
+  #session b { color: var(--fg); font-weight: 600; }
+  #session .mode { color: var(--blue); }
+  #session .stale { color: var(--amber); }
+  /* which layout is in play: dim for the packaged build, amber the moment it
+     is anything else, so a seeded session cannot be mistaken for the real one */
+  #session .seed { color: var(--dim); }
+  #session .seed.alt { color: var(--amber); }
+
+  /* ---- level navigation ---- */
+  #levelbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+              justify-content: center; }
+  #levelbar .lv { font-size: 13px; }
+  #levelbar .lv b { color: var(--fg); font-size: 15px; }
+  #strip { display: flex; gap: 3px; }
+  #strip span { width: 16px; height: 6px; border-radius: 2px; background: var(--line); }
+  #strip span.done { background: var(--accent); }
+  #strip span.here { background: var(--blue); }
+
+  /* ---- the phase banner: the thing you look at ---- */
+  #phase { width: 100%; max-width: 640px; border-radius: 5px; padding: 11px 14px;
+           display: flex; align-items: center; gap: 12px; font-size: 13px;
+           border: 1px solid var(--line); background: var(--panel); }
+  #phase .txt { flex: 1; }
+  #phase .txt small { display: block; color: var(--dim); font-size: 11px; margin-top: 2px; }
+  #phase.ready    { border-color: var(--blue);   background: #12202e; }
+  #phase.playing  { border-color: var(--accent); background: #16251200; }
+  #phase.done     { border-color: var(--accent); background: #16251a; }
+  #phase.finished { border-color: var(--accent); background: #16251a; }
+  #phase.over     { border-color: var(--warn);   background: #2a1614; }
+  #phase .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--dim); }
+  #phase.playing .dot { background: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+  #phase.ready .dot { background: var(--blue); }
+  #phase.over .dot { background: var(--warn); }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  @media (prefers-reduced-motion: reduce) { #phase.playing .dot { animation: none } }
+
+  canvas { image-rendering: pixelated; border: 1px solid var(--line); background: #000; }
+  canvas.armed { cursor: crosshair; }
+  canvas.idle { opacity: .45; }
+
+  #err { font-size: 12px; color: var(--warn); min-height: 15px; text-align: center; }
+  #err.hint { color: var(--dim); }
+  #rec { font-size: 10.5px; color: var(--off); text-align: center; }
+  #warn { font-size: 12px; color: var(--amber); text-align: center; max-width: 560px;
+          border: 1px solid var(--amber); border-radius: 4px; padding: 7px 11px;
+          background: #241f10; }
+  #warn:empty { display: none; }
+
+  #gameFilter { width: 100%; margin: 0 0 6px; background: var(--bg); color: var(--fg);
+      border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit;
+      font-size: 12px; }
+  #gameFilter:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  #seedFree { width: 110px; background: var(--bg); color: var(--fg);
+      border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; font: inherit;
+      font-size: 12px; }
+  #seedFree:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .game.empty { color: var(--dim); cursor: default; font-size: 12px; }
+  button, select { background: var(--panel); color: var(--fg); border: 1px solid var(--line);
+                   border-radius: 4px; padding: 5px 10px; font: inherit; font-size: 12px;
+                   cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--dim); }
+  button:disabled { opacity: .35; cursor: default; }
+  button.go { background: var(--accent); border-color: var(--accent); color: #0d1a08;
+              font-weight: 600; padding: 7px 14px; }
+  button.go:hover { filter: brightness(1.1); }
+
+  .ctl { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
+  .ctl .name { color: var(--fg); }
+  .ctl .note { color: var(--dim); font-size: 11px; }
+  .ctl.off .name, .ctl.off .note { color: var(--off); }
+  .ctl.off kbd { border-color: #26292e; color: var(--off); background: transparent; }
+  kbd { display: inline-block; min-width: 20px; text-align: center; padding: 2px 5px;
+        border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px;
+        background: var(--panel); font-size: 11px; color: var(--fg); }
+  .keys { display: flex; gap: 3px; width: 92px; flex: none; }
+
+  table { border-collapse: collapse; font-size: 11px; width: 100%; }
+  th, td { padding: 2px 6px 2px 0; text-align: right; }
+  th { color: var(--dim); font-weight: 500; }
+  td:first-child, th:first-child { text-align: left; }
+  td.ab { color: var(--off); }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+</style>
+
+<div id="side">
+  <h1>Games</h1>
+  <input type="search" id="gameFilter" placeholder="filter games…" aria-label="Filter games">
+  <div id="list"></div>
+</div>
+
+<div id="main">
+  <div id="session">
+    <span>mode
+      <select id="mode">
+        <option value="discovery">discovery (blind)</option>
+        <option value="replay">replay (known)</option>
+      </select>
+    </span>
+    <span>seed
+      <select id="seed" aria-label="Layout seed"></select>
+      <!-- text, not number: a number field silently swallows a typo, and the
+           server's plain-sentence refusal is the thing you want to see -->
+      <input type="text" inputmode="numeric" id="seedFree" placeholder="seed"
+             aria-label="Layout seed to play" hidden>
+    </span>
+    <span id="ident">no game loaded</span>
+    <span id="age"></span>
+    <button id="dl">Download log</button>
+  </div>
+
+  <div id="levelbar">
+    <button id="prev" disabled>&#9664; Prev</button>
+    <span class="lv">Level <b id="lvl">&mdash;</b> of <span id="tot">&mdash;</span></span>
+    <button id="next" disabled>Next &#9654;</button>
+    <div id="strip"></div>
+  </div>
+
+  <div id="phase"><span class="dot"></span><span class="txt">Pick a game from the left.</span></div>
+
+  <canvas id="c" width="64" height="64" style="width:496px;height:496px"></canvas>
+  <div id="warn"></div>
+  <div id="err"></div>
+  <div id="rec"></div>
+</div>
+
+<div id="right">
+  <h1>Controls</h1>
+  <div id="controls"></div>
+  <h1 class="gap">This session</h1>
+  <table id="done"></table>
+</div>
+
+<script>
+// The official 16-colour ARC palette — identical to arc_agi.rendering.COLOR_MAP.
+const COLORS = ["#FFFFFF","#CCCCCC","#999999","#666666","#333333","#000000","#E53AA3","#FF7BCC",
+                "#F93C31","#1E93FF","#88D8F1","#FFDC00","#FF851B","#921231","#4FCC30","#A356D6"];
+
+// Both official ARC-AGI-3 schemes: WASD+Space and Arrows+F.
+// ACTION7 (officially Z) is deliberately unbound — see the controls panel.
+const KEYS = {
+  w: 1, ArrowUp: 1,  s: 2, ArrowDown: 2,
+  a: 3, ArrowLeft: 3, d: 4, ArrowRight: 4,
+  " ": 5, f: 5,
+  r: 0,
+};
+
+const CONTROLS = [
+  { action: 1, keys: ["W", "↑"],   name: "ACTION1" },
+  { action: 2, keys: ["S", "↓"],   name: "ACTION2" },
+  { action: 3, keys: ["A", "←"],   name: "ACTION3" },
+  { action: 4, keys: ["D", "→"],   name: "ACTION4" },
+  { action: 5, keys: ["Space", "F"],    name: "ACTION5" },
+  { action: 6, keys: ["Click"],         name: "ACTION6", note: "on the board" },
+  { action: 0, keys: ["R"],             name: "RESET",   note: "counted as an action", always: true },
+  { action: 7, keys: ["Z"],             name: "undo",    note: "disabled — the agent has none", never: true },
+];
+
+const $ = id => document.getElementById(id);
+const ctx = $("c").getContext("2d");
+let games = [], sessions = [], current = null, snap = null, busy = false, doneCount = 0;
+let animToken = 0;   // cancels an in-flight animation when a new action lands
+
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Some games return several frames per action — a bp35 click returns five. The
+// intermediate ones are not noise: in some games the only sign that an action
+// was REJECTED lives there. Play them at the game's own fps, then settle.
+async function animate(frames, settled, fps) {
+  const token = ++animToken;
+  if (REDUCED || !frames || frames.length < 2) { draw(settled); return; }
+  const delay = Math.max(16, 1000 / (fps || 10));
+  for (const f of frames) {
+    if (token !== animToken) return;      // superseded by a newer action
+    draw(f);
+    await new Promise(r => setTimeout(r, delay));
+  }
+  if (token === animToken) draw(settled);
+}
+
+async function api(path, body) {
+  const res = await fetch(path, body
+    ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    : undefined);
+  const data = await res.json();
+  if (!res.ok) {
+    const e = new Error(data.error || res.statusText);
+    e.status = res.status;   // 403 = the game refused it; anything else is a fault
+    throw e;
+  }
+  return data;
+}
+
+function draw(frame) {
+  const img = ctx.createImageData(64, 64);
+  for (let y = 0; y < 64; y++) {
+    for (let x = 0; x < 64; x++) {
+      const hex = COLORS[frame[y][x] % 16] || "#000000";
+      const i = (y * 64 + x) * 4;
+      img.data[i]     = parseInt(hex.slice(1, 3), 16);
+      img.data[i + 1] = parseInt(hex.slice(3, 5), 16);
+      img.data[i + 2] = parseInt(hex.slice(5, 7), 16);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// Dim every control this game does not expose, so the legal action set is
+// visible at a glance rather than discovered by pressing keys.
+function drawControls(available, live) {
+  const set = new Set(available || []);
+  $("controls").innerHTML = CONTROLS.map(c => {
+    const on = (c.always ? !!current : c.never ? false : set.has(c.action)) && live;
+    return `<div class="ctl${on ? "" : " off"}">` +
+           `<span class="keys">${c.keys.map(k => `<kbd>${k}</kbd>`).join("")}</span>` +
+           `<span class="name">${c.name}</span>` +
+           (c.note ? `<span class="note">${c.note}</span>` : "") + `</div>`;
+  }).join("");
+}
+
+const fmtAge = s => s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s/60)}m` : `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m`;
+
+// Overcommunicate: the banner always states the phase, what is being counted,
+// and what to press next.
+function drawPhase(s) {
+  const el = $("phase"), btn = `<button class="go" id="start">`;
+  const over = (s.state || "").toUpperCase().includes("OVER");
+  let cls = "", html = "";
+  const last = s.levels_done.filter(l => l.status === "COMPLETED").slice(-1)[0];
+
+  if (over) {
+    cls = "over";
+    html = `<div class="txt"><b>GAME OVER on level ${s.level}.</b>` +
+           `<small>Press <kbd>R</kbd> to reset — the reset counts as an action, same as it does for the agent.</small></div>`;
+  } else if (s.phase === "ready") {
+    cls = "ready";
+    html = `<div class="txt"><b>Level ${s.level} is staged. Nothing is being counted yet.</b>` +
+           `<small>Press Start when you are ready to play. Baseline for this level: ${s.baseline_actions ?? "—"} actions.</small></div>` +
+           `${btn}Start level ${s.level}</button>`;
+  } else if (s.phase === "playing") {
+    cls = "playing";
+    html = `<div class="txt"><b>Recording level ${s.level} — ${s.level_actions} action${s.level_actions === 1 ? "" : "s"}.</b>` +
+           `<small>Every action counts, resets included. Baseline ${s.baseline_actions ?? "—"}.</small></div>`;
+  } else if (s.phase === "level_done") {
+    cls = "done";
+    html = `<div class="txt"><b>Level ${last ? last.level : ""} cleared in ${last ? last.actions : "?"} actions` +
+           `${last && last.baseline_actions ? ` vs baseline ${last.baseline_actions}` : ""}.</b>` +
+           `<small>${last && last.level_score != null ? `RHAE ${last.level_score} · ratio ${last.ratio}. ` : ""}Level ${s.level} is staged and idle.</small></div>` +
+           `${btn}Start level ${s.level}</button>`;
+  } else if (s.phase === "finished") {
+    cls = "finished";
+    html = `<div class="txt"><b>Game complete — all ${s.win_levels} levels.</b>` +
+           `<small>Log saved. Switch mode to replay and load this game again, or move to the next game.</small></div>`;
+  } else {
+    html = `<div class="txt">Pick a game from the left.</div>`;
+  }
+  el.className = cls;
+  el.innerHTML = `<span class="dot"></span>${html}`;
+  const b = $("start");
+  if (b) b.addEventListener("click", startLevel);
+}
+
+function render(s) {
+  snap = s;
+  $("err").textContent = "";
+  if (!s || s.phase === "no_game") { drawPhase({ phase: "no_game", levels_done: [] }); return; }
+
+  const fps = (games.find(g => g.game_id === s.game_id) || {}).default_fps;
+  animate(s.frames, s.frame, fps);
+  const live = s.phase === "playing";
+  $("c").className = live && (s.available_actions || []).includes(6) ? "armed" : (live ? "" : "idle");
+
+  // The seed in play stays on screen for the whole session (L-2) — a run on a
+  // seed you picked must never read as a run on the packaged build.
+  $("ident").innerHTML = `<b>${s.title}</b> <span class="mode">${s.mode}</span> ` +
+    `<span class="seed${s.layout_seed == null ? "" : " alt"}">` +
+    `${s.layout_seed == null ? "canonical" : `seed ${s.layout_seed}`}</span>`;
+  const stale = s.idle_s != null && s.idle_s > 600;
+  $("age").innerHTML = `session ${fmtAge(s.session_age_s)} old` +
+    (s.idle_s != null ? ` · <span class="${stale ? "stale" : ""}">idle ${fmtAge(s.idle_s)}${stale ? " — check this is the session you meant" : ""}</span>` : "");
+  $("rec").textContent = s.log_file ? `recording to play-logs/${s.log_file}` : "";
+  $("warn").textContent = s.warning || "";
+
+  $("lvl").textContent = s.level;
+  $("tot").textContent = s.win_levels;
+  $("prev").disabled = s.level <= 1;
+  $("next").disabled = s.level >= s.win_levels;
+  $("strip").innerHTML = Array.from({ length: s.win_levels }, (_, i) =>
+    `<span class="${s.levels_cleared.includes(i + 1) ? "done" : ""}${i + 1 === s.level ? " here" : ""}"></span>`).join("");
+
+  drawControls(s.available_actions, live);
+  drawPhase(s);
+
+  const rows = s.levels_done.map(l => {
+    const ab = l.status !== "COMPLETED";
+    return `<tr class="${ab ? "ab" : ""}"><td${ab ? ' class="ab"' : ""}>L${l.level}${ab ? " · left" : ""}</td>` +
+           `<td>${l.actions}</td><td>${l.baseline_actions ?? "—"}</td>` +
+           `<td>${l.ratio ?? "—"}</td><td>${l.level_score ?? "—"}</td></tr>`;
+  }).join("");
+  $("done").innerHTML = rows
+    ? `<tr><th>lvl</th><th>yours</th><th>base</th><th>ratio</th><th>RHAE</th></tr>${rows}`
+    : `<tr><td style="color:var(--off)">nothing recorded yet</td></tr>`;
+
+  if (s.levels_done.length !== doneCount) { doneCount = s.levels_done.length; refreshSessions(); }
+}
+
+async function call(fn) {
+  if (busy) return;
+  busy = true; $("err").textContent = ""; $("err").className = "";
+  try { render(await fn()); }
+  catch (e) {
+    // A 403 means the game does not expose that action — information, not a
+    // fault. Styling it red made normal exploration look like a malfunction.
+    $("err").className = e.status === 403 ? "hint" : "";
+    $("err").textContent = e.message;
+  }
+  finally { busy = false; }
+}
+
+const startLevel = () => call(() => api("/api/start", {}));
+const gotoLevel  = n => call(() => api("/api/level", { level: n }));
+
+function act(id, x, y) {
+  if (!current) return;
+  if (snap && snap.phase !== "playing") {
+    $("err").textContent = snap.phase === "ready" || snap.phase === "level_done"
+      ? "Press Start level first — nothing is being counted yet."
+      : "This game is finished. Pick another, or reload it in replay mode.";
+    return;
+  }
+  call(() => api("/api/action", { id, x, y }));
+}
+
+// Once a game's discovery run is finished, replay is almost always what you
+// want next — pre-select it rather than relying on remembering.
+function suggestMode(id) {
+  const fin = m => sessions.some(s => s.game_id === id && s.mode === m && s.finished);
+  if (fin("discovery") && !fin("replay")) $("mode").value = "replay";
+  else if (!fin("discovery")) $("mode").value = "discovery";
+  // Both finished: there is no sensible default, so say so rather than leaving
+  // the dropdown silently on whatever it was. Silence here is what let a whole
+  // replay get recorded as a second discovery run.
+  else if (fin("discovery") && fin("replay"))
+    $("warn").textContent = "Both modes are already recorded for this game — "
+      + "set the mode deliberately before you start, or you will supersede one of them.";
+}
+
+// ---- the layout-seed picker (contract L-2) --------------------------------
+//
+// §7 says `Game(layout_seed=None)` IS the authored canonical build, so the
+// default here sends no seed at all and a game plays exactly as it was
+// packaged. The alternatives are the seeds S6 actually validated — read from
+// the game's own package/manifest.json, labelled with the win and level count
+// it measured — plus any seed you care to type. A mirror entry with no
+// manifest simply has none of the middle options.
+const CANON = "", CUSTOM = "custom";
+
+function drawSeedPicker(game) {
+  const seeds = (game && game.seeds) || [];
+  $("seed").innerHTML = [`<option value="${CANON}">canonical (as packaged)</option>`]
+    .concat(seeds.map(s => `<option value="${s.seed}">${s.seed} — ${s.win ? "win" : "no win"}` +
+      `${s.levels_completed != null ? ` · ${s.levels_completed}L` : ""}</option>`))
+    .concat([`<option value="${CUSTOM}">another seed…</option>`]).join("");
+  $("seed").value = CANON;
+  $("seedFree").hidden = true;
+  $("seedFree").value = "";
+}
+
+// What /api/load is given: null for the canonical build, else what was chosen.
+// A typed seed goes over as-is — the server is what validates it, and it
+// answers with a sentence rather than letting the UI guess.
+function chosenSeed() {
+  const v = $("seed").value;
+  if (v === CUSTOM) return $("seedFree").value.trim() || null;
+  return v === CANON ? null : Number(v);
+}
+
+// Put the picker on a seed the server is already playing — a page reload onto
+// a live session must not claim "canonical" while a seeded game is loaded.
+function showSeed(seed) {
+  if (seed == null) { $("seed").value = CANON; $("seedFree").hidden = true; return; }
+  if ([...$("seed").options].some(o => o.value === String(seed))) {
+    $("seed").value = String(seed);
+    $("seedFree").hidden = true;
+  } else {
+    $("seed").value = CUSTOM;
+    $("seedFree").hidden = false;
+    $("seedFree").value = seed;
+  }
+}
+
+// Changing the seed re-loads the game at that layout. Nothing is lost quietly:
+// `load` closes a part-played level as ABANDONED and flushes the log first,
+// exactly as it already does when you switch games.
+function reloadWithSeed() {
+  if ($("seed").value === CUSTOM && !$("seedFree").value.trim()) return;
+  if (current) load(current);
+}
+
+$("seed").addEventListener("change", () => {
+  const custom = $("seed").value === CUSTOM;
+  $("seedFree").hidden = !custom;
+  if (custom) { $("seedFree").value = ""; $("seedFree").focus(); return; }
+  reloadWithSeed();
+});
+$("seedFree").addEventListener("change", reloadWithSeed);
+
+async function load(id) {
+  if (busy) return;
+  suggestMode(id);
+  // A different game has a different validated-seed list, so switching games
+  // rebuilds the picker and puts it back on canonical. Re-loading the SAME
+  // game keeps the seed you picked — that is how the picker re-loads.
+  if (id !== current) drawSeedPicker(games.find(g => g.game_id === id));
+  busy = true; $("err").textContent = "";
+  try {
+    current = id; doneCount = 0;
+    render(await api("/api/load",
+      { game_id: id, mode: $("mode").value, layout_seed: chosenSeed() }));
+    await refreshSessions();
+  } catch (e) { $("err").textContent = e.message; }
+  finally { busy = false; }
+}
+
+$("c").addEventListener("click", ev => {
+  const r = ev.target.getBoundingClientRect();
+  act(6, Math.min(63, Math.floor((ev.clientX - r.left) / r.width * 64)),
+         Math.min(63, Math.floor((ev.clientY - r.top) / r.height * 64)));
+});
+$("prev").addEventListener("click", () => snap && gotoLevel(snap.level - 1));
+$("next").addEventListener("click", () => snap && gotoLevel(snap.level + 1));
+
+document.addEventListener("keydown", ev => {
+  // INPUT joined SELECT here with the seed picker (L-2): the free-entry seed
+  // field and the game filter are places you type, and a keystroke meant for a
+  // text box must never reach the board as an action.
+  if (ev.target.tagName === "SELECT" || ev.target.tagName === "INPUT") return;
+  if (ev.key === "Enter") {
+    ev.preventDefault();
+    if (snap && (snap.phase === "ready" || snap.phase === "level_done")) startLevel();
+    return;
+  }
+  const key = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
+  const id = KEYS[key];
+  if (id === undefined) return;
+  ev.preventDefault();               // Space scrolls, arrows scroll
+  act(id);
+});
+
+$("dl").addEventListener("click", async () => {
+  const log = await api("/api/log");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(log, null, 2)], { type: "application/json" }));
+  a.download = `${log.game_id}_${log.mode}.json`;
+  a.click();
+});
+
+// Which (game, mode) pairs already have a log on disk — the sidebar is the
+// progress tracker across all 50 sessions.
+// With 25 games an unfiltered list is fine; a custom collection is 165 and it
+// is not. Filter on title and id, and always keep the loaded game visible so
+// typing cannot hide what you are currently playing.
+function visibleGames() {
+  const t = ($("gameFilter")?.value || "").trim().toLowerCase();
+  if (!t) return games;
+  return games.filter(g =>
+    g.game_id === current ||
+    g.title.toLowerCase().includes(t) ||
+    g.game_id.toLowerCase().includes(t));
+}
+
+function renderList() {
+  const has = (id, mode) => sessions.some(s => s.game_id === id && s.mode === mode);
+  const shown = visibleGames();
+  if (!shown.length) {
+    $("list").innerHTML = '<div class="game empty">no game matches</div>';
+    return;
+  }
+  $("list").innerHTML = shown.map(g =>
+    `<div class="game" data-id="${g.game_id}"><span>${g.title}</span>` +
+    `<small>${g.levels}L<span class="tick${has(g.game_id, "discovery") ? " on" : ""}">D</span>` +
+    `<span class="tick${has(g.game_id, "replay") ? " on" : ""}">R</span></small></div>`).join("");
+  document.querySelectorAll(".game").forEach(el => {
+    el.classList.toggle("active", el.dataset.id === current);
+    el.addEventListener("click", () => load(el.dataset.id));
+  });
+}
+
+async function refreshSessions() {
+  try { sessions = await api("/api/sessions"); } catch (e) { /* ticks are cosmetic */ }
+  renderList();
+}
+
+$("gameFilter").addEventListener("input", renderList);
+
+(async () => {
+  games = await api("/api/games");
+  drawSeedPicker(null);          // canonical + a typed seed, until a game is picked
+  await refreshSessions();
+  // A server left running keeps its session — show it rather than hiding it.
+  try {
+    const s = await api("/api/state");
+    if (s && s.phase !== "no_game") {
+      current = s.game_id; $("mode").value = s.mode;
+      drawSeedPicker(games.find(g => g.game_id === s.game_id));
+      showSeed(s.layout_seed);
+      renderList(); render(s);
+    }
+    else drawControls([], false);
+  } catch (e) { drawControls([], false); }
+  // keep the age/idle readout honest while the page sits open
+  setInterval(() => {
+    if (!snap || snap.phase === "no_game") return;
+    snap.session_age_s += 1;
+    if (snap.idle_s != null) snap.idle_s += 1;
+    const stale = snap.idle_s != null && snap.idle_s > 600;
+    $("age").innerHTML = `session ${fmtAge(snap.session_age_s)} old` +
+      (snap.idle_s != null ? ` · <span class="${stale ? "stale" : ""}">idle ${fmtAge(snap.idle_s)}${stale ? " — check this is the session you meant" : ""}</span>` : "");
+  }, 1000);
+})();
+</script>

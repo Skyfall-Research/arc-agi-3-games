@@ -1,0 +1,18 @@
+{
+  "game_id": "key-strip-rover-7c579f97",
+  "title": "Key Strip Rover",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    33,
+    29,
+    28,
+    101,
+    89,
+    40,
+    133,
+    111
+  ],
+  "default_fps": 30
+}

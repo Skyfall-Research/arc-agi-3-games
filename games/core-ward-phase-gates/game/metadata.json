@@ -1,0 +1,18 @@
+{
+  "game_id": "core-ward-phase-gates-ce68e4dc",
+  "title": "Core Ward Phase Gates",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    17,
+    44,
+    22,
+    124,
+    86,
+    56,
+    95,
+    144
+  ],
+  "default_fps": 30
+}

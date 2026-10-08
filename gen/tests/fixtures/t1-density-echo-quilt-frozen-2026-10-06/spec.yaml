@@ -1,0 +1,118 @@
+game:
+  slug: echo-quilt
+  title: Echo Quilt
+  idea_ref: g20261006-1-i001
+  terms:
+  - goal.cover
+  - manip.select_cycle
+  - move.coupled
+  - move.grid
+  objective:
+    primary: cover_targets
+    secondary: null
+  locus: selection
+  actions:
+    ACTION1: declared
+    ACTION2: declared
+    ACTION3: declared
+    ACTION4: declared
+    ACTION5: declared
+    ACTION6: absent
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 0
+    goal: 11
+    danger: null
+    reserved:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    background: 5
+  hud:
+    reserved: row63
+    meter:
+      placement: row63, left to right
+      direction: right
+  neg2_readers:
+  - echo_block: white control band remains visible over the selected colored block
+  layers: explicit
+  render:
+    cell_px: 4
+  chrome:
+  - kind: bezel
+    where: border
+  - kind: divider
+    where: bottom
+  layout:
+    seed: 46127
+    grid:
+    - 16
+    - 16
+  levels:
+  - relation_to_prev: new
+    terms_introduced:
+    - goal.cover
+    sketch: A paired blue quilt patch and its pale-blue echo demonstrate one translated
+      move; the two yellow target patches make full coverage visually obvious. The
+      seed mirrors the chamber horizontally and varies the side on which the patch
+      begins while preserving a one-move teaching impasse.
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: Two differently shaped patch pairs share an offset corridor. The seed
+      swaps the upper and lower alcoves and reflects the board, preserving the requirement
+      to select the pair whose echo can enter the nearer target first.
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: Three pairs surround an open central stitching lane. The seed permutes
+      three anchored arms and reflects the whole room; two target arms can be advanced
+      in either order, but each threatens the other pair's usable staging square.
+  - relation_to_prev: invert
+    terms_introduced: []
+    sketch: A previously useful aligned push becomes a liability because it fills
+      a shared target before its partner can pass. The seed reflects a hook-shaped
+      room and exchanges its two side pockets while preserving the temporary-clearance
+      dependency.
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: Four patch pairs occupy a pinwheel of uneven bays. The seed rotates the
+      pinwheel and exchanges long and short approach arms, preserving two independent
+      first moves and a later crossing that requires one target to remain vacant.
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: A split quilt has two local chains that must join across a single central
+      target. The seed reflects the split and swaps the two offset echo vectors, preserving
+      a choice between staging an outer pair early or routing it through the center
+      late.
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: The final quilt is an asymmetric ring with a narrow interior seam. The
+      seed rotates among four orientations and swaps two nonadjacent bays, preserving
+      three coupled staging choices, a forced revisit, and a final continuous chain
+      only after every yellow patch is covered.
+  budget:
+    enforced: true
+    displayed: true
+    counts: Every declared directional move and selection press is counted; refused
+      moves are free.
+    lives: null
+  solver_notes: 'The board is a 16 by 16 logical lattice rendered at four pixels per
+    cell. Every layout is generated from its level seed by the stated reflection,
+    rotation, arm permutation, or pocket exchange; those transformations move walls,
+    patches, targets, and distances together, while preserving the dependency graph
+    and target adjacency. State settles only in step(): a successful direction translates
+    the selected block and its echo by the same unit vector simultaneously, then evaluates
+    coverage and chain connectivity. SPACE changes selection only after the current
+    settled frame. A blocked translation leaves all movable state unchanged and paints
+    a persistent gray refusal outline for the next settled frame; it consumes no budget.
+    No animation is needed for unit translations; the simultaneous two-object displacement
+    is shown as an immediate settled update. Completion is confirmed on the same settled
+    frame after all targets are covered and their target-cell adjacency is one orthogonally
+    connected component.'

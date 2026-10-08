@@ -1,0 +1,17 @@
+{
+  "game_id": "echo-quilt-ff1cd68b",
+  "title": "Echo Quilt",
+  "tags": [
+    "generated"
+  ],
+  "baseline_actions": [
+    7,
+    8,
+    27,
+    10,
+    15,
+    27,
+    34
+  ],
+  "default_fps": 30
+}

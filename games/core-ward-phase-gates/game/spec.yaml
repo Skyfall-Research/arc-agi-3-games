@@ -1,0 +1,278 @@
+game:
+  slug: core-ward-phase-gates
+  title: "Core Ward: Toggle the Phase Gates"
+  idea_ref: b002-triple-i002
+  terms:
+    - goal.survive
+    - manip.group_toggle
+    - info.probe
+    - gate.phase
+    - hazard.timed
+    - state.wait
+    - gate.remote
+    - budget.cap
+    - terrain.track
+    - agent.patrol
+    - info.recall
+  objective:
+    primary: survive
+    secondary: null
+  locus: selection
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: declared
+    ACTION6: declared
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: inferable
+    danger_tell: unique-hue
+    deceptions: ["camouflage", "retrospective punishment", "false tell"]
+  palette:
+    you: 11
+    goal: 14
+    danger: 8
+    reserved: [0, 1, 2, 3]
+  hud:
+    reserved: row0
+    meter:
+      placement: row0
+      direction: left-to-right fill
+  neg2_readers:
+    - gate_readout: "each phase gate's countdown pip-row is masked (-2) and renders as flat background until that specific gate has been probed at least once since its last flip; a fresh auto-flip or a group-toggle re-masks it immediately"
+    - gate_period: "a gate's fixed phase period (the value its countdown resets to) is never rendered even when probed; only the live decrementing remaining-countdown pip-row is shown, so the period itself must be inferred by the player across repeated observations"
+  layers: explicit
+  layout:
+    seed: 20260924
+    grid: [25, 21]
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [gate.phase, info.probe, manip.group_toggle, hazard.timed, goal.survive, terrain.track, agent.patrol]
+      sketch: >
+        A single lane enters from the west edge and ends in one phase gate immediately
+        west of the core; one control cluster in the side panel shares the lane's color
+        and is wired only to that one gate. The gate starts closed (solid bar) with a
+        short hidden phase period relative to the lane's length, so it is guaranteed to
+        auto-flip open at least once while a hazard token is mid-lane. A second hazard
+        token is queued to spawn once the first has been resolved, arriving while the
+        gate is mid-cycle again rather than freshly reset. Each hazard token is an
+        autonomous agent that advances exactly one cell along the lane's fixed terrain
+        track every turn regardless of player input, so the player's first useful
+        discovery is watching that agent walk toward the gate on its own schedule while
+        only the gate's state is under direct control. The player then discovers that
+        clicking the gate itself (probe) reveals its remaining countdown as a capped
+        pip-row without changing its state or costing anything beyond the turn, and that
+        clicking the cluster (group toggle, wired remotely to its gate across the panel
+        gap rather than adjacent to it) flips the gate's current visible state and
+        restarts its hidden countdown from a full period. Waiting (no click) still lets
+        the countdown tick and the hazard advance. Neither pure spam-toggling (it flips
+        an already-safe closed gate open right as the hazard reaches it) nor pure waiting
+        (the gate is scheduled to auto-open mid-transit) survives both waves; only probing
+        first and timing a single well-placed toggle per wave does. Win: both hazard
+        tokens are blocked at the closed gate across the full wave sequence and the core
+        stays intact. Target depth: 8-10 actions (one early probe, timed waits, two
+        precisely placed toggles across the two waves).
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        Three lanes now converge on the core: a short north lane and a long east lane are
+        BOTH colored the same blue and wired to a single shared cluster, while a south
+        lane is a separate purple with its own solo cluster. This is the same group-toggle
+        rule as level 1, reused in a coupled context: clicking the blue cluster flips both
+        the north and east gates together, whether or not both currently need it. The
+        north hazard is short-fused (arrives soon, demanding an urgent blue toggle) while
+        the east hazard is still far out; toggling blue to save the north gate also flips
+        the currently-safe east gate, and if that flip lands badly relative to east's much
+        later arrival, the player must probe and toggle blue a second time before the east
+        hazard reaches it. The purple lane runs on its own independent probe/toggle/wait
+        cycle exactly as in level 1, giving a direct point of comparison for what solo
+        control feels like next to the coupled pair. Win: all three lanes' hazards are
+        blocked and the core survives the full sequence. Anti-degenerate note: resolving
+        north, then east, then south strictly in that order fails, because the blue toggle
+        that rescues north also perturbs east's timeline immediately, so east must be
+        re-checked long before its own hazard is nearby. Target depth: 10-20 actions.
+    - relation_to_prev: compose
+      terms_introduced: [state.wait]
+      sketch: >
+        Four lanes run simultaneously with overlapping two-token waves: a fast short
+        purple lane with a short period (needs near-constant attention), a slow long
+        orange lane with a long period (safe to ignore for many turns but will finally
+        arrive while the player is busy elsewhere), and a blue-colored pair on the east
+        and west sides sharing one cluster as in level 2, but now with very different
+        lane lengths so the pair's shared toggle timing is asymmetric. Only one click is
+        possible per turn, so a turn spent toggling blue cannot also rescue a purple
+        emergency landing the same turn. The player hits a genuine impasse: every visible
+        option (toggle purple, toggle blue, probe orange) actively risks desynchronizing
+        one of the other lanes' fragile windows. The only correct move on some turns is to
+        deliberately take no action and let the countdowns and hazards advance on their
+        own (state.wait) so that a dangerous window on one lane passes before spending the
+        turn on another. This is the first level where "do nothing" is a load-bearing,
+        repeatedly-necessary decision rather than idle filler. Win: all four lanes'
+        hazards are blocked across the full sequence. Target depth: 10-20 actions.
+    - relation_to_prev: new
+      terms_introduced: [info.recall]
+      sketch: >
+        Five lanes populate an asymmetric board where the core sits offset toward one
+        corner of the play field rather than centered, so some lanes are short (little
+        reaction time) and others stretch far across the board (plenty of time, easy to
+        forget). One lane's own hazard wave has two generations: its first token is
+        blocked safely early in the run, and its second token does not spawn until far
+        later, well after the player has moved attention to the other four active lanes
+        (a mix of the risky shared-cluster coupling from level 2 and the fast/slow
+        contrast from level 3). This is a new consequence not seen before: a lane that
+        looks fully resolved must be revisited from memory much later, with no on-screen
+        reminder beyond the gate's own visible bar/outline state, and since a re-probe of
+        that dormant gate returns a freshly reset countdown rather than the value the
+        player last saw, the player must recall the lane's period and arrival cadence
+        itself rather than trusting any stored countdown number. Win: all lanes across
+        both wave generations are blocked and the core survives. Anti-degenerate note: a
+        plan that treats each lane as "solved once its first hazard is blocked" loses to
+        the dormant lane's delayed second wave. Target depth: 30-40 actions.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        Six lanes, two color-matched pairs: a blue pair with one lane to the north and its
+        partner far to the south, and a purple pair with one lane east and its partner
+        west, plus two independent solo lanes (orange, magenta). This reuses the level 2
+        shared-cluster rule, but in the opposite strategic role: this time the seed places
+        each pair's hazard arrivals close enough together that a single well-timed cluster
+        toggle protects both members at once, turning the coupling from a liability into a
+        deliberate efficiency the player should seek out rather than fear. The solo
+        orange and magenta lanes still require individual probe/toggle/wait management
+        exactly as in earlier levels, so the level also tests whether the player can tell,
+        from the two gates' visible states and probed countdowns alone, whether a given
+        pair is currently a "combine them" opportunity or would need separate handling.
+        Win: all six lanes' hazards are blocked and the core survives. Anti-degenerate
+        note: always grouping without checking each pair's actual offset fails whenever
+        the seed desynchronizes a pair, since the operational toggle rule never changes
+        between levels — only the timing context each seed produces does. Target depth:
+        30-40 actions.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Seven lanes run dense, overlapping waves such that there are more gates worth
+        probing than there are safe turns to probe them in, forcing triage between
+        spending a turn to learn a countdown versus spending it to wait or toggle on
+        information already in hand. The board combines a dormant-then-revived lane (as
+        in level 4), a beneficial same-arrival coupled pair (as in level 5), and a risky
+        desynchronized coupled pair (as in level 2) all at once, so the player must decide
+        per-lane, from partial and aging information, which gates to trust from an old
+        probe and which to re-probe before acting, recalling each lane's period and
+        cadence the way level 4 first demanded. Win: all seven lanes' hazards are
+        blocked and the core survives the full sequence. Anti-degenerate note: probing
+        every gate every time it is touched is not affordable within the turn count the
+        waves allow, so blind toggling-by-memory on the lanes the player has already
+        characterized is required, not optional. Target depth: 40+ actions.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Seven lanes carry two separate overlapping wave cascades, an early fast cascade
+        and a later slow cascade, whose hazard arrival windows interleave rather than
+        following the order the lanes are laid out on the board. One coupled pair
+        deliberately mixes a short/fast lane with a long/slow lane sharing a cluster, so a
+        single toggle can be timed to serve the fast lane's urgent need and the slow
+        lane's later need simultaneously, reusing level 5's beneficial-coupling insight
+        but now mandatory rather than optional given how few spare turns the dense
+        cascades leave for redundant toggles. A dormant lane from the early cascade is
+        revived deep into the late cascade, testing whether an early probe result was
+        retained across many intervening turns. Win: both cascades fully resolve with the
+        core intact. Target depth: 40+ actions, harder than level 6.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Eight lanes, the game's maximum, reuse every established color role at once: a
+        blue pair and a purple pair (each capable of being either a risky or a beneficial
+        coupling depending on the seed's exact offsets), plus four solo lanes (orange,
+        magenta, pink, light-blue) each needing independent probe/toggle/wait handling.
+        The core sits asymmetrically placed as in level 4, three overlapping wave
+        generations run across the level's full length, and at least one lane is dormant
+        for a long early stretch before reviving late, mirroring level 7's memory
+        pressure. No lane resolves in the order it first appears on screen; the player
+        must maintain a running mental model of every gate's last-known countdown and
+        each pair's current coupling relationship throughout. Win: every lane across every
+        wave generation is blocked and the core survives to the end of the sequence.
+        Anti-degenerate note: no subset of this level's lanes can be ignored or solved by
+        a fixed click order, since the seed determines which pairs are currently
+        beneficial versus risky and which lane is about to revive. Target depth: 40+
+        actions, the longest and hardest in the set.
+  budget:
+    enforced: true
+    displayed: true
+    counts: "elapsed turns (one per click or wait) since the level's hazard wave sequence began, shown as a left-to-right fill meter; not an action cap, just the timeline the core must survive"
+    lives: 1
+  solver_notes: >
+    The seed reshapes, per level, the number of active lanes, their compass directions
+    and lengths, their color assignments (and therefore which gates share a control
+    cluster), each gate's hidden phase period, and each lane's hazard wave schedule
+    (token count and spawn stagger) — the core's exact board position and the side
+    panel's layout also shift within the declared grid under the same seed. What never
+    changes across any seed is the rule layer: a gate always sits on the lane cell
+    immediately adjacent to the core; a gate's open/closed state is always visibly
+    rendered (solid bar = closed, hollow outline = open) while its countdown is always
+    hidden until probed and re-hidden on every flip; a control cluster always toggles
+    every gate sharing its exact lane color, flipping state and resetting countdown to a
+    full period; SPACE always advances one turn with no other effect; and each turn
+    resolves in the fixed order (player action, then all countdown ticks and any
+    resulting auto-flips, then all hazard advances, then core-breach/gate-block checks).
+    Because the seed can place a shared-color pair's hazard arrivals close together
+    (beneficial to group) or far apart (risky to group) without changing the toggle rule
+    itself, a solver must read each level's actual probed countdowns and lane lengths at
+    runtime rather than memorizing any fixed coordinate, click order, or "always group"
+    / "never group" heuristic. Losing is immediate and terminal (lives: 1): a hazard
+    token that advances onto the core cell while that lane's gate is open destroys the
+    core and ends the run, so the solver must never leave a gate open on a turn when a
+    hazard occupies that lane's gate cell.
+
+    Click truthfulness (sys_click contract): every clickable sprite in this game — every
+    control cluster AND every phase gate, across every lane on every level, up to the
+    32 such sprites the level-8 board instantiates (8 lanes x up to 4 clickable sprites
+    each: 1 cluster cell plus each lane's own gate cell, counting shared clusters once
+    per lane color) — is tagged sys_click, and every one of those tags is truthful:
+    the engine's click-action list and any RL consumer that reads it will find a live
+    handler for every tagged sprite, with no exceptions and no coordinate-only fallback.
+    Click routing always branches on the clicked sprite's own tag, never on its screen
+    position alone: a sprite tagged as a control-cluster resolves to
+    manip.group_toggle keyed by that cluster's lane-color id (gate.remote — the cluster
+    is spatially remote from every gate it controls, sitting in the side panel rather
+    than adjacent to any lane, and its toggle reaches across that distance to every
+    gate sharing its color in one resolution step); a sprite tagged as a phase-gate
+    resolves to info.probe keyed by that gate's own id. Both handlers exist for every
+    lane on every level, so no clickable sprite is ever left wired to a name or tag
+    that no click path branches on.
+
+    Turn budget (budget.cap): each level's hazard-wave sequence is generated with a
+    fixed total turn count sized to the level's lane count and wave schedule — the
+    same elapsed-turns meter reported in budget.counts doubles as this cap, so running
+    out of turns while any lane's hazard has not yet been blocked ends the level
+    unresolved exactly as a core breach does. The cap is never a hidden action-economy
+    trick: it is the same visible left-to-right meter the player already watches, and
+    because gate.phase periods and hazard.timed schedules are the mechanisms that make
+    survival non-trivial, the cap itself is not what the player is racing — the phase
+    gates and hazard timers are.
+
+    Undeclared-mechanic reconciliation: the shipped build also exercises three closed-
+    vocabulary mechanics the narrative prose above did not previously name, and this
+    revision declares them so the spec matches what the engine actually does.
+    terrain.track names the lane cell-path itself — the fixed, rendered sequence of
+    cells a hazard token advances along one cell per tick from its spawn edge to its
+    gate; it is not a new object, only the formal name for the lane geometry every
+    level already lays out and every hazard already walks. agent.patrol names the
+    hazard token's own per-turn movement primitive on that track: each hazard token is
+    an autonomous agent that advances exactly one cell along its lane's fixed terrain
+    track every turn resolution, with no player action required to push it forward,
+    exactly as level 1 first shows the player when a hazard closes distance on a gate
+    the player never touched. info.recall names the memory burden the level 4, 7, and 8
+    sketches already place on the player: because a dormant gate's countdown resets to
+    a fresh, unprobed value the moment its lane revives (per the neg2_readers masking
+    rule above), the player cannot rely on a stored countdown number from an earlier
+    probe and must instead recall that lane's period and arrival cadence from memory to
+    judge when a revived gate needs attention — this is the same "resolved once, must
+    be revisited later" pressure those levels already build, now named explicitly
+    rather than left implicit. None of these three add a new clickable, a new visible
+    object, or a new player action; they are the formal names for lane geometry,
+    self-driven per-turn hazard advancement, and cross-turn memory reliance that the
+    level sketches above already require the player to reckon with from level 1 onward.

@@ -1,0 +1,125 @@
+{
+  "schema_version": "b10.1",
+  "slug": "seamlock",
+  "game_id": "seamlock",
+  "verdict": "packaged",
+  "seeds": {
+    "requested": 5,
+    "validated": [
+      {
+        "seed": 73,
+        "win": true,
+        "levels_completed": 7,
+        "actions_total": 73,
+        "error": null
+      },
+      {
+        "seed": 2038720825,
+        "win": true,
+        "levels_completed": 7,
+        "actions_total": 73,
+        "error": null
+      },
+      {
+        "seed": 3866901322,
+        "win": true,
+        "levels_completed": 7,
+        "actions_total": 73,
+        "error": null
+      },
+      {
+        "seed": 1489718924,
+        "win": true,
+        "levels_completed": 7,
+        "actions_total": 73,
+        "error": null
+      },
+      {
+        "seed": 4247077614,
+        "win": true,
+        "levels_completed": 7,
+        "actions_total": 73,
+        "error": null
+      }
+    ],
+    "authored_seed": 73
+  },
+  "split": {
+    "train": 0.7,
+    "eval": 0.3,
+    "note": "applied at slug level; officials never in train"
+  },
+  "spec_hash": "91c321bb94d5c217168f53b9bc20beb7a13ea8977ba562505905661a56b0c82f",
+  "game_hash": "cb044ffc8b85724bbe1b9d0794f1f180f64815efe8f6bdccd43417371600484b",
+  "layout_contract": {
+    "present": true,
+    "legacy_no_layout": false
+  },
+  "section6_flags": [
+    {
+      "question": "Q1",
+      "default_applied": "TSV canonical",
+      "pending_contract_answer": true,
+      "note": "package/tsv/level-set.tsv is the CANONICAL trajectory surface this stage ships; \u00a71 names the ingest path <slug>_<qualifier>/<policy>/unprocessed_game.tsv, so a generated game is meant to be a path addition, and C-5 makes that concrete: package/duck-intake/<slug>_perfect/human_policy/unprocessed_game.tsv is a byte-identical copy of the same file at the consumer's own literals (sprite_lib --sample-dir globs *_perfect/human_policy/unprocessed_game.tsv)."
+    },
+    {
+      "question": "Q3",
+      "default_applied": "verbs in TSV dialect",
+      "pending_contract_answer": true,
+      "note": "\u00a73 mapping table: ACTION1-4 -> UP/DOWN/LEFT/RIGHT, ACTION5 -> INTERACT, ACTION6 -> CLICK with {x,y}. CLICK is the MEASURED spelling \u2014 24/24 official TSVs at duckWM sha 31f3a8b carry CLICK and none carries MOUSE, and five sprite_lib sites gate on the literal (b003 freeze addendum 7). Any other id (incl. RESET=0 and ACTION7/undo, both unmapped there) falls back to ACTION<id>, as the reference emitter does."
+    },
+    {
+      "question": "Q4",
+      "default_applied": "duration omitted",
+      "pending_contract_answer": true,
+      "note": "DIVERGENCE, deliberate: the \u00a76 default text says omitted, but the dialect we proved parity against writes the constant \"0.0000\" in every action row (\u00a71 duration row: \"0.0000 in ALL rows of their own human file\"; \u00a76 Q4 \"largely self-answers (emit 0.0000)\"). This emitter follows the PROVEN DIALECT \u2014 \"0.0000\" on action rows, \"\" on the terminal row \u2014 and flags the divergence here."
+    },
+    {
+      "question": "Q5",
+      "default_applied": "sparse reward",
+      "pending_contract_answer": true,
+      "note": "0/1 per row: 1 on a levels_completed increment or WIN, and the terminal row echoes the win reward, so a winning file carries levels+1 ones (\u00a71 measured on ar25: \"9 ones = 8 levels_completed increments + 1 on the final WIN step\"; \u00a74 parity check \"reward count incl. the terminal-row echo\"). The EnvSampler's transition reward (\u00a75) is NOT emitted."
+    },
+    {
+      "question": "Q6",
+      "default_applied": "no baked augmentation",
+      "pending_contract_answer": true,
+      "note": "one TSV, at the authored layout seed. Layout variants stay a sampler call (D13; architecture \u00a73 S6: per-seed emission on demand rather than pre-baked), and no colour/rot/flip copies are written."
+    },
+    {
+      "question": "Q7",
+      "default_applied": "empty WM columns left empty",
+      "pending_contract_answer": true,
+      "note": "explore_exploit / world_model_path / goal / exploration_output are written empty in every row, terminal included (\u00a71: empty in all 260 ar25 rows)."
+    },
+    {
+      "question": "Q9",
+      "default_applied": "volume = 1 near-optimal per level-set per game",
+      "pending_contract_answer": true,
+      "note": "exactly one line is replayed \u2014 S4's winning solver line (actions/level-*.json), which is \u00a76's 'solver as policy' default made concrete by D11 (solver-first). No noisy or failed trajectories."
+    }
+  ],
+  "versions": {
+    "arcengine": "0.9.3",
+    "python": "3.12.8"
+  },
+  "paths": {
+    "worker": null,
+    "out_dir": ".",
+    "s4_metadata": null,
+    "spec": "spec.yaml",
+    "tsv": "package/tsv/level-set.tsv",
+    "manifest": "package/manifest.json",
+    "duck_intake": "package/duck-intake/seamlock_perfect/human_policy/unprocessed_game.tsv",
+    "play_mirror": null,
+    "report": null,
+    "game": "game.py",
+    "metadata": "metadata.json"
+  },
+  "paths_note": "contract P-3: every path is RELATIVE to the build dir holding this manifest's own package/ (games/<slug>/game/). Entries whose referent is not part of the promoted tree are null: `worker` (the local build tree), `s4_metadata` (S4's baseline record), `play_mirror` (the out/play mirror) and `report` (the operator's s6-report.json) all stay in out/, which is gitignored. `game` and `metadata` name the two promoted files the out/ manifest has no key for. The out/ manifest itself is untouched and keeps its absolute paths.",
+  "promotion": {
+    "contract": "P-3",
+    "shelf_entry": "seamlock/game",
+    "source_batch": "g20261001-1"
+  }
+}

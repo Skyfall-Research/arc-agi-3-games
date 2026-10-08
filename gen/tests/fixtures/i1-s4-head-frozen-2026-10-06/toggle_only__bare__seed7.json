@@ -1,0 +1,295 @@
+{
+  "actions": {
+    "level-1.json": [
+      {
+        "data": null,
+        "id": 5
+      },
+      {
+        "data": null,
+        "id": 1
+      }
+    ],
+    "level-2.json": [
+      {
+        "data": null,
+        "id": 5
+      },
+      {
+        "data": null,
+        "id": 1
+      }
+    ]
+  },
+  "config": {
+    "g": {
+      "floor": 6,
+      "iqr": [
+        1.54,
+        2.96
+      ],
+      "median": 2.0,
+      "redraw_cap": 3,
+      "span_target": 9,
+      "trend": 0.65
+    }
+  },
+  "metadata": {
+    "baseline_actions": [
+      6,
+      6
+    ],
+    "caps": [
+      null,
+      null
+    ],
+    "g": [
+      3.0,
+      3.0
+    ],
+    "game_id": "i1-toggle-only",
+    "provenance": {
+      "arcengine": "<ARCENGINE>",
+      "g_config": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      },
+      "python": "<PYTHON>"
+    },
+    "rng_seed": 7,
+    "schema_version": "b8.1",
+    "solver_actions": [
+      2,
+      2
+    ],
+    "verdict": "fit"
+  },
+  "report": {
+    "band": {
+      "config": {
+        "games": 1,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "levels": 2,
+        "median": 2.0,
+        "tolerance": 0.25
+      },
+      "iqr_g": [
+        3.0,
+        3.0
+      ],
+      "median_g": 3.0,
+      "within": {
+        "iqr": false,
+        "median": false
+      }
+    },
+    "caps": {
+      "battery_margin": 5,
+      "bound": 2000,
+      "has_lose_call": true,
+      "levels": [
+        {
+          "bound": 2000,
+          "burn_action": null,
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION5",
+              "action_id": 5,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION7",
+              "action_id": 7,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": null,
+          "level": 1
+        },
+        {
+          "bound": 2000,
+          "burn_action": null,
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION5",
+              "action_id": 5,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION7",
+              "action_id": 7,
+              "burn": {
+                "calls": 2000,
+                "outcome": "bound"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": null,
+          "level": 2
+        }
+      ],
+      "note": "no cap measurable on any of 2 level(s) within 2000 burn action(s), although the game DOES call lose() \u2014 every cap-fit row is vacuous, so this game ships uncalibrated by the check S4 exists to run (R-05 \u00a72)",
+      "status": "unmeasured",
+      "values": [
+        null,
+        null
+      ]
+    },
+    "config": {
+      "g": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      }
+    },
+    "g_fit": {
+      "clip": [
+        1.2,
+        6.0
+      ],
+      "mu": 0.6931471805599453,
+      "sigma": 0.4843712241145833
+    },
+    "game_id": "i1-toggle-only",
+    "out_dir": "<OUT>",
+    "paths": {
+      "actions": [
+        "<OUT>/actions/level-1.json",
+        "<OUT>/actions/level-2.json"
+      ],
+      "metadata": "<OUT>/metadata.json",
+      "report": "<OUT>/s4-report.json"
+    },
+    "result": {
+      "attempts": [
+        {
+          "attempt": 0,
+          "baselines": [
+            6,
+            6
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": true,
+              "cap": null,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 6,
+              "battery_fits": true,
+              "cap": null,
+              "fits": true,
+              "level": 2,
+              "solver": 2
+            }
+          ],
+          "g": [
+            3.0,
+            3.0
+          ],
+          "ok": true
+        }
+      ],
+      "baseline_actions": [
+        6,
+        6
+      ],
+      "g": [
+        3.0,
+        3.0
+      ],
+      "invariants": {
+        "floor_ok": true,
+        "has_strict_descent": "vacuous",
+        "span_achieved": 1.0,
+        "trend_achieved": null
+      },
+      "redraws": 0,
+      "verdict": "fit"
+    },
+    "rng_seed": 7,
+    "schema_version": "b8.1",
+    "seed_source": "explicit",
+    "solver": {
+      "actions_per_level": [
+        2,
+        2
+      ],
+      "actions_total": 4,
+      "described": [
+        [
+          "ACTION5",
+          "ACTION1"
+        ],
+        [
+          "ACTION5",
+          "ACTION1"
+        ]
+      ],
+      "levels": 2,
+      "win": true
+    },
+    "stage": "s4",
+    "verdict": "fit",
+    "versions": "<VERSIONS>",
+    "worker": "<WORKER>"
+  },
+  "seed": 7,
+  "worker": "toggle_only"
+}

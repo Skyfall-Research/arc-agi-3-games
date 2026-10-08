@@ -1,0 +1,189 @@
+game:
+  slug: tidegate-mosaic
+  title: Tidegate Mosaic
+  idea_ref: b004-validation-i002
+  terms:
+    - goal.pattern_match
+    - gate.phase
+    - state.undo
+    - move.grid
+    - move.slide
+  objective:
+    primary: match_pattern
+    secondary: null
+  locus: click-only
+  actions:
+    ACTION1: absent
+    ACTION2: absent
+    ACTION3: absent
+    ACTION4: absent
+    ACTION5: absent
+    ACTION6: declared
+    ACTION7: declared
+    decoys: []
+  knobs:
+    refusal: visible
+    refusal_transient: true
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: ["lying display: the header balance meter reads like progress feedback but is purely decorative — it never gates, blocks, or contributes to the win condition, so a player who trusts it as a completion signal is misled"]
+  palette:
+    you: 11
+    goal: 14
+    danger: null
+    background: 5
+    reserved: [5, 1, 2, 3]
+  hud:
+    reserved: custom-rect
+    meter:
+      placement: "top-right corner strip, rows 0-1, columns 28-31, separated from the reference swatch by one blank column"
+      direction: "a single needle cell slides within a 4-cell horizontal track; each successful socket placement nudges the needle one cell toward the track's left end if that socket sits in the left half of the mosaic, or toward the right end if it sits in the right half; the needle never ends or blocks a level"
+  neg2_readers: []
+  layers: explicit
+  layout:
+    seed: 1337
+    grid: [32, 32]
+  render:
+    cell_px: 2
+  chrome:
+    - kind: panel
+      where: top
+    - kind: bezel
+      where: border
+  levels:
+    - relation_to_prev: new
+      terms_introduced: [move.grid, move.slide, goal.pattern_match]
+      sketch: >
+        Nine ungated lanes run from a rack row down to nine sockets. A reference
+        swatch across the top strip shows the nine target colors in lane order.
+        One lane (its index chosen by the seed) starts already resolved: its
+        rack token is gone and its socket already glows the matching color,
+        demonstrating exactly what a solved lane looks like. The remaining eight
+        lanes each hold one rack token in the seed-assigned color for that
+        lane's socket. Clicking a rack token slides it straight down its empty
+        shaft to its socket in one step; no gate can block it here. The level
+        ends when all nine sockets hold their correct color. This introduces
+        the click-to-launch action and the swatch-versus-floor matching
+        objective before any timing pressure exists.
+    - relation_to_prev: new
+      terms_introduced: [gate.phase, state.undo]
+      sketch: >
+        Four lanes. Two lanes (seed-chosen) are plain shafts as in level 1; the
+        other two each contain a single gate cell partway down, cycling
+        between an open lattice and a solid wall on a fixed period, both set
+        so the gate reads CLOSED at the level's first tick. A player who
+        clicks a gated lane's token immediately watches it slide partway and
+        stop dead against the wall, no longer sitting in the rack and no
+        longer clickable there — the lane is now jammed. Pressing the undo
+        action pulls that stalled token back to its rack slot, clickable again,
+        teaching that undo is not decoration but the only way to retry a
+        mistimed launch. The two ungated lanes can be solved anytime and serve
+        as a visible baseline for comparison against the two rhythmed ones.
+    - relation_to_prev: reuse
+      terms_introduced: []
+      sketch: >
+        Five lanes, every one of them gated with a single gate, each gate
+        given a distinct period and offset (seed-chosen) so no two lanes open
+        on the same tick pattern. Where level 2 isolated one rhythm against a
+        static baseline, here every lane demands its own read, and because the
+        global tick advances on every click or undo regardless of which lane
+        it touches, working one lane's window shifts all four others' phases
+        underneath the player. A stalled attempt in one lane still only costs
+        an undo, but that undo is itself a tick that can knock a second lane
+        out of its own window, so tracking is now genuinely concurrent rather
+        than isolated.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Four lanes. Two (seed-chosen) carry a single gate as before; the other
+        two each carry two gates in series at different shaft depths with
+        independent periods. Launching into a double-gated lane when only the
+        first gate is open still slides the token through gate one and parks
+        it stalled between the two gates — a second, later click on that same
+        lane (once re-armed via undo, or simply once you have already cleared
+        gate one and are waiting on gate two) is needed to finish the descent.
+        With up to two lanes able to be jammed at once, the player must also
+        start choosing WHICH jam to clear first, since undo only ever affects
+        the single most recently launched token.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Six lanes with shortened gate periods across the board (tighter
+        open windows), a mix of single- and double-gated lanes, and every
+        period mutually desynced by the seed. Open windows are now short
+        enough that clicking a rack token on the wrong tick is the likely
+        outcome of acting without first spending a few no-op observation
+        clicks (clicking any non-rack cell advances the tick for free and
+        changes nothing else) to read a lane's cadence. Success requires
+        interleaving launches, waits, and undos across all six lanes so that
+        no single lane's stall is left unresolved long enough to force a
+        second costly re-read of its rhythm.
+    - relation_to_prev: invert
+      terms_introduced: []
+      sketch: >
+        Three lanes, small on purpose. Lane A carries a gate timed so a naive
+        first click stalls it. Lane B is ungated and can be finished in one
+        clean click at any time. If the player stalls lane A, then immediately
+        clicks lane B's token to bank an easy correct placement, pressing undo
+        no longer frees lane A: undo always retracts only the single most
+        recently launched token, so it now retracts lane B's already-correct
+        placement instead, sending that token back to its rack and leaving
+        lane A still jammed. The same undo rule that was a free safety net in
+        levels 2-5 is now a liability unless the player clears a stall before
+        launching anything else — the fix is discipline in ordering, not a new
+        rule.
+    - relation_to_prev: compose
+      terms_introduced: []
+      sketch: >
+        Eight lanes: a mix of single- and double-gated lanes plus a couple of
+        ungated ones, all periods short and mutually desynced by the seed, laid
+        out across the full width of the mosaic floor so that no two adjacent
+        lanes share a favorable window. The level only yields to a player who
+        applies every earlier lesson together: read before launching, resolve
+        any stall with undo before touching another lane (per level 6's
+        ordering lesson), and treat waiting clicks as a legitimate tool for
+        aligning a slow-period lane rather than racing it. The full eight-lane
+        swatch must be matched simultaneously to end the level.
+  budget:
+    enforced: true
+    displayed: false
+    counts: "every action taken (rack-token launches, no-op observation clicks, and undo retractions) on the way to a fully matched mosaic"
+    lives: null
+  solver_notes: >
+    layout.seed drives, per level: the permutation of token/socket colors
+    drawn from an eight-hue pool (indices 6,7,8,9,10,12,13,15) assigned to
+    that level's lanes; which lane starts pre-solved in level 1; the exact
+    shaft row(s) each gate occupies within the fixed shaft band; each gate's
+    period and phase offset within that level's authored range; and the
+    exact margins and inter-lane gap widths across the 32-wide board. What
+    the seed never changes: the global tick advances by exactly one on every
+    ACTION6 or ACTION7; a gate is open for the first half (rounded up) of its
+    period and closed the rest, evaluated at the tick immediately after the
+    action that triggers a launch; only a token still sitting in its rack
+    slot can be clicked to launch, and a launch resolves fully within that
+    same step by sliding cell by cell down the lane (move.slide, the
+    per-action logical unit being one shaft cell per animation frame), the
+    resolution stopping either at the socket or at the first closed gate
+    encountered; undo always retracts the single most recently launched
+    token regardless of whether it stalled or reached its socket, and does
+    nothing (but still spends a tick) if no token has been launched since
+    the last undo; a click on any non-rack-token cell is a free,
+    visibly-flashing no-op that still spends a tick; and the level is won
+    exactly when every socket holds a placed token whose color equals that
+    socket's swatch-assigned target color. No level is solvable by clicking
+    lanes in an arbitrary fixed order, because the seed's periods and
+    offsets determine which order is actually open at the ticks the
+    player's own action sequence produces — the player must read the
+    rendered gate state at decision time, not recall a memorized route.
+    Sliding a token down its lane is rendered as a short deterministic
+    animation (the token sprite stepping one shaft cell per animation frame
+    until it settles or hits a wall); the animation consumes no extra player
+    steps beyond the single triggering click, and the final resting state
+    (stalled cell or socket) is committed the instant the animation ends. A
+    failed/no-op click or undo flashes the clicked cell white for one
+    rendered frame and reverts (refusal_transient), so no settled frame ever
+    shows a refusal, only its consequence (or lack of one). The header
+    balance meter (a lying display) updates on every successful socket
+    placement but is read-only feedback: it never advances, blocks, or
+    contributes to the win check, which depends solely on socket colors
+    matching the swatch.

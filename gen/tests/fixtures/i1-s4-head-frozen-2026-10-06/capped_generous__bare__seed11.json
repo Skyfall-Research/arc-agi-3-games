@@ -1,0 +1,470 @@
+{
+  "actions": {
+    "level-1.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ],
+    "level-2.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ],
+    "level-3.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ],
+    "level-4.json": [
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      },
+      {
+        "data": null,
+        "id": 4
+      }
+    ]
+  },
+  "config": {
+    "g": {
+      "floor": 6,
+      "iqr": [
+        1.54,
+        2.96
+      ],
+      "median": 2.0,
+      "redraw_cap": 3,
+      "span_target": 9,
+      "trend": 0.65
+    }
+  },
+  "metadata": {
+    "baseline_actions": [
+      6,
+      6,
+      24,
+      7
+    ],
+    "caps": [
+      120,
+      180,
+      240,
+      300
+    ],
+    "g": [
+      3.0,
+      2.0,
+      6.0,
+      1.4
+    ],
+    "game_id": "s4-capped-generous",
+    "provenance": {
+      "arcengine": "<ARCENGINE>",
+      "g_config": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      },
+      "python": "<PYTHON>"
+    },
+    "rng_seed": 11,
+    "schema_version": "b8.1",
+    "solver_actions": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "verdict": "fit"
+  },
+  "report": {
+    "band": {
+      "config": {
+        "games": 1,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "levels": 4,
+        "median": 2.0,
+        "tolerance": 0.25
+      },
+      "iqr_g": [
+        1.85,
+        3.75
+      ],
+      "median_g": 2.5,
+      "within": {
+        "iqr": false,
+        "median": true
+      }
+    },
+    "caps": {
+      "battery_margin": 5,
+      "bound": 2000,
+      "has_lose_call": true,
+      "levels": [
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 120,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 120,
+          "level": 1
+        },
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 180,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 180,
+          "level": 2
+        },
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 240,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 240,
+          "level": 3
+        },
+        {
+          "bound": 2000,
+          "burn_action": "ACTION1",
+          "candidates": [
+            {
+              "action": "ACTION1",
+              "action_id": 1,
+              "burn": {
+                "calls": 300,
+                "outcome": "game-over"
+              },
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION2",
+              "action_id": 2,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION3",
+              "action_id": 3,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            },
+            {
+              "action": "ACTION4",
+              "action_id": 4,
+              "burn": null,
+              "probe": "in-level",
+              "qualifies": true
+            }
+          ],
+          "cap": 300,
+          "level": 4
+        }
+      ],
+      "status": "measured",
+      "values": [
+        120,
+        180,
+        240,
+        300
+      ]
+    },
+    "config": {
+      "g": {
+        "floor": 6,
+        "iqr": [
+          1.54,
+          2.96
+        ],
+        "median": 2.0,
+        "redraw_cap": 3,
+        "span_target": 9.0,
+        "trend": 0.65
+      }
+    },
+    "g_fit": {
+      "clip": [
+        1.2,
+        6.0
+      ],
+      "mu": 0.6931471805599453,
+      "sigma": 0.4843712241145833
+    },
+    "game_id": "s4-capped-generous",
+    "out_dir": "<OUT>",
+    "paths": {
+      "actions": [
+        "<OUT>/actions/level-1.json",
+        "<OUT>/actions/level-2.json",
+        "<OUT>/actions/level-3.json",
+        "<OUT>/actions/level-4.json"
+      ],
+      "metadata": "<OUT>/metadata.json",
+      "report": "<OUT>/s4-report.json"
+    },
+    "result": {
+      "attempts": [
+        {
+          "attempt": 0,
+          "baselines": [
+            6,
+            6,
+            24,
+            7
+          ],
+          "capfit": [
+            {
+              "baseline": 6,
+              "battery_fits": true,
+              "cap": 120,
+              "fits": true,
+              "level": 1,
+              "solver": 2
+            },
+            {
+              "baseline": 6,
+              "battery_fits": true,
+              "cap": 180,
+              "fits": true,
+              "level": 2,
+              "solver": 3
+            },
+            {
+              "baseline": 24,
+              "battery_fits": true,
+              "cap": 240,
+              "fits": true,
+              "level": 3,
+              "solver": 4
+            },
+            {
+              "baseline": 7,
+              "battery_fits": true,
+              "cap": 300,
+              "fits": true,
+              "level": 4,
+              "solver": 5
+            }
+          ],
+          "g": [
+            3.0,
+            2.0,
+            6.0,
+            1.4
+          ],
+          "ok": true
+        }
+      ],
+      "baseline_actions": [
+        6,
+        6,
+        24,
+        7
+      ],
+      "g": [
+        3.0,
+        2.0,
+        6.0,
+        1.4
+      ],
+      "invariants": {
+        "floor_ok": true,
+        "has_strict_descent": true,
+        "span_achieved": 4.0,
+        "trend_achieved": 0.35548454184961015
+      },
+      "redraws": 0,
+      "verdict": "fit"
+    },
+    "rng_seed": 11,
+    "schema_version": "b8.1",
+    "seed_source": "explicit",
+    "solver": {
+      "actions_per_level": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "actions_total": 14,
+      "described": [
+        [
+          "ACTION4",
+          "ACTION4"
+        ],
+        [
+          "ACTION4",
+          "ACTION4",
+          "ACTION4"
+        ],
+        [
+          "ACTION4",
+          "ACTION4",
+          "ACTION4",
+          "ACTION4"
+        ],
+        [
+          "ACTION4",
+          "ACTION4",
+          "ACTION4",
+          "ACTION4",
+          "ACTION4"
+        ]
+      ],
+      "levels": 4,
+      "win": true
+    },
+    "stage": "s4",
+    "verdict": "fit",
+    "versions": "<VERSIONS>",
+    "worker": "<WORKER>"
+  },
+  "seed": 11,
+  "worker": "capped_generous"
+}

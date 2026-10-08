@@ -1,0 +1,64 @@
+# b001-pilot — the one-slot pilot config (architecture §5 + D25 backends).
+# Every key traces to a decision: quotas/mix (D20/D21/D22-S0, D24 objectives) ·
+# tiers (spec §5) · g.* (D7) · battery (D8/D12 smoke ruling) · verifier (D11) ·
+# seeds (D13) · backends + repo boundary (D25).
+
+duckwm_docs: ../duckWM/local-docs/arc-agi-3-generator   # READ-ONLY canon (resolved absolute at load)
+duckwm_games: ../duckWM/games/official   # READ-ONLY officials corpus (25 games; B2 calibration)
+
+backends:
+  default_driver: localclaude            # localclaude | codex
+  per_stage: {}                          # e.g. {implementer: codex}
+  localclaude:
+    # implementer fable -> opus (operator R2 ruling, 2026-09-22): a Max-plan
+    # fable-limits call, not a capability ranking — the green-loop can burn
+    # up to 12 long sessions. Flips back when limits allow.
+    models: {spec_writer: claude-sonnet-5, implementer: claude-opus-5, verifier: claude-opus-5}
+    # S2 worker sessions (B3). Operator ruling 2026-09-21: scoped tools, no
+    # permission bypass — `bypassPermissions` here is refused by the driver.
+    session:
+      permission_mode: acceptEdits
+      allowed_tools: [Edit, Write, Read, Glob, Grep, "Bash(make *)", "Bash(python *)",
+                      "Bash(.venv/bin/python *)"]
+      # effort: R2 ruling (operator 2026-09-22). Default-effort S2 sessions sat
+      # >30 min in silent thinking and died on the 1800s driver timeout with
+      # zero output (attempt-1 record). medium = S1's all-day-proven setting.
+      effort: medium
+  codex:
+    auth_env: OPENAI_API_KEY
+    models: {spec_writer: gpt-5.4, implementer: gpt-5.4-codex, verifier: gpt-5.4}
+    session:
+      sandbox: workspace-write           # read-only | workspace-write | danger-full-access
+
+batch:
+  id: b001-pilot
+  size: 1                                # pilot; production ~20-40
+  seed: 1                                # S0 rng seed (D13); --seed overrides
+  tiers: {t1: 0.4, t2: 0.4, t3: 0.2}     # legibility tiers (spec §5 knob defaults per tier)
+  mix:
+    hazardless: 0.5
+    locus: {mover: .40, selection: .36, click: .24}
+    objective:                           # D24: floors + reach cap (tufa collapsed to 50% reach)
+      floors: {reach_goal: 1, cover_targets: 1, collect_all: 1, match_pattern: 1,
+               sequence: 1, survive: 1, connect: 1, balance: 1}
+      reach_cap: 0.25
+  quotas: {goal.confirm: 2, state.action_lag: 2, agent.echo: 1}   # term minima (D22 S0)
+
+ideas:
+  seed_terms_per_idea: [2, 4]
+  failure_family_share: 0.4              # ideas seeded from the five agent-failure families
+  dedupe_window: 3                       # batches
+
+lint:        {strict: true}            # S1 §11 linter: recorded in every lint-report.json
+implementer: {max_green_attempts: 12, session_token_cap: 400k}
+verifier:    {reject_cap: 2, bfs_level_size_cap: 400}    # cells
+g:           {median: 2.00, iqr: [1.54, 2.96], floor: 6, span_target: 9, trend: 0.65, redraw_cap: 3}
+# battery.model: pilot stand-in (R1 ruling, operator 2026-09-22; B9 live-proven
+# lane, $0.0023). Flips to the duck's deployment when the team wires it.
+battery:     {model: meta-llama/llama-3.1-8b-instruct, passes: 3, token_cap: 100k, smoke: true}
+# respec_cap: pilot runs at 3 (R2 ruling, operator 2026-09-22): kill #1 landed
+# under the since-fixed ambiguous neg2 prompt; B11 carry-flag 'RESPEC_CAP=2
+# not canon' resolved by making it per-batch config.
+# Raised to 4 at the R2 coherence pass (operator 2026-09-22): kill #3 (contradiction) came from a hazardless-false draw with no hazard term plus garbage S0 prose; the writer prompt now carries the full lint surface.
+orchestrator: {workers: 4, wave_size: 5, max_attrition: 0.30, respec_cap: 4}
+package:     {seeds_validated: 5, split: {train: 0.7, eval: 0.3}}

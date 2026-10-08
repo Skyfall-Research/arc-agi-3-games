@@ -1,0 +1,142 @@
+game:
+  slug: lantern-path-parity-trace
+  title: Lantern Path
+  idea_ref: g20261001-5-i001
+  terms:
+  - goal.pattern_match
+  - move.grid
+  - budget.cap
+  - goal.cover
+  - terrain.trail
+  objective:
+    primary: match_pattern
+    secondary: null
+  locus: unique-mover
+  actions:
+    ACTION1: declared
+    ACTION2: declared
+    ACTION3: declared
+    ACTION4: declared
+    ACTION5: absent
+    ACTION6: absent
+    ACTION7: absent
+    decoys: []
+  knobs:
+    refusal: visible
+    goal_legible: obvious
+    danger_tell: none
+    deceptions: []
+  palette:
+    you: 11
+    goal: 10
+    danger: null
+    reserved:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    background: 5
+  hud:
+    reserved: custom-rect
+    meter:
+      placement: bottom edge beneath the board and reference panel
+      direction: horizontal
+  neg2_readers:
+  - lantern: the yellow 1x1 logical mover is read by its occupied-cell mask; its 2x2
+      dark bezel is visual-only
+  layers: explicit
+  render:
+    cell_px: 4
+  chrome:
+  - kind: bezel
+    where: border
+  - kind: divider
+    where: custom
+  layout:
+    seed: 173
+    grid:
+    - 16
+    - 14
+  levels:
+  - relation_to_prev: new
+    terms_introduced:
+    - goal.pattern_match
+    - move.grid
+    - budget.cap
+    sketch: A compact target hook is shown in a light-blue reference panel beside
+      a matching open walk area. The lantern begins at one endpoint, so tracing every
+      target cell teaches that warm cells are the required picture and dark cells
+      must remain unlit. The seed mirrors the hook and shifts its inner elbow, while
+      preserving one endpoint start and one dead-end finish.
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: 'A forked target comb reuses permanent lighting: entering the shared stem
+      twice is now useful because it remains warm, and each tooth requires a return
+      through that shared route. The seed mirrors the comb and swaps which tooth is
+      long, preserving a single articulation stem and two unequal leaves.'
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: Two target islands touch through a narrow already-dark bridge cell that
+      belongs to the picture. The player must use the bridge to connect coverage,
+      then leave it warm while clearing both irregular lobes. The seed selects one
+      of two bridge offsets and reflects both lobes, preserving exactly one shared
+      bridge and an asymmetric leaf on each side.
+  - relation_to_prev: new
+    terms_introduced: []
+    sketch: A ring-shaped target introduces a central forbidden hole and two unequal
+      side bays. Movement remains ordinary, but the ring makes route order matter
+      because each bay can be entered only through a different rim segment. The seed
+      changes the bay depths and places the start on either permitted rim side, preserving
+      the hole and the two one-mouth bays.
+  - relation_to_prev: reuse
+    terms_introduced: []
+    sketch: 'The comb returns inside a ring: its shared stem is now a safe revisitable
+      spine, while a shallow bay off the ring must be completed before the only convenient
+      return. The seed mirrors the composition and exchanges the deep and shallow
+      bay, preserving one ring hole, one articulation stem, and one delayed bay.'
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: A figure-eight target joins two rings at one warmable waist cell. The
+      waist is useful for access but repeatedly crossing it does not repair skipped
+      leaves, so the player must plan both loops and their off-axis bays as one trace.
+      The seed varies which loop is taller and which bay points inward, preserving
+      one waist, two holes, and four one-mouth bays.
+  - relation_to_prev: invert
+    terms_introduced: []
+    sketch: 'The familiar shared spine becomes a liability when it lies outside the
+      light-blue target picture: using it gives access but lights an illegal cell,
+      forcing the player to approach both target lobes through the longer outer route
+      instead. The seed mirrors the lopsided outer route and moves the spine between
+      two legal offsets, preserving one visibly non-target shortcut and two target
+      lobes.'
+  - relation_to_prev: compose
+    terms_introduced: []
+    sketch: The final lantern mural combines a figure-eight, an outer detour, and
+      two asymmetric bays. A central non-target shortcut is tempting but cannot be
+      touched; the player must use the revisitable target waist to cover every lobe
+      without lighting the voids. The seed reflects the mural and independently chooses
+      the upper-loop height and lower-bay offset, preserving the same blocked shortcut
+      and coverage dependencies.
+  budget:
+    enforced: true
+    displayed: true
+    counts: Each accepted directional step counts once; blocked directional attempts
+      are visibly refused and do not count. The generated cap is solver-derived with
+      generous exploratory slack, especially in the first three levels.
+    lives: null
+  solver_notes: 'Update is atomic per accepted direction: validate the adjacent logical
+    cell, move the lantern, permanently set that cell''s lit bit to 1, then evaluate
+    the pattern. A blocked move leaves all state unchanged and shows a settled magenta
+    bezel on the attempted side for one full subsequent frame; it costs no budget.
+    A level wins exactly when every target cell is lit and every non-target walk cell
+    is unlit; walls, panel cells, chrome, HUD, and the lantern''s bezel are ignored.
+    Layout generation uses layout.seed structurally: for every seed, select listed
+    mirror/offset variants, rebuild walls and target masks, and verify the same topology
+    invariants before play. Do not hard-code a route or a numeric cap. The left/right
+    balance meter is informative only: after each accepted step it displays the absolute
+    difference between lit target cells in the board''s left and right halves, with
+    the smaller side''s segment shrinking; it never affects validation. Gate slide
+    and completion glow are short deterministic animations with state committed before
+    animation; frames never consume budget.'

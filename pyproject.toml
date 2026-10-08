@@ -1,0 +1,36 @@
+[project]
+name = "arc-agi-games"
+version = "0.0.1"
+description = "An ARC-AGI-3-style game generator: idea, spec, agent-built implementation, blind audit, structural and visual gates, play-test and packaging, end to end."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.12"
+dependencies = [
+    "arcengine==0.9.3",
+    "numpy>=2.0",
+    "pyyaml>=6.0",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6", "pytest>=8.0"]
+
+# The zero-YAML command line (contract P-4). `arc-games` and `python -m gen`
+# are the same entry point; the console script is what the README's quickstart
+# uses once `pip install -e .` has run.
+[project.scripts]
+arc-games = "gen.cli:main"
+
+[tool.ruff]
+line-length = 100
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# `gen.tools` is the P-2 follow-up: `sync_canon` and `promote_games` are real
+# modules an installed clone must be able to import (the CLI's canon
+# spot-check reads `gen.tools.sync_canon`), and a packages list that names only
+# `gen` leaves them out of the installed distribution.
+packages = ["gen", "gen.tools"]

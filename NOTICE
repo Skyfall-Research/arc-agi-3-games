@@ -1,0 +1,39 @@
+arc-agi-games — an ARC-AGI-3-style game generator
+Copyright 2026 Skyfall AI
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+
+Third-party material
+--------------------
+
+Tufalabs re-arc-3 prompts (MIT License)
+
+  canon/third-party/re-arc-3/game_generation_prompt.md
+  canon/third-party/re-arc-3/spec_prompt.md
+
+  Tufalabs re-arc-3 v0.1.2, (c) Tufalabs (team: Harold Bessis, Jeroen
+  Cottaar, Isaiah Pressman, Andries Smit, Michal Tesnar, Stefano Viel),
+  obtained from Kaggle dataset jeroencottaar/taaf-kaggle-source (dataset
+  license field: MIT), vendored 2026-09-21. The two files are included
+  verbatim and unmodified. The MIT grant is the Kaggle dataset-level license
+  field, set by the bundle's author, a member of the Tufalabs team; the full
+  license text and attribution are in
+  canon/third-party/re-arc-3/LICENSE-MIT.md.
+
+
+The official ARC-AGI-3 games
+----------------------------
+
+The official ARC-AGI-3 games are published by the ARC Prize Foundation
+(arcprize.org). This repository does not redistribute them: it contains no
+official game source code, level data or frames. Where the generator's canon,
+configuration and tests refer to the official games, what they carry is
+derived data — counts, ratios, per-level values and measured visual
+statistics — and the canon's own written analyses (canon/design/objects/
+bestiary/), which cite the games and quote them briefly for analysis.
+canon/PROVENANCE.md names arcprize as the source of the games those analyses
+describe.
+
+The game engine the generated games run on, `arcengine`, is a separate
+package installed from PyPI under its own license; it is not vendored here.
